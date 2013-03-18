@@ -1,0 +1,60 @@
+/*
+ * Copyright (c) 2012 Samsung Electronics Co., Ltd All Rights Reserved
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ */
+
+#ifndef _PRIVACY_CHECKER_H_
+#define _PRIVACY_CHECKER_H_
+
+#include <string>
+#include <mutex>
+#include <list>
+#include <vector>
+#include <memory>
+#include <map>
+#include <PrivacyManagerTypes.h>
+#include <dbus/dbus.h>
+#include <glib.h>
+
+struct sqlite3;
+
+class EXTERN_API PrivacyChecker
+{
+private:
+	static const std::string DB_PATH;
+	static std::map < std::string, bool > m_privacyCache;
+	static std::string m_pkgId;
+	static bool m_isInitialized;
+	static std::mutex m_cacheMutex;
+	static DBusConnection* m_pDBusConnection;
+	static GMainLoop* m_pLoop;
+
+private:
+	static int initializeDbus(void);
+	static int finalizeDbus(void);
+	static int getUniqueIdFromPackageId(const std::string pkgId, int& uniqueId);
+	static int updateCache(void);
+	static int updateCache(const std::string privacyId);
+	static void printCache(void);
+	static void* runSignalListenerThread(void* pData);
+	static int getCurrentPkgId(std::string& pkgId);
+
+public:
+	static int initialize(const std::string pkgId);
+	static int check(const std::string privacyId);
+	static int finalize(void);
+	static DBusHandlerResult handleNotification(DBusConnection* connection, DBusMessage* message, void* user_data);
+};
+
+#endif // _PRIVACY_CHECKER_H_
