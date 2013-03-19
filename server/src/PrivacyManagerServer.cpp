@@ -223,7 +223,8 @@ PrivacyManagerServer::addAppPackagePrivacyInfo(const std::string pkgId, const st
 		res = sqlite3_bind_text(pPrivacyStmt.get(), 2, iter->c_str(), -1, SQLITE_TRANSIENT);
 		TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
 		
-		res = sqlite3_bind_int(pPrivacyStmt.get(), 3, 0);
+		// Before setting app and popup is ready, default value is true
+		res = sqlite3_bind_int(pPrivacyStmt.get(), 3, 1);
 		TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_int : %d", res);
 
 		res = sqlite3_step(pPrivacyStmt.get());

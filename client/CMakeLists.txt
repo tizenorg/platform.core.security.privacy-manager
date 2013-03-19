@@ -47,9 +47,11 @@ INCLUDE_DIRECTORIES(${pkgs_INCLUDE_DIRS} ${client_include_dir} ${common_include_
 SET(PRIVACY_MANAGER_CLIENT_SOURCES 
 	${common_src_dir}/SocketConnection.cpp
 	${common_src_dir}/SocketStream.cpp
+	${common_src_dir}/PrivacyIdInfo.cpp
 	${client_src_dir}/SocketClient.cpp
 	${client_src_dir}/PrivacyManager.cpp
 	${client_src_dir}/PrivacyChecker.cpp
+	${client_src_dir}/privacy_checker_client.cpp
 	${client_src_dir}/privacy_info_client.cpp
 	${client_src_dir}/privacy_manager_client.cpp
 	)
@@ -59,13 +61,12 @@ SET(PRIVACY_MANAGER_CLIENT_HEADERS
 	${client_include_dir}/PrivacyChecker.h
 	${client_include_dir}/privacy_info_client.h
 	${client_include_dir}/privacy_manager_client.h
+	${client_include_dir}/privacy_checker_client.h
 	${common_include_dir}/privacy_manager_client_types.h
 )
 SET(PRIVACY_MANAGER_CLIENT_LDFLAGS " -module -avoid-version ")
 SET(PRIVACY_MANAGER_CLIENT_CFLAGS  " ${CFLAGS} -fPIC ")
 #SET(PRIVACY_MANAGER_CLIENT_LIBADD " ")
-
-SET(PC_CFLAGS -I\${includedir}/privacy_manager)
 
 ADD_DEFINITIONS("-DLOG_TAG=\"PRIVACY-MANAGER-CLIENT\"")
 ADD_LIBRARY(privacy-manager-client SHARED ${PRIVACY_MANAGER_CLIENT_SOURCES})
@@ -74,6 +75,11 @@ SET_TARGET_PROPERTIES(privacy-manager-client PROPERTIES COMPILE_FLAGS "${PRIVACY
 SET_TARGET_PROPERTIES(privacy-manager-client PROPERTIES SOVERSION ${VERSION_MAJOR})
 SET_TARGET_PROPERTIES(privacy-manager-client PROPERTIES VERSION ${VERSION})
 ###################################################################################################
+
+SET(PC_NAME privacy-manager-client)
+SET(PC_DESCRIPTION "Privacy Manager Client API")
+SET(PC_LDFLAGS -lprivacy-manager-client)
+SET(PC_CFLAGS -I\${includedir}/privacy_manager)
 
 CONFIGURE_FILE(../privacy-manager-client.pc.in privacy-manager-client.pc @ONLY)
 

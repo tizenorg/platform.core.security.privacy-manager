@@ -14,8 +14,8 @@
  * limitations under the License. 
  */
 
-#ifndef __TIZEN_PRIVACYMGR_PRIVACY_MANAGER_CLIENT_H
-#define __TIZEN_PRIVACYMGR_PRIVACY_MANAGER_CLIENT_H
+#ifndef _PRIVACY_MANAGER_CLIENT_H
+#define _PRIVACY_MANAGER_CLIENT_H
 
 #include <privacy_info_client.h>
 #include <privacy_manager_client_types.h>

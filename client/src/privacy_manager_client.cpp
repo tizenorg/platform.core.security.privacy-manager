@@ -50,9 +50,8 @@ int privacy_manager_client_install_privacy(const char *package_id, const char** 
 	std::list < std::string > privacyList;
 
 	while (*privacy_list != NULL)
-	{
 		privacyList.push_back(std::string(*privacy_list ++));
-	}
+
 	retval = pInst->addAppPackagePrivacyInfo(std::string(package_id), privacyList);
 
 	return retval;

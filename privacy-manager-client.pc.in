@@ -1,9 +1,11 @@
 prefix=@PREFIX@
 exec_prefix=@EXEC_PREFIX@
 libdir=@LIBDIR@
-includedir=/usr/lib/privacy_manager
+includedir=/usr/include
 
-Name: privacy-manager-client
-Description: Privacy Manager Client
+Name: @PC_NAME@
+Description: @PC_DESCRIPTION@
 Version: @VERSION@
+Libs: -L${libdir} @PC_LDFLAGS@
+Cflags: @PC_CFLAGS@
 Requires: 

@@ -51,29 +51,29 @@ Requires:   privacy-manager-client = %{version}-%{release}
 %description -n privacy-manager-client-devel
 Privacy Management(development files)
 
-#%package -n capi-security-privacy-manager
-#Summary:    Privacy Manager API
-#Version:    0.0.1
-#Release:    0
-#Group:      TO_BE/FILLED_IN
-#License:    TO BE FILLED IN
-#BuildRequires:  cmake
-#BuildRequires:  pkgconfig(dlog)
-#BuildRequires:  pkgconfig(capi-base-common)
-#BuildRequires:  pkgconfig(glib-2.0)
-#Requires(post): /sbin/ldconfig  
-#Requires(postun): /sbin/ldconfig
+%package -n capi-security-privacy-manager
+Summary:    Privacy Manager API
+Version:    0.0.1
+Release:    0
+Group:      TO_BE/FILLED_IN
+License:    TO BE FILLED IN
+BuildRequires:  cmake
+BuildRequires:  pkgconfig(dlog)
+BuildRequires:  pkgconfig(capi-base-common)
+BuildRequires:  pkgconfig(glib-2.0)
+Requires(post): /sbin/ldconfig  
+Requires(postun): /sbin/ldconfig
 
-#%description -n capi-security-privacy-manager
-#The Privacy Manager API provides functions to get/set information about privacy information of installed packages.
+%description -n capi-security-privacy-manager
+The Privacy Manager API provides functions to get/set information about privacy information of installed packages.
 
-#%package  -n capi-security-privacy-manager-devel
-#Summary:  Privacy Manager API (Development)
-#Group:    TO_BE/FILLED_IN
-#Requires: %{name} = %{version}-%{release}
+%package  -n capi-security-privacy-manager-devel
+Summary:  Privacy Manager API (Development)
+Group:    TO_BE/FILLED_IN
+Requires: %{name} = %{version}-%{release}
 
-#%description -n capi-security-privacy-manager-devel
-#The Privacy Manager API provides functions to get/set information about privacy information of installed packages.(DEV)
+%description -n capi-security-privacy-manager-devel
+The Privacy Manager API provides functions to get/set information about privacy information of installed packages.(DEV)
 
 %prep
 %setup -q
@@ -109,8 +109,8 @@ install -D %{SOURCE2} %{buildroot}%{_datadir}/privacy-manager-client.manifest
 %make_install -n privacy-manager-server
 install -D %{SOURCE1} %{buildroot}%{_datadir}/privacy-manager-server.manifest
 
-#%make_install -n capi-security-privacy-manager
-#install -D %{SOURCE4} %{buildroot}%{_datadir}/capi-security-privacy-manager.manifest
+%make_install -n capi-security-privacy-manager
+install -D %{SOURCE4} %{buildroot}%{_datadir}/capi-security-privacy-manager.manifest
 
 #mkdir -p %{buildroot}/etc/rc.d/rc3.d
 #mkdir -p %{buildroot}/etc/rc.d/rc5.d
@@ -127,7 +127,7 @@ rm -rf %{buildroot}
 %post
 /sbin/ldconfig
 
-if [ ! -f /opt/dbspace/.ace.db ]
+if [ ! -f /opt/dbspace/.privacy.db ]
 then
 	/usr/bin/privacy_manager_create_clean_db.sh
 fi
@@ -146,6 +146,9 @@ fi
 #/etc/rc.d/rc5.d/S10privacy-manager-server.sh
 /usr/share/license/privacy-manager-server
 
+%files -n privacy-manager-server-devel
+%{_libdir}/pkgconfig/privacy-manager-server.pc
+
 %files -n privacy-manager-client
 %defattr(-,root,root,-)
 %manifest %{_datadir}/privacy-manager-client.manifest
@@ -155,14 +158,14 @@ fi
 %files -n privacy-manager-client-devel
 %defattr(-,root,root,-)
 %{_includedir}/*
-%{_libdir}/pkgconfig/*
+%{_libdir}/pkgconfig/privacy-manager-client.pc
 
-#%files -n capi-security-privacy-manager
-#%{_libdir}/libcapi-security-privacy-manager.so.*
-#%manifest %{_datadir}/capi-security-privacy-manager.manifest
+%files -n capi-security-privacy-manager
+%{_libdir}/libcapi-security-privacy-manager.so.*
+%manifest %{_datadir}/capi-security-privacy-manager.manifest
 
-#%files -n capi-security-privacy-manager-devel
-#%{_includedir}/privacymgr/*.h
-#%{_libdir}/libcapi-security-privacy-manager.so
-#%{_libdir}/pkgconfig/*.pc
+%files -n capi-security-privacy-manager-devel
+%{_includedir}/privacymgr/*.h
+%{_libdir}/libcapi-security-privacy-manager.so
+%{_libdir}/pkgconfig/capi-security-privacy-manager.pc
 

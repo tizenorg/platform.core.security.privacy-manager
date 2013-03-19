@@ -8,7 +8,10 @@ SET(CMAKE_INSTALL_PREFIX /usr)
 SET(PREFIX ${CMAKE_INSTALL_PREFIX})
 
 SET(INC_DIR include)
-INCLUDE_DIRECTORIES(${INC_DIR} /usr/include/privacy_manager)
+
+INCLUDE_DIRECTORIES(${INC_DIR} 
+	"${CMAKE_SOURCE_DIR}/client/inc/"
+	"${CMAKE_SOURCE_DIR}/common/inc/")
 
 #SET(requires capi-base-common dlog privacy-manager-client glib-2.0)
 SET(pc_requires "capi-base-common")

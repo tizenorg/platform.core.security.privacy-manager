@@ -16,6 +16,7 @@
 
 #include <PrivacyManager.h>
 #include <SocketClient.h>
+#include <PrivacyIdInfo.h>
 #include <algorithm> 
 #include <memory>
 #include <Utils.h>
@@ -43,8 +44,18 @@ int
 PrivacyManager::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string >& pList)
 {
 	int result;
+
+	std::list < std::string > privacyList;
+
+	result = PrivacyIdInfo::getPrivacyIdListFromPrivilegeList(pList, privacyList);
+	if (result != PRIV_MGR_ERROR_SUCCESS )
+		return result;
+
+	if (privacyList.size() == 0)
+		return PRIV_MGR_ERROR_SUCCESS;
+
 	m_pSocketClient->connect();
-	m_pSocketClient->call("addPrivacyInfo", pkgId, pList, &result);
+	m_pSocketClient->call("addPrivacyInfo", pkgId, privacyList, &result);
 	m_pSocketClient->disconnect();
 
 	return result;
