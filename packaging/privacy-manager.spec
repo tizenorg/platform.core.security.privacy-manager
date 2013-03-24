@@ -20,15 +20,13 @@ BuildRequires: pkgconfig(dbus-glib-1)
 Requires(post):   /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
-provides: privacy-manager-server
-
 %description
 Privacy Management
 
 %package -n privacy-manager-server-devel
 summary: privacy-manager server
 Group: Development/Libraries
-Requires: privacy-manager-server = %{version}-%{release}
+Requires: privacy-manager = %{version}-%{release}
 
 %description -n privacy-manager-server-devel
 privacy-manager server devel
@@ -36,9 +34,7 @@ privacy-manager server devel
 %package -n privacy-manager-client
 summary: privacy-manager client
 Group: Development/Libraries
-Requires: privacy-manager-server = %{version}-%{release}
-
-provides: libprivacy-manager-client.so.1
+Requires: privacy-manager = %{version}-%{release}
 
 %description -n privacy-manager-client
 privacy-manager client
@@ -46,6 +42,7 @@ privacy-manager client
 %package -n privacy-manager-client-devel
 Summary:    privacy-manager client devel
 Group:      Development/Libraries
+BuildRequires:  pkgconfig(libxml-2.0)
 Requires:   privacy-manager-client = %{version}-%{release}
 
 %description -n privacy-manager-client-devel
@@ -95,7 +92,7 @@ make %{?jobs:-j%jobs}
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/license
-cp LICENSE.APLv2 %{buildroot}/usr/share/license/%{name}
+cp LICENSE.APLv2 %{buildroot}/usr/share/license/privacy-manager-server
 mkdir -p %{buildroot}/usr/share/license
 cp LICENSE.APLv2 %{buildroot}/usr/share/license/privacy-manager-client
 mkdir -p %{buildroot}/usr/bin
@@ -106,7 +103,7 @@ cp res/usr/bin/* %{buildroot}/usr/bin/
 %make_install -n privacy-manager-client
 install -D %{SOURCE2} %{buildroot}%{_datadir}/privacy-manager-client.manifest
 
-%make_install -n privacy-manager-server
+%make_install -n privacy-manager
 install -D %{SOURCE1} %{buildroot}%{_datadir}/privacy-manager-server.manifest
 
 %make_install -n capi-security-privacy-manager
@@ -114,8 +111,8 @@ install -D %{SOURCE4} %{buildroot}%{_datadir}/capi-security-privacy-manager.mani
 
 #mkdir -p %{buildroot}/etc/rc.d/rc3.d
 #mkdir -p %{buildroot}/etc/rc.d/rc5.d
-#ln -sf /etc/rc.d/init.d/wrt-security-daemon.sh %{buildroot}/etc/rc.d/rc3.d/S10privacy-manager-server.sh
-#ln -sf /etc/rc.d/init.d/wrt-security-daemon.sh %{buildroot}/etc/rc.d/rc5.d/S10privacy-manager-server.sh
+#ln -sf res/etc/rc.d/init.d/privacy-manager-server.sh %{buildroot}/etc/rc.d/rc3.d/S10privacy-manager-server.sh
+#ln -sf res/etc/rc.d/init.d/privacy-manager-server.sh %{buildroot}/etc/rc.d/rc5.d/S10privacy-manager-server.sh
 
 mkdir -p %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants
 install -m 0644 %{SOURCE3} %{buildroot}%{_libdir}/systemd/system/privacy-manager-server.service
@@ -124,11 +121,13 @@ ln -sf /usr/lib/systemd/system/privacy-manager-server.service %{buildroot}%{_lib
 %clean
 rm -rf %{buildroot}
 
-%post
+%post -n privacy-manager-server
 /sbin/ldconfig
 
+echo "Check privacy DB"
 if [ ! -f /opt/dbspace/.privacy.db ]
 then
+	echo "Create privacy DB"
 	/usr/bin/privacy_manager_create_clean_db.sh
 fi
 
@@ -137,10 +136,10 @@ fi
 
 %files -n privacy-manager-server
 %defattr(-,root,root,-)
-%manifest %{_datadir}/%{name}.manifest
+%manifest %{_datadir}/privacy-manager-server.manifest
 %{_bindir}/*
 %{_libdir}/systemd/*
-#%{_libdir}/etc/rc.d/init.d/privacy-manager-server.sh
+#/etc/rc.d/init.d/privacy-manager-server.sh
 #%attr(755,root,root) /etc/rc.d/init.d/privacy-manager-server.sh
 #/etc/rc.d/rc3.d/S10privacy-manager-server.sh
 #/etc/rc.d/rc5.d/S10privacy-manager-server.sh
@@ -152,8 +151,9 @@ fi
 %files -n privacy-manager-client
 %defattr(-,root,root,-)
 %manifest %{_datadir}/privacy-manager-client.manifest
-%{_libdir}/*.so*
+%{_libdir}/libprivacy-manager-client.so*
 /usr/share/license/privacy-manager-client
+/usr/etc/package-manager/parserlib/libprivileges.so
 
 %files -n privacy-manager-client-devel
 %defattr(-,root,root,-)
@@ -168,4 +168,3 @@ fi
 %{_includedir}/privacymgr/*.h
 %{_libdir}/libcapi-security-privacy-manager.so
 %{_libdir}/pkgconfig/capi-security-privacy-manager.pc
-

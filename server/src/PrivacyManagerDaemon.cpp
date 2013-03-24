@@ -17,7 +17,6 @@
 #include <string>
 #include <PrivacyManagerDaemon.h>
 #include <PrivacyInfoService.h>
-#include <TestService.h>
 #include <PrivacyManagerServer.h>
 
 PrivacyManagerDaemon* PrivacyManagerDaemon::pInstance = NULL;
@@ -51,7 +50,6 @@ PrivacyManagerDaemon::inialize(void)
 	pSocketService->initialize();
 
 	PrivacyInfoService::registerCallbacks(pSocketService);
-	TestService::registerCallbacks(pSocketService);
 
 	return 0;
 }

@@ -1,9 +1,0 @@
-prefix=@PREFIX@
-exec_prefix=@EXEC_PREFIX@
-libdir=@LIBDIR@
-includedir=@INCLUDEDIR@
-
-Name: privacy-manager-server
-Description: Privacy Manager Server
-Version: @VERSION@
-Requires: 
