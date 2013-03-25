@@ -14,15 +14,26 @@
  *    limitations under the License.
  */
 
-#ifndef _PRIVACY_MANAGER_TYPES_H_
-#define _PRIVACY_MANAGER_TYPES_H_
+#ifndef _TEST_SERVICE_H_
+#define _TEST_SERVICE_H_
 
-#include <string>
-#include <privacy_manager_client_types.h>
+#include <SocketConnection.h>
+#include <SocketService.h>
 
-static const std::string SERVER_ADDRESS ("/tmp/privacy_manager_server");
-static const std::string DBUS_PATH("/privacy_manager/dbus_notification");
-static const std::string DBUS_SIGNAL_INTERFACE("org.tizen.privacy_manager.signal");
-static const std::string DBUS_SIGNAL_NAME("privacy_setting_updated");
+class TestService {
+private:
+	inline static std::string getInterfaceName(void)
+	{
+		return "TestService";
+	}
 
-#endif
+public:
+	static void registerCallbacks(SocketService* pSocketService)
+	{
+		pSocketService->registerServiceCallback(getInterfaceName(), std::string("test"), test);
+	}
+
+	static void test(SocketConnection* pConnector);
+
+};
+#endif // _TEST_SERVICE_H_

@@ -32,8 +32,8 @@ struct sqlite3;
 class EXTERN_API PrivacyChecker
 {
 private:
+	static const std::string DB_PATH;
 	static std::map < std::string, bool > m_privacyCache;
-	static std::map < std::string, std::map < std::string, bool > > m_privacyInfoCache;
 	static std::string m_pkgId;
 	static bool m_isInitialized;
 	static std::mutex m_cacheMutex;
@@ -43,17 +43,16 @@ private:
 private:
 	static int initializeDbus(void);
 	static int finalizeDbus(void);
-	static int updateCache(const std::string privacyId, std::map < std::string, bool >& pkgCacheMap);
-	static int updateCache(std::map < std::string, bool >& pkgCacheMap);
+	static int getUniqueIdFromPackageId(const std::string pkgId, int& uniqueId);
+	static int updateCache(void);
+	static int updateCache(const std::string privacyId);
 	static void printCache(void);
 	static void* runSignalListenerThread(void* pData);
 	static int getCurrentPkgId(std::string& pkgId);
-	static int check(const std::string privacyId, std::map < std::string, bool >& privacyMap);
 
 public:
 	static int initialize(const std::string pkgId);
 	static int check(const std::string privacyId);
-	static int check(const std::string, std::string privacyId);
 	static int finalize(void);
 	static DBusHandlerResult handleNotification(DBusConnection* connection, DBusMessage* message, void* user_data);
 };

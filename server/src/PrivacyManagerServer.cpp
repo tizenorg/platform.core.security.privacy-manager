@@ -19,9 +19,9 @@
 #include <dlog.h>
 #include <Utils.h>
 #include <PrivacyManagerTypes.h>
-#include <sqlite3.h>
 
 std::mutex PrivacyManagerServer::m_singletonMutex;
+const std::string PrivacyManagerServer::DB_PATH("/opt/dbspace/.privacy.db");
 PrivacyManagerServer* PrivacyManagerServer::m_pInstance = NULL;
 
 void
@@ -31,19 +31,82 @@ PrivacyManagerServer::createDB(void)
 }
 
 int
+PrivacyManagerServer::isPackageIdAreadyExisted(const std::string pkgId, bool& isExisted)
+{
+	LOGI("enter");
+
+	isExisted = false;
+
+	static const std::string query = std::string("SELECT UNIQUE_ID from PackageInfo where PKG_ID=?");
+
+	int res;
+
+	openDb(DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	prepareDb(pDbHandler, query.c_str(), pStmt);
+
+	res = sqlite3_bind_text(pStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
+	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_prepare_v2 : %d", res);
+
+	res = sqlite3_step(pStmt.get());
+	if (res == SQLITE_DONE)
+	{
+		isExisted = true;
+		return 0;
+	}
+
+	LOGI("leave");
+
+	return 0;
+}
+
+int
+PrivacyManagerServer::getUniqueIdFromPackageId(const std::string pkgId, int& uniqueId)
+{
+	LOGI("enter");
+
+	static const std::string query = std::string("SELECT UNIQUE_ID from PackageInfo where PKG_ID=?");
+
+	int res;
+
+	openDb(DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	prepareDb(pDbHandler, query.c_str(), pStmt);
+
+	res = sqlite3_bind_text(pStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
+	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_prepare_v2 : %d", res);
+
+	res = sqlite3_step(pStmt.get());
+	TryReturn( res == SQLITE_ROW, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_step : %d", res);
+
+
+	int cnt = sqlite3_data_count(pStmt.get());
+	TryReturn(cnt != 0, PRIV_MGR_ERROR_NO_DATA, , "Failed to find data");
+
+	uniqueId = sqlite3_column_int(pStmt.get(), 0);
+
+	LOGI("%s : %d", pkgId.c_str(), uniqueId);
+
+	LOGI("leave");
+
+	return 0;
+}
+int
 PrivacyManagerServer::setPrivacySetting(const std::string pkgId, const std::string privacyId, bool enabled)
 {
 	LOGI("enter");
 
-	static const std::string query = std::string("UPDATE PrivacyInfo set IS_ENABLED =? where PKG_ID=? and PRIVACY_ID=?");
+	static const std::string query = std::string("UPDATE Privacy set IS_ENABLED =? where ID=? and PRIVACY_ID=?");
 
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	int uniqueId;
+	int res = getUniqueIdFromPackageId(pkgId, uniqueId);
+	TryReturn(res == 0, PRIV_MGR_ERROR_NO_DATA, , "getUniqueIdFromPackageId : %d", res);
+
+	openDb(DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
 	prepareDb(pDbHandler, query.c_str(), pStmt);
 
-	int res = sqlite3_bind_int(pStmt.get(), 1, enabled);
+	res = sqlite3_bind_int(pStmt.get(), 1, enabled);
 	TryReturn(res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_int : %d", res);
 
-	res = sqlite3_bind_text(pStmt.get(), 2, pkgId.c_str(), -1, SQLITE_TRANSIENT);
+	res = sqlite3_bind_int(pStmt.get(), 2, uniqueId);
 	TryReturn(res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_int : %d", res);
 
 	res = sqlite3_bind_text(pStmt.get(), 3, privacyId.c_str(), -1, SQLITE_TRANSIENT);
@@ -65,9 +128,9 @@ PrivacyManagerServer::getPrivacyAppPackages(std::list <std::string>& list)
 {
 	LOGI("enter");
 
-	std::string query = "SELECT PKG_ID from PackageInfo";
+	std::string query = "SELECT pkg_id from PackageInfo";
 
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	openDb(DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
 	prepareDb(pDbHandler, query.c_str(), pStmt);
 
 	while ( sqlite3_step(pStmt.get()) == SQLITE_ROW )
@@ -84,29 +147,35 @@ PrivacyManagerServer::getPrivacyAppPackages(std::list <std::string>& list)
 }
 
 int
-PrivacyManagerServer::getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair < std::string, bool > >& privacyInfoList)
+PrivacyManagerServer::getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair < std::string, bool > >* pPrivacyInfoList)
 {
 	LOGI("enter");
 
-	static const std::string query = "SELECT PRIVACY_ID, IS_ENABLED from PrivacyInfo where PKG_ID=?";
+	static const std::string query = "SELECT PRIVACY_ID, IS_ENABLED from Privacy where ID=?";
 
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	int uniqueId;
+	int res = getUniqueIdFromPackageId(pkgId, uniqueId);
+	TryReturn( res == 0, -1, , "getUniqueIdFromPackageId : %d", res);
+
+	openDb(DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
 	prepareDb(pDbHandler, query.c_str(), pStmt);
 
-	int res = sqlite3_bind_text(pStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
+	res = sqlite3_bind_int(pStmt.get(), 1, uniqueId);
 	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_int : %d", res);
 
-	LOGI("start");
+	std::unique_ptr < std::list < std::pair < std:: string, bool > > > pList ( new std::list < std::pair < std:: string, bool > >);
 
-	while ( (res= sqlite3_step(pStmt.get())) == SQLITE_ROW )
+	LOGI("start");
+	while ((res= sqlite3_step(pStmt.get())) == SQLITE_ROW )
 	{
 		const char* privacyId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
 		bool privacyEnabled = sqlite3_column_int(pStmt.get(), 1) > 0 ? true : false;
 
-		privacyInfoList.push_back( std::pair <std::string, bool> (std::string(privacyId), privacyEnabled) );
+		pList->push_back( std::pair <std::string, bool> (std::string(privacyId), privacyEnabled) );
 
 		LOGD("Privacy found : %s %d", privacyId, privacyEnabled);
 	}
+	*pPrivacyInfoList = *pList.release();
 
 	LOGI("leave");
 
@@ -120,26 +189,35 @@ PrivacyManagerServer::addAppPackagePrivacyInfo(const std::string pkgId, const st
 	LOGI("enter");
 
 	static const std::string pkgInfoQuery("INSERT INTO PackageInfo(PKG_ID, IS_SET) VALUES(?, ?)");
-	static const std::string privacyQuery("INSERT INTO PrivacyInfo(PKG_ID, PRIVACY_ID, IS_ENABLED) VALUES(?, ?, ?)");
+	static const std::string privacyQuery("INSERT INTO Privacy(ID, PRIVACY_ID, IS_ENABLED) VALUES(?, ?, ?)");
+
+	int res;
+	int uniqueId;
+	bool check;
+	res = isPackageIdAreadyExisted(pkgId, check);
+	TryReturn(check, PRIV_MGR_ERROR_INVALID_STATE, ,"The pkg ID %s is alreay added : %d", pkgId.c_str(), res);
 	
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	openDb(DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
 	prepareDb(pDbHandler, pkgInfoQuery.c_str(), pPkgInfoStmt);
 
-	int res = sqlite3_bind_text(pPkgInfoStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
+	res = sqlite3_bind_text(pPkgInfoStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
 	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
 	
 	res = sqlite3_bind_int(pPkgInfoStmt.get(), 2, 0);
 	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_int : %d", res);
 
 	res = sqlite3_step(pPkgInfoStmt.get());
-	TryReturn( res == SQLITE_DONE || res == SQLITE_CONSTRAINT, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_step : %d", res);
+	TryReturn( res == SQLITE_DONE, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_step : %d", res);
+
+	
+	res = getUniqueIdFromPackageId(pkgId, uniqueId);
+	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "getUniqueIdFromPackageId : %d", res);
 	
 	for ( std::list <std::string>::const_iterator iter = privilegeList.begin(); iter != privilegeList.end(); ++iter)
 	{
-		LOGD(" install privacy: %s", iter->c_str());
 		prepareDb(pDbHandler, privacyQuery.c_str(), pPrivacyStmt);
 		
-		res = sqlite3_bind_text(pPrivacyStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
+		res = sqlite3_bind_int(pPrivacyStmt.get(), 1, uniqueId);
 		TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_int : %d", res);
 
 		res = sqlite3_bind_text(pPrivacyStmt.get(), 2, iter->c_str(), -1, SQLITE_TRANSIENT);
@@ -150,9 +228,7 @@ PrivacyManagerServer::addAppPackagePrivacyInfo(const std::string pkgId, const st
 		TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_int : %d", res);
 
 		res = sqlite3_step(pPrivacyStmt.get());
-		TryReturn( res == SQLITE_DONE || res == SQLITE_CONSTRAINT, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_step : %d", res);
-
-		sqlite3_reset(pPrivacyStmt.get());
+		TryReturn( res == SQLITE_DONE, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_step : %d", res);
 	}
 
 	return 0;
@@ -164,11 +240,14 @@ PrivacyManagerServer::removeAppPackagePrivacyInfo(const std::string pkgId)
 	LOGI("enter");
 
 	static const std::string pkgInfoQuery("DELETE FROM PackageInfo WHERE PKG_ID=?");
-	static const std::string privacyQuery("DELETE FROM PrivacyInfo WHERE PKG_ID=?");
+	static const std::string privacyQuery("DELETE FROM Privacy WHERE ID=?");
 
 	int res;
+	int uniqueId;
+	res = getUniqueIdFromPackageId(pkgId, uniqueId);
+	TryReturn( res == 0, res, , "getUniqueIdFromPackageId : %d", res);
 
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	openDb(DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
 	prepareDb(pDbHandler, pkgInfoQuery.c_str(), pPkgInfoStmt);
 
 	res = sqlite3_bind_text(pPkgInfoStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
@@ -179,8 +258,8 @@ PrivacyManagerServer::removeAppPackagePrivacyInfo(const std::string pkgId)
 
 	prepareDb(pDbHandler, privacyQuery.c_str(), pPrivacyStmt);
 
-	res = sqlite3_bind_text(pPrivacyStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
-	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);	
+	res = sqlite3_bind_int(pPrivacyStmt.get(), 1, uniqueId);
+	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_int : %d", res);	
 
 	res = sqlite3_step(pPrivacyStmt.get());
 	TryReturn( res == SQLITE_DONE, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_step : %d", res);
@@ -195,10 +274,14 @@ PrivacyManagerServer::isUserPrompted(const std::string pkgId, bool& isPrompted)
 
 	static const std::string query = "SELECT IS_SET from PackageInfo where PKG_ID=?";
 
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	int uniqueId;
+	int res = getUniqueIdFromPackageId(pkgId, uniqueId);
+	TryReturn( res == 0, res, , "getUniqueIdFromPackageId : %d", res);
+
+	openDb(DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
 	prepareDb(pDbHandler, query.c_str(), pStmt);
 
-	int res = sqlite3_bind_text(pStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
+	res = sqlite3_bind_text(pStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
 	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
 
 	std::unique_ptr < std::list < std::pair < std:: string, bool > > > pList ( new std::list < std::pair < std:: string, bool > >);
@@ -227,7 +310,7 @@ PrivacyManagerServer::setUserPrompted(const std::string pkgId, bool prompted)
 
 	int res;
 
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	openDb(DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
 	prepareDb(pDbHandler, query.c_str(), pStmt);
 
 	res = sqlite3_bind_int(pStmt.get(), 1, prompted? 1 : 0);
@@ -261,4 +344,10 @@ PrivacyManagerServer::getInstance(void)
 	}
 	LOGI("leave");
 	return m_pInstance;
+}
+
+sqlite3*
+PrivacyManagerServer::getDBHandler(void)
+{
+	return m_pDBHandler;
 }

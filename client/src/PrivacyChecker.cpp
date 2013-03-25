@@ -15,7 +15,7 @@
  */
 
 #include <PrivacyChecker.h>
-#include <PrivacyManagerClient.h>
+#include <PrivacyManager.h>
 #include <SocketClient.h>
 #include <algorithm> 
 #include <memory>
@@ -27,14 +27,37 @@
 #include <unistd.h>
 
 bool PrivacyChecker::m_isInitialized = false;
+const std::string PrivacyChecker::DB_PATH("/opt/dbspace/.privacy.db");
 std::map < std::string, bool >PrivacyChecker::m_privacyCache;
-std::map < std::string, std::map < std::string, bool > > PrivacyChecker::m_privacyInfoCache;
 std::mutex PrivacyChecker::m_cacheMutex;
 std::string PrivacyChecker::m_pkgId;
 DBusConnection* PrivacyChecker::m_pDBusConnection;
 GMainLoop* PrivacyChecker::m_pLoop = NULL;
 
 const int MAX_LOCAL_BUF_SIZE = 128;
+
+int
+PrivacyChecker::getUniqueIdFromPackageId(const std::string pkgId, int& uniqueId)
+{
+	LOGI("enter");
+	std::string PkgIdQuery = std::string("SELECT UNIQUE_ID from PackageInfo where PKG_ID=?");
+
+	int res;
+	openDb(DB_PATH.c_str(), pDbH, SQLITE_OPEN_READONLY);
+	prepareDb(pDbH, PkgIdQuery.c_str(), pStmt);
+
+	res = sqlite3_bind_text(pStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
+	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_IO_ERROR, , "sqlite3_bind_text : %d", res);
+
+	res = sqlite3_step(pStmt.get());
+	TryReturn( res == SQLITE_ROW, PRIV_MGR_ERROR_IO_ERROR, , "sqlite3_step : %d", res);
+
+	uniqueId = sqlite3_column_int(pStmt.get(), 0);
+	LOGI("%s : %d", pkgId.c_str(), uniqueId);
+
+	LOGI("leave");
+	return PRIV_MGR_ERROR_SUCCESS;
+}
 
 int
 PrivacyChecker::initialize(const std::string pkgId)
@@ -50,7 +73,7 @@ PrivacyChecker::initialize(const std::string pkgId)
 	TryReturn(res >= 0, PRIV_MGR_ERROR_SYSTEM_ERROR, errno = res;, "Failed to create listener thread :%s", strerror(res));
 
 	m_pkgId = pkgId;
-	res = updateCache(m_privacyCache);
+	res = updateCache();
 	TryReturn(res == 0, res, m_pkgId.clear(), "Failed to update cache : %d", res);
 
 	m_isInitialized = true;
@@ -136,21 +159,12 @@ PrivacyChecker::handleNotification(DBusConnection* connection, DBusMessage* mess
 			DBUS_TYPE_INVALID);
 		TryReturn(r, DBUS_HANDLER_RESULT_NOT_YET_HANDLED, , "Fail to get data : %s", error.message);
 		
-		std::lock_guard < std::mutex > guard(m_cacheMutex);
-
 		if (std::string(pPkgId) == m_pkgId)
 		{
 			LOGI("Current app pkg privacy information updated");
-			updateCache(pPrivacyId, m_privacyCache);
+			updateCache(pPrivacyId);
 			printCache();
 		}
-
-		std::map < std::string, std::map < std::string, bool > > :: iterator iter = m_privacyInfoCache.find(std::string(pPkgId));
-		if (iter != m_privacyInfoCache.end())
-		{
-			updateCache(pPrivacyId, iter->second);
-		}
-		
 	}
 	else
 	{
@@ -167,64 +181,22 @@ PrivacyChecker::check(const std::string privacyId)
 
 	std::lock_guard < std::mutex > guard(m_cacheMutex);
 
-	int ret = check(privacyId, m_privacyCache);
+	TryReturn(m_isInitialized, -1, , "Not initialized");
 
-	LOGI("leave");
-
-	return ret;
-}
-
-int
-PrivacyChecker::check(const std::string privacyId, std::map < std::string, bool >& privacyMap)
-{
-	LOGI("enter");
-
-	TryReturn(m_isInitialized, PRIV_MGR_ERROR_NOT_INITIALIZED, , "Not initialized");
-
-	std::map < std::string, bool >::const_iterator iter = privacyMap.find(privacyId);
-	if (iter == privacyMap.end() )
+	std::map < std::string, bool >::const_iterator iter = m_privacyCache.find(privacyId);
+	if (iter == m_privacyCache.end() )
 	{
 		LOGD("NO matcheded");
-		return PRIV_MGR_ERROR_USER_NOT_CONSENTED;
+		return -1;
 	}
 	else if (!iter->second)
 	{
 		LOGD("NOT allowed");
-		return PRIV_MGR_ERROR_USER_NOT_CONSENTED;
+		return -1;
 	}
 	LOGD("OK");
 
 	return PRIV_MGR_ERROR_SUCCESS;
-}
-
-int
-PrivacyChecker::check(const std::string pkgId, const std::string privacyId)
-{
-	LOGI("enter");
-
-	std::lock_guard < std::mutex > guard(m_cacheMutex);
-
-	int res;
-
-	std::map < std::string, std::map < std::string, bool > >::iterator iter = m_privacyInfoCache.find(pkgId);
-	if (iter == m_privacyInfoCache.end() )
-	{
-		std::map < std::string, bool > pkgCacheMap;
-		res = updateCache(pkgCacheMap);
-		TryReturn( res == PRIV_MGR_ERROR_SUCCESS, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
-
-		m_privacyInfoCache.insert( std::map < std::string, std::map < std::string, bool > >::value_type(std::string(pkgId), pkgCacheMap));
-
-		iter = m_privacyInfoCache.find(pkgId);
-	}
-	if (iter->second.size() == 0)
-		return PRIV_MGR_ERROR_USER_NOT_CONSENTED;
-
-	res = check(privacyId, iter->second);
-
-	LOGI("leave");
-
-	return res;
 }
 
 int
@@ -244,6 +216,39 @@ PrivacyChecker::finalize(void)
 	return PRIV_MGR_ERROR_SUCCESS;
 }
 
+int
+PrivacyChecker::updateCache(void)
+{
+	LOGI("enter");
+	static const std::string PrivacyQuery = "SELECT PRIVACY_ID, IS_ENABLED from Privacy where ID=?";
+	
+	std::lock_guard < std::mutex > guard(m_cacheMutex);
+
+	int res;
+	int id;
+	res = getUniqueIdFromPackageId(m_pkgId, id);
+	TryReturn( res == 0, -1, , "getUniqueIdFromPackageId : %d", res);
+	LOGD("id : %d" ,id);
+	
+	openDb(DB_PATH.c_str(), pDbH, SQLITE_OPEN_READONLY);
+	prepareDb(pDbH, PrivacyQuery.c_str(), pPrivacyStmt);
+	res = sqlite3_bind_int(pPrivacyStmt.get(), 1, id);
+	TryReturn( res == 0, -1, , "sqlite3_bind_int : %d", res);
+
+
+	while ( sqlite3_step(pPrivacyStmt.get()) == SQLITE_ROW )
+	{
+		LOGI("start");
+		const char* privacyId =  reinterpret_cast < const char* > (sqlite3_column_text(pPrivacyStmt.get(), 0));
+		bool privacyEnabled = sqlite3_column_int(pPrivacyStmt.get(), 1) > 0 ? true : false;
+
+		m_privacyCache.insert(std::map < std::string, bool >::value_type(std::string(privacyId), privacyEnabled));
+
+		LOGD("Privacy found : %s %d", privacyId, privacyEnabled);
+	}
+	LOGI("leave");
+	return PRIV_MGR_ERROR_SUCCESS;
+}
 void
 PrivacyChecker::printCache(void)
 {
@@ -253,59 +258,37 @@ PrivacyChecker::printCache(void)
 		LOGD(" %s : %d", iter->first.c_str(), iter->second);
 	}
 }
-
 int
-PrivacyChecker::updateCache(const std::string privacyId, std::map < std::string, bool >& pkgCacheMap)
+PrivacyChecker::updateCache(const std::string privacyId)
 {
 	LOGI("enter");
-	static const std::string PrivacyQuery = "SELECT IS_ENABLED from PrivacyInfo where PKG_ID=? and PRIVACY_ID=?";
+	static const std::string PrivacyQuery = "SELECT IS_ENABLED from Privacy where ID=? and PRIVACY_ID=?";
+
+	int res;
+	int id;
+	res = getUniqueIdFromPackageId(m_pkgId, id);
+	TryReturn( res == 0, -1, , "getUniqueIdFromPackageId : %d", res);
+
+	LOGD("id : %d" ,id);
 	
-	openDb(PRIVACY_DB_PATH.c_str(), pDbH, SQLITE_OPEN_READONLY);
+	openDb(DB_PATH.c_str(), pDbH, SQLITE_OPEN_READONLY);
 	prepareDb(pDbH, PrivacyQuery.c_str(), pPrivacyStmt);
-	int res = sqlite3_bind_text(pPrivacyStmt.get(), 1, m_pkgId.c_str(),  -1, SQLITE_TRANSIENT);
-	TryReturn( res == 0, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
+	res = sqlite3_bind_int(pPrivacyStmt.get(), 1, id);
+	TryReturn( res == 0, -1, , "sqlite3_bind_int : %d", res);
 
 	res = sqlite3_bind_text(pPrivacyStmt.get(), 2, privacyId.c_str(),  -1, SQLITE_TRANSIENT);
-	TryReturn( res == 0, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
+	TryReturn( res == 0, -1, , "sqlite3_bind_text : %d", res);
 
 	while ( sqlite3_step(pPrivacyStmt.get()) == SQLITE_ROW )
 	{
 		bool privacyEnabled = sqlite3_column_int(pPrivacyStmt.get(), 0) > 0 ? true : false;
 
 		std::lock_guard < std::mutex > guard(m_cacheMutex);
-		pkgCacheMap.erase(privacyId);
-		pkgCacheMap.insert(std::map < std::string, bool >::value_type(privacyId, privacyEnabled));
+		m_privacyCache.erase(privacyId);
+		m_privacyCache.insert(std::map < std::string, bool >::value_type(privacyId, privacyEnabled));
 	}
 	
 	LOGI("leave");
 
-	return PRIV_MGR_ERROR_SUCCESS;
-}
-
-
-int
-PrivacyChecker::updateCache(std::map < std::string, bool >& pkgCacheMap)
-{
-	LOGI("enter");
-	static const std::string PrivacyQuery = "SELECT PRIVACY_ID, IS_ENABLED from PrivacyInfo where PKG_ID=?";
-
-	pkgCacheMap.clear();
-	
-	openDb(PRIVACY_DB_PATH.c_str(), pDbH, SQLITE_OPEN_READONLY);
-	prepareDb(pDbH, PrivacyQuery.c_str(), pPrivacyStmt);
-	int res = sqlite3_bind_text(pPrivacyStmt.get(), 1, m_pkgId.c_str(), -1, SQLITE_TRANSIENT);
-	TryReturn( res == 0, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
-
-	while ( sqlite3_step(pPrivacyStmt.get()) == SQLITE_ROW )
-	{
-		LOGI("start");
-		const char* privacyId =  reinterpret_cast < const char* > (sqlite3_column_text(pPrivacyStmt.get(), 0));
-		bool privacyEnabled = sqlite3_column_int(pPrivacyStmt.get(), 1) > 0 ? true : false;
-
-		pkgCacheMap.insert(std::map < std::string, bool >::value_type(std::string(privacyId), privacyEnabled));
-
-		LOGD("Privacy found : %s %d", privacyId, privacyEnabled);
-	}
-	LOGI("leave");
 	return PRIV_MGR_ERROR_SUCCESS;
 }

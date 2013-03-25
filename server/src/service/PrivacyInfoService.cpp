@@ -90,7 +90,7 @@ PrivacyInfoService::getAppPackagePrivacyInfo(SocketConnection* pConnector)
 	
 	std::list < std::pair < std::string, bool > > infoList;
 	
-	int res = pPrivacyManagerServer->getAppPackagePrivacyInfo(pkgId, infoList);
+	int res = pPrivacyManagerServer->getAppPackagePrivacyInfo(pkgId, &infoList);
 
 	pConnector->write( res );
 	pConnector->write( infoList );

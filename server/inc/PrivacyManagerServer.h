@@ -14,25 +14,34 @@
  *    limitations under the License.
  */
 
-#ifndef _PRIVACY_MANAGER_SERVER_H_
-#define _PRIVACY_MANAGER_SERVER_H_
+#ifndef _PRIVACY_DB_H_
+#define _PRIVACY_DB_H_
 
 #include <string>
 #include <memory>
 #include <list>
 #include <mutex>
+#include <sqlite3.h>
 #include <NotificationServer.h>
 
 class NotificationServer;
+struct sqlite3;
+class a;
 class PrivacyManagerServer
 {
 private:
 	static std::mutex m_singletonMutex;
+	static const std::string DB_PATH;
 	static PrivacyManagerServer* m_pInstance;
+	sqlite3* m_pDBHandler;
 	NotificationServer m_notificationServer;
+
+	const static std::string CREATE_PACKAGE_INFO_TABLE;
+	const static std::string CREATE_PRIVACY_TABLE;
 
 private:
 	void createDB(void);
+	int isPackageIdAreadyExisted(const std::string pkgId, bool& isExisted);
 
 public:
 
@@ -40,9 +49,13 @@ public:
 
 	static PrivacyManagerServer* getInstance(void);
 
+	sqlite3* getDBHandler(void);
+
+	int getUniqueIdFromPackageId(const std::string pkgId, int& id);
+
 	int getPrivacyAppPackages(std::list <std::string>& list);
 
-	int getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair < std::string, bool > > & list);
+	int getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair < std::string, bool > > *pList);
 
 	int setPrivacySetting(const std::string pkgId, const std::string privacyId, bool enabled);
 
@@ -56,4 +69,4 @@ public:
 };
 
 
-#endif // _PRIVACY_MANAGER_SERVER_H_
+#endif // _PRIVACY_DB_H_

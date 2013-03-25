@@ -39,65 +39,65 @@ struct PrivacyDeviceCapPair
 
 static struct PrivacyPrivilegePair DeviceCapToPrivacyTable[] =
 {
-	{"bluetooth.admin", 			"http://tizen.org/privacy/bluetooth"},
-	{"bluetooth.gap", 				"http://tizen.org/privacy/bluetooth"},
-	{"bluetooth.spp", 				"http://tizen.org/privacy/bluetooth"},
-	{"bluetoothmanager", 			"http://tizen.org/privacy/bluetooth"},
+	{"bluetooth.admin", "bluetooth"},
+	{"bluetooth.gap", "bluetooth"},
+	{"bluetooth.spp", "bluetooth"},
+	{"bluetoothmanager", "bluetooth"},
 
-	{"calendar.read", 				"http://tizen.org/privacy/calender"},
-	{"calendar.write", 				"http://tizen.org/privacy/calender"},
+	{"calendar.read", "calender"},
+	{"calendar.write", "calender"},
 
-	{"contact.read", 				"http://tizen.org/privacy/contact"},
-	{"contact.write", 				"http://tizen.org/privacy/contact"},
+	{"contact.read", "contact"},
+	{"contact.write", "contact"},
 
-	{"messaging.read", 				"http://tizen.org/privacy/messaging"},
-	{"messaging.write", 			"http://tizen.org/privacy/messaging"},
-	{"messaging.send", 				"http://tizen.org/privacy/messaging"},
+	{"messaging.read", "messaging"},
+	{"messaging.write", "messaging"},
+	{"messaging.send", "messaging"},
 
-	{"nfc.admin", 					"http://tizen.org/privacy/nfc"},
-	{"nfcmanager.cardemulation", 	"http://tizen.org/privacy/nfc"},
-	{"nfc.common", 					"http://tizen.org/privacy/nfc"},
-	{"nfc.p2p", 					"http://tizen.org/privacy/nfc"},
-	{"nfc.tag", 					"http://tizen.org/privacy/nfc"},
+	{"nfc.admin", "nfc"},
+	{"nfcmanager.cardemulation", "nfc"},
+	{"nfc.common", "nfc"},
+	{"nfc.p2p", "nfc"},
+	{"nfc.tag", "nfc"},
 
-	{"XMLHttpRequest", 				"http://tizen.org/privacy/internet"},
-	{"externalNetworkAccess", 		"http://tizen.org/privacy/internet"},
+	{"XMLHttpRequest", "internet"},
+	{"externalNetworkAccess", "internet"},
 
 	{"\0", "\0"}
 };
 
 static struct PrivacyPrivilegePair PrivilegeToPrivacyTable[] =
 {
-	{"http://tizen.org/privilege/bluetooth.admin", 			"http://tizen.org/privacy/bluetooth"},
-	{"http://tizen.org/privilege/bluetooth.gap", 			"http://tizen.org/privacy/bluetooth"},
-	{"http://tizen.org/privilege/bluetooth.health",			"http://tizen.org/privacy/bluetooth"},
-	{"http://tizen.org/privilege/bluetooth.opp", 			"http://tizen.org/privacy/bluetooth"},
-	{"http://tizen.org/privilege/bluetooth.spp", 			"http://tizen.org/privacy/bluetooth"},
-	{"http://tizen.org/privilege/bluetoothmanager",			"http://tizen.org/privacy/bluetooth"},
+	{"http://tizen.org/privilege/bluetooth.admin", "bluetooth"},
+	{"http://tizen.org/privilege/bluetooth.gap", "bluetooth"},
+	{"http://tizen.org/privilege/bluetooth.health", "bluetooth"},
+	{"http://tizen.org/privilege/bluetooth.opp", "bluetooth"},
+	{"http://tizen.org/privilege/bluetooth.spp", "bluetooth"},
+	{"http://tizen.org/privilege/bluetoothmanager", "bluetooth"},
 
-	{"http://tizen.org/privilege/calendar.read", 			"http://tizen.org/privacy/calender"},
-	{"http://tizen.org/privilege/calendar.write", 			"http://tizen.org/privacy/calender"},
+	{"http://tizen.org/privilege/calendar.read", "calender"},
+	{"http://tizen.org/privilege/calendar.write", "calender"},
 
-	{"http://tizen.org/privilege/contact.read", 			"http://tizen.org/privacy/contact"},
-	{"http://tizen.org/privilege/contact.write", 			"http://tizen.org/privacy/contact"},
+	{"http://tizen.org/privilege/contact.read", "contact"},
+	{"http://tizen.org/privilege/contact.write", "contact"},
 
-	{"http://tizen.org/privilege/contextmanager.privacy", 	"http://tizen.org/privacy/context"},
-	{"http://tizen.org/privilege/contextmanager.upload", 	"http://tizen.org/privacy/context"},
+	{"http://tizen.org/privilege/contextmanager.privacy", "context"},
+	{"http://tizen.org/privilege/contextmanager.upload", "context"},
 
-	{"http://tizen.org/privilege/location", 				"http://tizen.org/privacy/location"},
+	{"http://tizen.org/privilege/location", "location"},
 
-	{"http://tizen.org/privilege/messaging.read", 			"http://tizen.org/privacy/messaging"},
-	{"http://tizen.org/privilege/messaging.write", 			"http://tizen.org/privacy/messaging"},
+	{"http://tizen.org/privilege/messaging.read", "messaging"},
+	{"http://tizen.org/privilege/messaging.write", "messaging"},
 
-	{"http://tizen.org/privilege/nfc.admin", 				"http://tizen.org/privacy/nfc"},
-	{"http://tizen.org/privilege/nfcmanager.cardemulation", "http://tizen.org/privacy/nfc"},
-	{"http://tizen.org/privilege/nfc.common", 				"http://tizen.org/privacy/nfc"},
-	{"http://tizen.org/privilege/nfc.p2p", 					"http://tizen.org/privacy/nfc"},
-	{"http://tizen.org/privilege/nfc.tag", 					"http://tizen.org/privacy/nfc"},
+	{"http://tizen.org/privilege/nfc.admin", "nfc"},
+	{"http://tizen.org/privilege/nfcmanager.cardemulation", "nfc"},
+	{"http://tizen.org/privilege/nfc.common", "nfc"},
+	{"http://tizen.org/privilege/nfc.p2p", "nfc"},
+	{"http://tizen.org/privilege/nfc.tag", "nfc"},
 
-	{"http://tizen.org/privilege/http", 					"http://tizen.org/privacy/internet"},
-	{"http://tizen.org/privilege/socket", 					"http://tizen.org/privacy/internet"},
-	{"http://tizen.org/privilege/web.service", 				"http://tizen.org/privacy/internet"},
+	{"http://tizen.org/privilege/http", "internet"},
+	{"http://tizen.org/privilege/socket", "internet"},
+	{"http://tizen.org/privilege/web.service", "internet"},
 
 	{"\0", "\0"}
 };

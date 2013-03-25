@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2012 Samsung Electronics Co., Ltd All Rights Reserved
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -14,15 +14,16 @@
  *    limitations under the License.
  */
 
-#ifndef _PRIVACY_MANAGER_TYPES_H_
-#define _PRIVACY_MANAGER_TYPES_H_
 
-#include <string>
-#include <privacy_manager_client_types.h>
+#include <TestService.h>
 
-static const std::string SERVER_ADDRESS ("/tmp/privacy_manager_server");
-static const std::string DBUS_PATH("/privacy_manager/dbus_notification");
-static const std::string DBUS_SIGNAL_INTERFACE("org.tizen.privacy_manager.signal");
-static const std::string DBUS_SIGNAL_NAME("privacy_setting_updated");
+void
+TestService::test(SocketConnection* pConnector)
+{
+	std::string res1, res2;
+	pConnector->read(&res1, &res2);
+	LOGD("TEST received: %s %s", res1.c_str(),res2.c_str());
 
-#endif
+	pConnector->write(std::string("-test OK-"));
+	pConnector->write(std::string("-byebye-"));
+}
