@@ -75,11 +75,11 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 		curPtr = curPtr->next;
 	}
 
-	char** ppPrivilegeList = (char**) calloc(1, privilegeList.size() + 1);
+	char** ppPrivilegeList = (char**) calloc(privilegeList.size() + 1, sizeof(char*));
 	std::list <std::string>::iterator iter = privilegeList.begin();
 	for (int i = 0; i < privilegeList.size(); ++i)
 	{
-		ppPrivilegeList[i] = (char*)calloc (1, strlen(iter->c_str() + 1));
+		ppPrivilegeList[i] = (char*)calloc (strlen(iter->c_str()) + 1, sizeof(char));
 		if (ppPrivilegeList[i] == NULL)
 		{
 			destroy_char_list(ppPrivilegeList, privilegeList.size() + 1);
