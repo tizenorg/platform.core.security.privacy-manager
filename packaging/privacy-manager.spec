@@ -1,7 +1,7 @@
 Name:    privacy-manager-server
 Summary: Privacy Management
 Version: 0.0.2
-Release: 1
+Release: 2
 Group:   System/Libraries
 License: SAMSUNG
 Source0: %{name}-%{version}.tar.gz
@@ -50,8 +50,6 @@ Privacy Management(development files)
 
 %package -n capi-security-privacy-manager
 Summary:    Privacy Manager API
-Version:    0.0.1
-Release:    0
 Group:      TO_BE/FILLED_IN
 License:    TO BE FILLED IN
 BuildRequires:  cmake
