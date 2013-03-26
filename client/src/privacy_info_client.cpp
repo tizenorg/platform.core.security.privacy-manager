@@ -17,7 +17,7 @@
 #include <string.h>
 #include <string>
 #include <memory>
-#include <PrivacyManager.h>
+#include <PrivacyManagerClient.h>
 #include <privacy_manager_client.h>
 #include <privacy_manager_client_types.h>
 #include "privacy_manager_client_internal_types.h"

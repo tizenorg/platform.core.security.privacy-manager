@@ -29,7 +29,7 @@ private:
 	static bool m_isInitialized;
 
 public:
-	static void initialize(void);
+	static int initialize(void);
 	static int getPrivacyIdFromPrivilege(const std::string privilege, std::string& privacyId);
 	static int getPrivacyIdFromDeviceCap(const std::string deviceCap, std::string& privacyId);
 

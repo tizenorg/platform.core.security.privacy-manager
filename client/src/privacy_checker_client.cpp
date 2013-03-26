@@ -17,7 +17,7 @@
 #include <string.h>
 #include <string>
 #include <memory>
-#include <PrivacyManager.h>
+#include <PrivacyManagerClient.h>
 #include <privacy_manager_client.h>
 #include <privacy_manager_client_types.h>
 #include "privacy_manager_client_internal_types.h"
@@ -35,33 +35,28 @@ int privacy_checker_check_privacy(const char *privacy_id)
 {
 	return PrivacyChecker::check(std::string(privacy_id));
 }
-int privacy_checker_check_privacy_by_privilege(const char *privilege_id)
+
+int privacy_checker_check_by_privilege(const char *privilege_id)
 {
-	int res;
-	std::string privacyId;
-
-	res = PrivacyIdInfo::getPrivacyIdFromPrivilege(std::string(privilege_id), privacyId);
-	if (res != PRIV_MGR_ERROR_SUCCESS)
-		return res;
-
-	return PrivacyChecker::check(privacyId);
-
+	return PrivacyChecker::checkWithPrivilege(privilege_id);
 }
 
-int privacy_checker_check_privacy_by_device_cap(const char *device_cap)
+int privacy_checker_check_by_device_cap(const char *device_cap)
 {
-	int res;
-	std::string privacyId;
-
-	res = PrivacyIdInfo::getPrivacyIdFromDeviceCap(std::string(device_cap), privacyId);
-	if (res != PRIV_MGR_ERROR_SUCCESS)
-		return res;
-
-	return PrivacyChecker::check(privacyId);
-
+	return PrivacyChecker::checkWithPrivilege(device_cap);
 }
 
 int privacy_checker_finalize(void)
 {
 	return PrivacyChecker::finalize();
+}
+
+int privacy_checker_check_package_by_privilege(const char* package_id, const char *privilege_id)
+{
+	return PrivacyChecker::checkWithPrivilege(package_id,privilege_id);
+}
+
+int privacy_checker_check_package_by_device_cap(const char* package_id, const char *device_cap)
+{
+	return PrivacyChecker::checkWithDeviceCap(package_id, device_cap);
 }

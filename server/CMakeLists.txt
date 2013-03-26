@@ -54,16 +54,15 @@ SET(PRIVACY_MANAGER_SERVER_SOURCES
 	${server_src_dir}/SocketService.cpp
 	${server_src_dir}/PrivacyManagerDaemon.cpp
 	${server_src_dir}/service/PrivacyInfoService.cpp
-	${server_src_dir}/service/TestService.cpp
 	${server_src_dir}/PrivacyManagerServer.cpp
 	${server_src_dir}/NotificationServer.cpp
 
 	)
 SET(PRIVACY_MANAGER_SERVER_HEADERS
-	${server_include_dir}/SocketService.h
-	${server_include_dir}/PrivacyManagerDaemon.h
-	${common_include_dir}/SocketConnection.h
-	${common_include_dir}/SocketConnection.h
+    #	${server_include_dir}/SocketService.h
+    #   ${server_include_dir}/PrivacyManagerDaemon.h
+    #	${common_include_dir}/SocketConnection.h
+    #	${common_include_dir}/SocketConnection.h
 )
 SET(PRIVACY_MANAGER_SERVER_LDFLAGS " -module -avoid-version ")
 SET(PRIVACY_MANAGER_SERVER_CFLAGS  " ${CFLAGS} -fPIC ")

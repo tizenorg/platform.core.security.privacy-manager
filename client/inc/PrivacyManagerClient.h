@@ -26,21 +26,21 @@
 
 class SocketClient;
 
-class EXTERN_API PrivacyManager
+class EXTERN_API PrivacyManagerClient
 {
 private:
-	static PrivacyManager* m_pInstance;
+	static PrivacyManagerClient* m_pInstance;
 	static const std::string INTERFACE_NAME;
 
 	std::unique_ptr< SocketClient > m_pSocketClient;
 
 	static std::mutex m_singletonMutex;
 
-	PrivacyManager();
-	~PrivacyManager();
+	PrivacyManagerClient();
+	~PrivacyManagerClient();
 
 public:
-	static PrivacyManager* getInstance(void);
+	static PrivacyManagerClient* getInstance(void);
 
 	int addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string >& list);
 

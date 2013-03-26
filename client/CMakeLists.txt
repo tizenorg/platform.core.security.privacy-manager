@@ -49,15 +49,14 @@ SET(PRIVACY_MANAGER_CLIENT_SOURCES
 	${common_src_dir}/SocketStream.cpp
 	${common_src_dir}/PrivacyIdInfo.cpp
 	${client_src_dir}/SocketClient.cpp
-	${client_src_dir}/PrivacyManager.cpp
+	${client_src_dir}/PrivacyManagerClient.cpp
 	${client_src_dir}/PrivacyChecker.cpp
 	${client_src_dir}/privacy_checker_client.cpp
 	${client_src_dir}/privacy_info_client.cpp
 	${client_src_dir}/privacy_manager_client.cpp
 	)
 SET(PRIVACY_MANAGER_CLIENT_HEADERS
-	${client_include_dir}/PrivacyManager.h
-	${client_include_dir}/PrivacyChecker.h
+    ${client_include_dir}/PrivacyManagerClient.h
 	${client_include_dir}/PrivacyChecker.h
 	${client_include_dir}/privacy_info_client.h
 	${client_include_dir}/privacy_manager_client.h

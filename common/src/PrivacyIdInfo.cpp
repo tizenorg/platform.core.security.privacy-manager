@@ -16,8 +16,10 @@
 
 #include <PrivacyIdInfo.h>
 #include <privacy_manager_client_types.h>
+#include <PrivacyManagerTypes.h>
 #include <dlog.h>
 #include <set>
+#include <Utils.h>
 
 
 std::map <std::string, std::string> PrivacyIdInfo::m_privilegeToPrivacyMap;
@@ -36,90 +38,103 @@ struct PrivacyDeviceCapPair
 	char DeviceCap[128];
 	char privacy[128];
 };
-
+/*
 static struct PrivacyPrivilegePair DeviceCapToPrivacyTable[] =
 {
-	{"bluetooth.admin", "bluetooth"},
-	{"bluetooth.gap", "bluetooth"},
-	{"bluetooth.spp", "bluetooth"},
-	{"bluetoothmanager", "bluetooth"},
+	{"bluetooth.admin", 			"http://tizen.org/privacy/bluetooth"},
+	{"bluetooth.gap", 				"http://tizen.org/privacy/bluetooth"},
+	{"bluetooth.spp", 				"http://tizen.org/privacy/bluetooth"},
+	{"bluetoothmanager", 			"http://tizen.org/privacy/bluetooth"},
 
-	{"calendar.read", "calender"},
-	{"calendar.write", "calender"},
+	{"calendar.read", 				"http://tizen.org/privacy/calender"},
+	{"calendar.write", 				"http://tizen.org/privacy/calender"},
 
-	{"contact.read", "contact"},
-	{"contact.write", "contact"},
+	{"contact.read", 				"http://tizen.org/privacy/contact"},
+	{"contact.write", 				"http://tizen.org/privacy/contact"},
 
-	{"messaging.read", "messaging"},
-	{"messaging.write", "messaging"},
-	{"messaging.send", "messaging"},
+	{"messaging.read", 				"http://tizen.org/privacy/messaging"},
+	{"messaging.write", 			"http://tizen.org/privacy/messaging"},
+	{"messaging.send", 				"http://tizen.org/privacy/messaging"},
 
-	{"nfc.admin", "nfc"},
-	{"nfcmanager.cardemulation", "nfc"},
-	{"nfc.common", "nfc"},
-	{"nfc.p2p", "nfc"},
-	{"nfc.tag", "nfc"},
+	{"nfc.admin", 					"http://tizen.org/privacy/nfc"},
+	{"nfcmanager.cardemulation", 	"http://tizen.org/privacy/nfc"},
+	{"nfc.common", 					"http://tizen.org/privacy/nfc"},
+	{"nfc.p2p", 					"http://tizen.org/privacy/nfc"},
+	{"nfc.tag", 					"http://tizen.org/privacy/nfc"},
 
-	{"XMLHttpRequest", "internet"},
-	{"externalNetworkAccess", "internet"},
+	{"XMLHttpRequest", 				"http://tizen.org/privacy/internet"},
+	{"externalNetworkAccess", 		"http://tizen.org/privacy/internet"},
 
 	{"\0", "\0"}
 };
 
 static struct PrivacyPrivilegePair PrivilegeToPrivacyTable[] =
 {
-	{"http://tizen.org/privilege/bluetooth.admin", "bluetooth"},
-	{"http://tizen.org/privilege/bluetooth.gap", "bluetooth"},
-	{"http://tizen.org/privilege/bluetooth.health", "bluetooth"},
-	{"http://tizen.org/privilege/bluetooth.opp", "bluetooth"},
-	{"http://tizen.org/privilege/bluetooth.spp", "bluetooth"},
-	{"http://tizen.org/privilege/bluetoothmanager", "bluetooth"},
+	{"http://tizen.org/privilege/bluetooth.admin", 			"http://tizen.org/privacy/bluetooth"},
+	{"http://tizen.org/privilege/bluetooth.gap", 			"http://tizen.org/privacy/bluetooth"},
+	{"http://tizen.org/privilege/bluetooth.health",			"http://tizen.org/privacy/bluetooth"},
+	{"http://tizen.org/privilege/bluetooth.opp", 			"http://tizen.org/privacy/bluetooth"},
+	{"http://tizen.org/privilege/bluetooth.spp", 			"http://tizen.org/privacy/bluetooth"},
+	{"http://tizen.org/privilege/bluetoothmanager",			"http://tizen.org/privacy/bluetooth"},
 
-	{"http://tizen.org/privilege/calendar.read", "calender"},
-	{"http://tizen.org/privilege/calendar.write", "calender"},
+	{"http://tizen.org/privilege/calendar.read", 			"http://tizen.org/privacy/calender"},
+	{"http://tizen.org/privilege/calendar.write", 			"http://tizen.org/privacy/calender"},
 
-	{"http://tizen.org/privilege/contact.read", "contact"},
-	{"http://tizen.org/privilege/contact.write", "contact"},
+	{"http://tizen.org/privilege/contact.read", 			"http://tizen.org/privacy/contact"},
+	{"http://tizen.org/privilege/contact.write", 			"http://tizen.org/privacy/contact"},
 
-	{"http://tizen.org/privilege/contextmanager.privacy", "context"},
-	{"http://tizen.org/privilege/contextmanager.upload", "context"},
+	{"http://tizen.org/privilege/contextmanager.privacy", 	"http://tizen.org/privacy/context"},
+	{"http://tizen.org/privilege/contextmanager.upload", 	"http://tizen.org/privacy/context"},
 
-	{"http://tizen.org/privilege/location", "location"},
+	{"http://tizen.org/privilege/location", 				"http://tizen.org/privacy/location"},
 
-	{"http://tizen.org/privilege/messaging.read", "messaging"},
-	{"http://tizen.org/privilege/messaging.write", "messaging"},
+	{"http://tizen.org/privilege/messaging.read", 			"http://tizen.org/privacy/messaging"},
+	{"http://tizen.org/privilege/messaging.write", 			"http://tizen.org/privacy/messaging"},
 
-	{"http://tizen.org/privilege/nfc.admin", "nfc"},
-	{"http://tizen.org/privilege/nfcmanager.cardemulation", "nfc"},
-	{"http://tizen.org/privilege/nfc.common", "nfc"},
-	{"http://tizen.org/privilege/nfc.p2p", "nfc"},
-	{"http://tizen.org/privilege/nfc.tag", "nfc"},
+	{"http://tizen.org/privilege/nfc.admin", 				"http://tizen.org/privacy/nfc"},
+	{"http://tizen.org/privilege/nfcmanager.cardemulation", "http://tizen.org/privacy/nfc"},
+	{"http://tizen.org/privilege/nfc.common", 				"http://tizen.org/privacy/nfc"},
+	{"http://tizen.org/privilege/nfc.p2p", 					"http://tizen.org/privacy/nfc"},
+	{"http://tizen.org/privilege/nfc.tag", 					"http://tizen.org/privacy/nfc"},
 
-	{"http://tizen.org/privilege/http", "internet"},
-	{"http://tizen.org/privilege/socket", "internet"},
-	{"http://tizen.org/privilege/web.service", "internet"},
+	{"http://tizen.org/privilege/http", 					"http://tizen.org/privacy/internet"},
+	{"http://tizen.org/privilege/socket", 					"http://tizen.org/privacy/internet"},
+	{"http://tizen.org/privilege/web.service", 				"http://tizen.org/privacy/internet"},
 
 	{"\0", "\0"}
 };
+*/
 
-
-void
+int
 PrivacyIdInfo::initialize(void)
 {
-		int i = 0;
-		while (PrivilegeToPrivacyTable[i].privilege[0] != '\0')		
-		{
-			m_privilegeToPrivacyMap.insert(std::map < std::string, std::string >::value_type(std::string(PrivilegeToPrivacyTable[i].privilege), std::string(PrivilegeToPrivacyTable[i].privacy)));
-			++i;
-		}
+	static const std::string sqlPrivilege("SELECT PRIVILEGE_ID, PRIVACY_ID from PrivilegeToPrivacyTable");
+	static const std::string sqlDeviceCap("SELECT DEVICE_CAP, PRIVACY_ID from DeviceCapToPrivacyTable");
 
-		i = 0;
-		while (DeviceCapToPrivacyTable[i].privilege[0] != '\0')		
-		{
-			m_deviceCapToPrivacyMap.insert(std::map < std::string, std::string >::value_type(std::string(DeviceCapToPrivacyTable[i].privilege), std::string(DeviceCapToPrivacyTable[i].privacy)));
-			++i;
-		}
-		m_isInitialized = true;
+	LOGI("enter");
+	
+	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
+	prepareDb(pDbHandler, sqlPrivilege.c_str(), pStmtPrivilege);
+
+	int res;
+	while ( (res = sqlite3_step(pStmtPrivilege.get())) == SQLITE_ROW )
+	{
+		const char* privilegeId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmtPrivilege.get(), 0));
+		const char* privacyId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmtPrivilege.get(), 1));
+		m_privilegeToPrivacyMap.insert(std::map < std::string, std::string >::value_type(std::string(privilegeId), std::string(privacyId)));
+		LOGD(" %s : %s", privilegeId, privacyId);
+	}
+
+	prepareDb(pDbHandler, sqlDeviceCap.c_str(), pStmtDeviceCap);
+	while ( (res = sqlite3_step(pStmtDeviceCap.get())) == SQLITE_ROW )
+	{
+		const char* DeviceCap =  reinterpret_cast < const char* > (sqlite3_column_text(pStmtDeviceCap.get(), 0));
+		const char* privacyId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmtDeviceCap.get(), 1));
+		m_deviceCapToPrivacyMap.insert(std::map < std::string, std::string >::value_type(std::string(DeviceCap), std::string(privacyId)));
+	}
+	m_isInitialized = true;
+
+	return PRIV_MGR_ERROR_SUCCESS;
 }
 
 int

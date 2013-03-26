@@ -14,26 +14,9 @@
  *    limitations under the License.
  */
 
-#ifndef _TEST_SERVICE_H_
-#define _TEST_SERVICE_H_
+#include <Utils.h>
 
-#include <SocketConnection.h>
-#include <SocketService.h>
-
-class TestService {
-private:
-	inline static std::string getInterfaceName(void)
-	{
-		return "TestService";
-	}
-
-public:
-	static void registerCallbacks(SocketService* pSocketService)
-	{
-		pSocketService->registerServiceCallback(getInterfaceName(), std::string("test"), test);
-	}
-
-	static void test(SocketConnection* pConnector);
-
-};
-#endif // _TEST_SERVICE_H_
+std::string Utils::toHash(std::string src)
+{
+	return src;
+}

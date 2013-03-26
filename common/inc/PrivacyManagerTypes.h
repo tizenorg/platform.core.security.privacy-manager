@@ -20,6 +20,8 @@
 #include <string>
 #include <privacy_manager_client_types.h>
 
+static const std::string PRIVACY_DB_PATH("/opt/dbspace/.privacy.db");
+static const std::string PRIVACY_INFO_DB_PATH("/opt/dbspace/.privacylist.db");
 static const std::string SERVER_ADDRESS ("/tmp/privacy_manager_server");
 static const std::string DBUS_PATH("/privacy_manager/dbus_notification");
 static const std::string DBUS_SIGNAL_INTERFACE("org.tizen.privacy_manager.signal");

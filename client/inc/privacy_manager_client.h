@@ -33,6 +33,7 @@ EXTERN_API int privacy_manager_client_foreach_privacy_packages(privacy_manager_c
 EXTERN_API int privacy_manager_client_foreach_get_privacy_info(const char *package_id, privacy_manager_client_privacy_info_cb callback, void* user_data);
 EXTERN_API int privacy_manager_client_set_package_privacy(const char *package_id, const char *privacy_id, bool enable);
 
+EXTERN_API int privacy_manager_client_check_user_consented(const char *package_id, bool consented);
 
 #ifdef __cplusplus
 }

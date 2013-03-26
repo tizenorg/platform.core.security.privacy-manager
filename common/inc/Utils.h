@@ -22,7 +22,8 @@
 #include <algorithm>
 #include <dlog.h>
 #include <sqlite3.h>
-
+#include <memory>
+#include <string>
 
 #define	TryCatchLogReturn(condition, expr, r, logFormat)	if (!(condition)) { \
 		LOGE(logFormat); \
@@ -66,4 +67,9 @@ auto DbDeleter = [&](sqlite3* pPtr) { LOGI("sqlite3_close"); sqlite3_close(pPtr)
 	}\
 	setStmtToUniquePtr(pStmt, pStmt##Temp);
 
+class Utils
+{
+public:
+	static std::string toHash (std::string src);
+};
 #endif //_UTILS_H_
