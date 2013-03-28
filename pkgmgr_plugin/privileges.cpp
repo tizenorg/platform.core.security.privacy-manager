@@ -91,7 +91,7 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 	for (int i = 0; i < privilegeList.size(); ++i)
 		LOGD(" values : %s", ppPrivilegeList[i]);
 
-	ppPrivilegeList[privilegeList.size()] = (char*)calloc (1, sizeof(char) + 1 );
+	ppPrivilegeList[privilegeList.size()] = (char*)calloc (2, sizeof(char));
 	memcpy(ppPrivilegeList[privilegeList.size()], "\0", 1);
 
 	ret = privacy_manager_client_install_privacy(packageId, (const char**) ppPrivilegeList);

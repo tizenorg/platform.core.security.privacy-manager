@@ -22,20 +22,20 @@
 #include <privacy_manager_client.h>
 #include "privacy_manager_client_internal_types.h"
 
-int create_privacy_info_client_s(const char* package_id, bool enabled, privacy_info_client_s **privacy_info)
+int create_privacy_info_client_s(const char* privacy_id, bool enabled, privacy_info_client_s **privacy_info)
 {
 	privacy_info_client_s* temp = (privacy_info_client_s*) calloc(1, sizeof(privacy_info_client_s));
 	if (temp == NULL)
 		return PRIV_MGR_ERROR_OUT_OF_MEMORY;
 
-	int size = strlen(package_id);
+	int size = strlen(privacy_id);
 	temp->privacy_id = (char*) calloc(1, size + 1);
 	if (temp->privacy_id == NULL)
 	{
 		free(temp);
 		return PRIV_MGR_ERROR_OUT_OF_MEMORY;
 	}
-	memcpy(temp->privacy_id, package_id, size + 1);
+	memcpy(temp->privacy_id, privacy_id, size + 1);
 	
 	temp->is_enabled = enabled;
 

@@ -50,6 +50,7 @@ INCLUDE_DIRECTORIES(
 SET(PRIVACY_MANAGER_SERVER_SOURCES 
 	${common_src_dir}/SocketConnection.cpp
 	${common_src_dir}/SocketStream.cpp
+	${common_src_dir}/PrivacyDb.cpp
 	${server_src_dir}/main.cpp
 	${server_src_dir}/SocketService.cpp
 	${server_src_dir}/PrivacyManagerDaemon.cpp

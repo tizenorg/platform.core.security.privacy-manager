@@ -24,8 +24,8 @@ do
     touch /opt/dbspace/.$name.db-journal
     chown 0:0 /opt/dbspace/.$name.db
     chown 0:0 /opt/dbspace/.$name.db-journal
-    chmod 660 /opt/dbspace/.$name.db
-    chmod 660 /opt/dbspace/.$name.db-journal
+    chmod 664 /opt/dbspace/.$name.db
+    chmod 664 /opt/dbspace/.$name.db-journal
 done
 
 

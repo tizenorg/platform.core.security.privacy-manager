@@ -14,32 +14,29 @@
  *    limitations under the License.
  */
 
-#ifndef _PRIVACY_MANAGER_SERVER_H_
-#define _PRIVACY_MANAGER_SERVER_H_
+#ifndef _PRIVACY_DB_H_
+#define _PRIVACY_DB_H_
 
 #include <string>
 #include <memory>
 #include <list>
 #include <mutex>
-#include <NotificationServer.h>
 
-class NotificationServer;
-
-class PrivacyManagerServer
+class PrivacyDb
 {
 private:
 	static std::mutex m_singletonMutex;
-	static PrivacyManagerServer* m_pInstance;
-	NotificationServer m_notificationServer;
+	static PrivacyDb* m_pInstance;
 
 private:
 	void createDB(void);
+	
+	PrivacyDb(void);
+
+	~PrivacyDb(void);
 
 public:
-
-	explicit PrivacyManagerServer(void);
-
-	static PrivacyManagerServer* getInstance(void);
+	static PrivacyDb* getInstance(void);
 
 	int getPrivacyAppPackages(std::list <std::string>& list);
 
@@ -58,4 +55,4 @@ public:
 };
 
 
-#endif // _PRIVACY_MANAGER_SERVER_H_
+#endif // _PRIVACY_DB_H_

@@ -34,22 +34,25 @@ std::mutex PrivacyChecker::m_cacheMutex;
 std::string PrivacyChecker::m_pkgId;
 DBusConnection* PrivacyChecker::m_pDBusConnection;
 GMainLoop* PrivacyChecker::m_pLoop = NULL;
-
+GMainContext* PrivacyChecker::m_pHandlerGMainContext = NULL;
 const int MAX_LOCAL_BUF_SIZE = 128;
+pthread_t PrivacyChecker::m_signalThread;
 
 int
 PrivacyChecker::initialize(const std::string pkgId)
 {
 	LOGI("enter");
 
-	if (m_isInitialized)
+	if (m_isInitialized) {
+		LOGD("Already Initalized");
 		return PRIV_MGR_ERROR_SUCCESS;
+	}
 
 	m_pkgId = pkgId;
 
 	std::lock_guard < std::mutex > guard(m_cacheMutex);
 
-	int res = updateCache(m_privacyCache);
+	int res = updateCache(m_pkgId, m_privacyCache);
 	TryReturn(res == 0, res, m_pkgId.clear(), "Failed to update cache : %d", res);
 
 	res = initialize();
@@ -63,13 +66,17 @@ PrivacyChecker::initialize(void)
 {
 	LOGI("enter");
 
-	if (m_isInitialized)
-		return PRIV_MGR_ERROR_SUCCESS;
+	TryReturn(!m_isInitialized, PRIV_MGR_ERROR_SUCCESS, , "Already Initalized");
 
-	int res;
-	pthread_t signalThread;
-	res = pthread_create(&signalThread, NULL, &runSignalListenerThread, NULL);
+	m_pHandlerGMainContext = g_main_context_new();
+	TryReturn(m_pHandlerGMainContext != NULL, PRIV_MGR_ERROR_SYSTEM_ERROR, m_pkgId.clear(), "cannot create m_pHandlerGMainContext");
+
+	m_pLoop = g_main_loop_new(m_pHandlerGMainContext, FALSE);
+	TryReturn(m_pLoop != NULL, PRIV_MGR_ERROR_SYSTEM_ERROR, m_pkgId.clear(), "cannot create m_pLoop");
+
+	int res = pthread_create(&m_signalThread, NULL, &runSignalListenerThread, NULL);
 	TryReturn(res >= 0, PRIV_MGR_ERROR_SYSTEM_ERROR, errno = res;, "Failed to create listener thread :%s", strerror(res));
+	LOGD("created thread");
 
 	m_isInitialized = true;
 
@@ -83,11 +90,6 @@ PrivacyChecker::runSignalListenerThread(void* pData)
 {
 	pthread_detach(pthread_self());
 	LOGI("Running g main loop for signal");
-	
-	if (m_pLoop != NULL)
-		return (void*) 0;
-	
-	m_pLoop = g_main_new(TRUE);
 
 	initializeDbus();
 
@@ -110,7 +112,7 @@ PrivacyChecker::initializeDbus(void)
 	m_pDBusConnection = dbus_bus_get_private(DBUS_BUS_SYSTEM, &error);
 	TryReturn(m_pDBusConnection != NULL, PRIV_MGR_ERROR_SYSTEM_ERROR, dbus_error_free(&error), "dbus_bus_get_private [%s] : %d", PRIV_MGR_ERROR_SYSTEM_ERROR);
 
-	dbus_connection_setup_with_g_main(m_pDBusConnection, NULL);
+	dbus_connection_setup_with_g_main(m_pDBusConnection, m_pHandlerGMainContext);
 	std::unique_ptr < char[] > pRule(new char[MAX_LOCAL_BUF_SIZE]);
 
 	snprintf(pRule.get(), MAX_LOCAL_BUF_SIZE, "path='%s',type='signal',interface='%s'", DBUS_PATH.c_str(), DBUS_SIGNAL_INTERFACE.c_str());
@@ -161,7 +163,7 @@ PrivacyChecker::handleNotification(DBusConnection* connection, DBusMessage* mess
 		if (std::string(pPkgId) == m_pkgId)
 		{
 			LOGI("Current app pkg privacy information updated");
-			updateCache(pPrivacyId, m_privacyCache);
+			updateCache(m_pkgId, pPrivacyId, m_privacyCache);
 			printCache();
 		}
 
@@ -184,11 +186,17 @@ PrivacyChecker::handleNotification(DBusConnection* connection, DBusMessage* mess
 int
 PrivacyChecker::check(const std::string privacyId, std::map < std::string, bool >& privacyMap)
 {
-	LOGI("enter");
+	LOGI("enter, %d", privacyMap.size());
 
 	TryReturn(m_isInitialized, PRIV_MGR_ERROR_NOT_INITIALIZED, , "Not initialized");
 
-	std::map < std::string, bool >::const_iterator iter = privacyMap.find(privacyId);
+	std::map < std::string, bool >::iterator iter;
+
+	for (iter = privacyMap.begin(); iter != privacyMap.end(); ++iter)
+	{
+		LOGD("data: %s, %d", iter->first.c_str(), iter->second);
+	}
+	iter = privacyMap.find(privacyId);
 	if (iter == privacyMap.end() )
 	{
 		LOGD("NO matcheded");
@@ -199,6 +207,7 @@ PrivacyChecker::check(const std::string privacyId, std::map < std::string, bool 
 		LOGD("NOT allowed");
 		return PRIV_MGR_ERROR_USER_NOT_CONSENTED;
 	}
+
 	LOGD("OK");
 
 	return PRIV_MGR_ERROR_SUCCESS;
@@ -224,10 +233,11 @@ PrivacyChecker::check(const std::string privacyId)
 int
 PrivacyChecker::check(const std::string pkgId, const std::string privacyId)
 {
-	LOGI("enter");
+	LOGI("enter %s: %s", pkgId.c_str(), privacyId.c_str());
 
 	if (!m_isInitialized)
 		initialize();
+
 	std::lock_guard < std::mutex > guard(m_cacheMutex);
 	int res;
 
@@ -235,14 +245,18 @@ PrivacyChecker::check(const std::string pkgId, const std::string privacyId)
 	if (iter == m_privacyInfoCache.end() )
 	{
 		std::map < std::string, bool > pkgCacheMap;
-		res = updateCache(pkgCacheMap);
+		res = updateCache(pkgId, pkgCacheMap);
 		TryReturn( res == PRIV_MGR_ERROR_SUCCESS, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
 
 		m_privacyInfoCache.insert( std::map < std::string, std::map < std::string, bool > >::value_type(std::string(pkgId), pkgCacheMap));
 		iter = m_privacyInfoCache.find(pkgId);
 	}
+
 	if (iter->second.size() == 0)
+	{
+		LOGD("NO PRIVACY contained");
 		return PRIV_MGR_ERROR_USER_NOT_CONSENTED;
+	}
 
 	res = check(privacyId, iter->second);
 
@@ -258,8 +272,11 @@ PrivacyChecker::checkWithPrivilege(const std::string pkgId, const std::string pr
 
 	std::string privacyId;
 	int res = PrivacyIdInfo::getPrivacyIdFromPrivilege(privilege, privacyId);
-	if (res == PRIV_MGR_ERROR_NO_DATA)
+	if (res == PRIV_MGR_ERROR_NO_DATA) {
+		LOGD("NOT privacy privilege");
 		return PRIV_MGR_ERROR_USER_NOT_CONSENTED;
+	}
+
 	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "getPrivacyIdFromPrivilege : %d", res);
 
 	LOGI("leave");
@@ -321,12 +338,19 @@ PrivacyChecker::finalize(void)
 	std::lock_guard <std::mutex> guard (m_cacheMutex);
 	m_privacyCache.clear();
 	m_privacyInfoCache.clear();
-	
+
 	if (m_pLoop != NULL)
 	{
 		g_main_loop_quit(m_pLoop);
 		m_pLoop = NULL;
 	}
+
+	if (m_pHandlerGMainContext != NULL) 
+	{
+		g_main_context_unref(m_pHandlerGMainContext);
+		m_pHandlerGMainContext = NULL;
+	}
+
 
 	m_isInitialized = false;
 
@@ -341,12 +365,6 @@ PrivacyChecker::printCache(void)
 	{
 		LOGD(" %s : %d", iter->first.c_str(), iter->second);
 	}
-}
-
-int
-PrivacyChecker::updateCache(const std::string privacyId, std::map < std::string, bool >& pkgCacheMap)
-{
-	return updateCache(m_pkgId, privacyId, pkgCacheMap);
 }
 
 int
@@ -378,9 +396,8 @@ PrivacyChecker::updateCache(const std::string pkgId, std::string privacyId, std:
 	return PRIV_MGR_ERROR_SUCCESS;
 }
 
-
 int
-PrivacyChecker::updateCache(std::map < std::string, bool >& pkgCacheMap)
+PrivacyChecker::updateCache(std::string pkgId, std::map < std::string, bool >& pkgCacheMap)
 {
 	LOGI("enter");
 	static const std::string PrivacyQuery = "SELECT PRIVACY_ID, IS_ENABLED from PrivacyInfo where PKG_ID=?";
@@ -389,10 +406,10 @@ PrivacyChecker::updateCache(std::map < std::string, bool >& pkgCacheMap)
 	
 	openDb(PRIVACY_DB_PATH.c_str(), pDbH, SQLITE_OPEN_READONLY);
 	prepareDb(pDbH, PrivacyQuery.c_str(), pPrivacyStmt);
-	int res = sqlite3_bind_text(pPrivacyStmt.get(), 1, m_pkgId.c_str(), -1, SQLITE_TRANSIENT);
-	TryReturn( res == 0, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
+	int res = sqlite3_bind_text(pPrivacyStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
+	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
 
-	while ( sqlite3_step(pPrivacyStmt.get()) == SQLITE_ROW )
+	while ( (res = sqlite3_step(pPrivacyStmt.get())) == SQLITE_ROW )
 	{
 		LOGI("start");
 		const char* privacyId =  reinterpret_cast < const char* > (sqlite3_column_text(pPrivacyStmt.get(), 0));
@@ -402,6 +419,6 @@ PrivacyChecker::updateCache(std::map < std::string, bool >& pkgCacheMap)
 
 		LOGD("Privacy found : %s %d", privacyId, privacyEnabled);
 	}
-	LOGI("leave");
+	LOGI("leave : %d", res);
 	return PRIV_MGR_ERROR_SUCCESS;
 }

@@ -48,6 +48,7 @@ SET(PRIVACY_MANAGER_CLIENT_SOURCES
 	${common_src_dir}/SocketConnection.cpp
 	${common_src_dir}/SocketStream.cpp
 	${common_src_dir}/PrivacyIdInfo.cpp
+	${common_src_dir}/PrivacyDb.cpp
 	${client_src_dir}/SocketClient.cpp
 	${client_src_dir}/PrivacyManagerClient.cpp
 	${client_src_dir}/PrivacyChecker.cpp

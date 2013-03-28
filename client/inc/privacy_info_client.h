@@ -30,7 +30,7 @@ typedef struct _privacy_info_client_s {
 
 EXTERN_API int create_privacy_info_client_s(const char* package_id, bool enabled, privacy_info_client_s **privacy_info);
 EXTERN_API int privacy_info_client_s_destroy(privacy_info_client_s* privacy_info);
-EXTERN_API int privacy_info_client_get_privacy_id(privacy_info_client_s* privacy_info, char **package);
+EXTERN_API int privacy_info_client_get_privacy_id(privacy_info_client_s* privacy_info, char **privacy_id);
 EXTERN_API int privacy_info_client_get_privacy_display_name(privacy_info_client_s* privacy_info, char **name);
 EXTERN_API int privacy_info_client_get_privacy_description(privacy_info_client_s* privacy_info, char **description);
 EXTERN_API int privacy_info_client_is_enabled(privacy_info_client_s* privacy_info, bool *enabled);

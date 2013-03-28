@@ -39,13 +39,14 @@ private:
 	static std::mutex m_cacheMutex;
 	static DBusConnection* m_pDBusConnection;
 	static GMainLoop* m_pLoop;
+	static GMainContext* m_pHandlerGMainContext;
+	static pthread_t m_signalThread;
 
 private:
 	static int initializeDbus(void);
 	static int finalizeDbus(void);
 	static int updateCache(const std::string pkgId, std::string privacyId, std::map < std::string, bool >& pkgCacheMap);
-	static int updateCache(const std::string privacyId, std::map < std::string, bool >& pkgCacheMap);
-	static int updateCache(std::map < std::string, bool >& pkgCacheMap);
+	static int updateCache(const std::string pkgId, std::map < std::string, bool >& pkgCacheMap);
 	static void printCache(void);
 	static void* runSignalListenerThread(void* pData);
 	static int getCurrentPkgId(std::string& pkgId);

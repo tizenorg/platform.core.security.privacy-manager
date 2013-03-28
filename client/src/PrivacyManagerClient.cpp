@@ -15,11 +15,15 @@
  */
 
 #include <PrivacyManagerClient.h>
+#include <PrivacyDb.h>
 #include <SocketClient.h>
 #include <PrivacyIdInfo.h>
 #include <algorithm> 
 #include <memory>
 #include <Utils.h>
+
+#undef __READ_DB_IPC__
+
 
 std::mutex PrivacyManagerClient::m_singletonMutex;
 PrivacyManagerClient* PrivacyManagerClient::m_pInstance = NULL;
@@ -41,12 +45,12 @@ PrivacyManagerClient::getInstance(void)
 }
 
 int
-PrivacyManagerClient::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string >& pList)
+PrivacyManagerClient::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string >& list)
 {
 
 	std::list < std::string > privacyList;
 
-	int res = PrivacyIdInfo::getPrivacyIdListFromPrivilegeList(pList, privacyList);
+	int res = PrivacyIdInfo::getPrivacyIdListFromPrivilegeList(list, privacyList);
 	if (res != PRIV_MGR_ERROR_SUCCESS )
 		return res;
 
@@ -60,45 +64,7 @@ PrivacyManagerClient::addAppPackagePrivacyInfo(const std::string pkgId, const st
 
 	return result;
 #else
-	LOGI("enter");
-
-	static const std::string pkgInfoQuery("INSERT INTO PackageInfo(PKG_ID, IS_SET) VALUES(?, ?)");
-	static const std::string privacyQuery("INSERT INTO PrivacyInfo(PKG_ID, PRIVACY_ID, IS_ENABLED) VALUES(?, ?, ?)");
-	
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
-	prepareDb(pDbHandler, pkgInfoQuery.c_str(), pPkgInfoStmt);
-
-	res = sqlite3_bind_text(pPkgInfoStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
-	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
-	
-	res = sqlite3_bind_int(pPkgInfoStmt.get(), 2, 0);
-	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_int : %d", res);
-
-	res = sqlite3_step(pPkgInfoStmt.get());
-	TryReturn( res == SQLITE_DONE || res == SQLITE_CONSTRAINT, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_step : %d", res);
-	
-	prepareDb(pDbHandler, privacyQuery.c_str(), pPrivacyStmt);
-	for ( std::list <std::string>::const_iterator iter = privacyList.begin(); iter != privacyList.end(); ++iter)
-	{
-		LOGD(" install privacy: %s", iter->c_str());
-		
-		res = sqlite3_bind_text(pPrivacyStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
-		TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_int : %d", res);
-
-		res = sqlite3_bind_text(pPrivacyStmt.get(), 2, iter->c_str(), -1, SQLITE_TRANSIENT);
-		TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
-		
-		// Before setting app and popup is ready, default value is true
-		res = sqlite3_bind_int(pPrivacyStmt.get(), 3, 1);
-		TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_int : %d", res);
-
-		res = sqlite3_step(pPrivacyStmt.get());
-		TryReturn( res == SQLITE_DONE || res == SQLITE_CONSTRAINT, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_step : %d", res);
-
-		sqlite3_reset(pPrivacyStmt.get());
-	}
-
-	return 0;
+	return PrivacyDb::getInstance()->addAppPackagePrivacyInfo(pkgId, privacyList);
 #endif
 }
 
@@ -125,22 +91,26 @@ PrivacyManagerClient::setPrivacySetting(const std::string pkgId, const std::stri
 }
 	
 int
-PrivacyManagerClient::getPrivacyAppPackages(std::list < std::string >& pList)
+PrivacyManagerClient::getPrivacyAppPackages(std::list < std::string >& list)
 {
+#ifdef __READ_DB_IPC__
 	int result, size;
 	std::string temp1;
 	SocketClient* p = new SocketClient(INTERFACE_NAME);
 	p->connect();
-	p->call("getPrivacyAppPackages", &result, &size, &pList);
+	p->call("getPrivacyAppPackages", &result, &size, &list);
 	p->disconnect();
 
 	return result;
+#endif
+
+	return PrivacyDb::getInstance()->getPrivacyAppPackages(list);
 }
 
 int
 PrivacyManagerClient::getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair <std::string, bool > > & list)
 {
-
+#ifdef __READ_DB_IPC__
 	std::unique_ptr <SocketClient> pSocketClient (new SocketClient(INTERFACE_NAME));
 
 	int result;
@@ -154,11 +124,15 @@ PrivacyManagerClient::getAppPackagePrivacyInfo(const std::string pkgId, std::lis
 	}
 
 	return result;
+#endif 
+
+	return PrivacyDb::getInstance()->getAppPackagePrivacyInfo(pkgId, list);
 }
 
 int
 PrivacyManagerClient::isUserPrompted(const std::string pkgId, bool& isPrompted)
 {
+#ifdef __READ_DB_IPC__
 	LOGI("enter");
 
 	std::unique_ptr <SocketClient> pSocketClient (new SocketClient(INTERFACE_NAME));
@@ -171,6 +145,8 @@ PrivacyManagerClient::isUserPrompted(const std::string pkgId, bool& isPrompted)
 	LOGI("leave");
 
 	return result;
+#endif
+	return PrivacyDb::getInstance()->isUserPrompted(pkgId, isPrompted);
 }
 
 int

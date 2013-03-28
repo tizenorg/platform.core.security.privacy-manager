@@ -34,12 +34,12 @@ int privacy_info_client_s_destroy(privacy_info_client_s* privacy_info)
 	return PRIV_MGR_ERROR_SUCCESS;
 }
 
-int privacy_info_client_get_privacy_id(privacy_info_client_s* privacy_info, char **package)
+int privacy_info_client_get_privacy_id(privacy_info_client_s* privacy_info, char **privacy_id)
 {
 	int size = strlen(privacy_info->privacy_id);
-	*package = (char*) calloc(1, size);
+	*privacy_id = (char*) calloc(1, size + 1);
 
-	memcpy (*package, privacy_info->privacy_id, size);
+	memcpy (*privacy_id, privacy_info->privacy_id, size);
 
 	return PRIV_MGR_ERROR_SUCCESS;
 }
@@ -48,7 +48,7 @@ int privacy_info_client_get_privacy_display_name(privacy_info_client_s* privacy_
 {
 	// TODO: Modify to use STMS
 	int size = strlen(privacy_info->privacy_id);
-	*name = (char*) calloc(1, size);
+	*name = (char*) calloc(1, size + 1);
 
 	memcpy (*name, privacy_info->privacy_id, size);
 
@@ -59,7 +59,7 @@ int privacy_info_client_get_privacy_description(privacy_info_client_s* privacy_i
 {
 	// TODO: Modify to use STMS
 	int size = strlen(privacy_info->privacy_id);
-	*description = (char*) calloc(1, size);
+	*description = (char*) calloc(1, size + 1);
 
 	memcpy (*description, privacy_info->privacy_id, size);
 
