@@ -7,7 +7,7 @@
                 </provide>
         </define>
         <request>
-                <domain name="privacy-manager-server" />
+                <domain name="privacy-manager" />
         </request>
         <assign>
 		        <filesystem path="/usr/bin/privacy-manager-server" label="privacy-manager::daemon" exec_label="privacy-manager::daemon"/>

@@ -71,12 +71,15 @@ PrivacyManagerClient::addAppPackagePrivacyInfo(const std::string pkgId, const st
 int
 PrivacyManagerClient::removeAppPackagePrivacyInfo(const std::string pkgId)
 {
+#ifdef __READ_DB_IPC__
 	int result;
 	m_pSocketClient->connect();
 	m_pSocketClient->call("removePrivacyInfo", pkgId, &result);
 	m_pSocketClient->disconnect();
-
 	return result;
+#else
+	return PrivacyDb::getInstance()->removeAppPackagePrivacyInfo(pkgId);
+#endif
 }
 
 int
