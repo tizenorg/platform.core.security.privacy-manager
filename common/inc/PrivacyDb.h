@@ -38,9 +38,9 @@ private:
 public:
 	static PrivacyDb* getInstance(void);
 
-	int getPrivacyAppPackages(std::list <std::string>& list);
+	int getPrivacyAppPackages(std::list <std::string>& list) const;
 
-	int getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair < std::string, bool > > & list);
+	int getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair < std::string, bool > > & list) const;
 
 	int setPrivacySetting(const std::string pkgId, const std::string privacyId, bool enabled);
 
@@ -48,10 +48,11 @@ public:
 
 	int removeAppPackagePrivacyInfo(const std::string pkgId);
 
-	int isUserPrompted(const std::string pkgId, bool& isPrompted);
+	int isUserPrompted(const std::string pkgId, bool& isPrompted) const;
 
 	int setUserPrompted(const std::string pkgId, bool prompted);
 
+	int getAppPackagesbyPrivacyId(std::string privacyId, std::list < std::pair < std::string, bool > >& list) const;
 };
 
 

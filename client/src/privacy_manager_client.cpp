@@ -19,6 +19,7 @@
 #include <memory>
 #include <dlog.h>
 #include <PrivacyManagerClient.h>
+#include <PrivacyIdInfo.h>
 #include <privacy_manager_client.h>
 #include "privacy_manager_client_internal_types.h"
 
@@ -121,9 +122,68 @@ int privacy_manager_client_set_package_privacy(const char *package_id, const cha
 	return pInst->setPrivacySetting(package_id, privacy_id, enable);
 }
 
-int privacy_manager_client_check_user_consented(const char *package_id, bool consented)
+int privacy_manager_client_check_user_consented(const char *package_id, bool *consented)
 {
 	PrivacyManagerClient* pInst = PrivacyManagerClient::getInstance();
 
-	return pInst->isUserPrompted(std::string(package_id), consented);
+	return pInst->isUserPrompted(std::string(package_id), *consented);
+}
+
+int privacy_manager_client_set_user_consented(const char *package_id, bool consented)
+{
+	PrivacyManagerClient* pInst = PrivacyManagerClient::getInstance();
+
+	return pInst->setUserPrompted(std::string(package_id), consented);
+}
+
+int privacy_manager_client_foreach_all_privacy(privacy_manager_client_all_privacy_info_cb callback, void* user_data)
+{
+	int retval;
+	bool res;
+
+	std::list < std::string > privacyList;
+	retval = PrivacyIdInfo::getAllPrivacyId(privacyList);
+	if (retval != PRIV_MGR_ERROR_SUCCESS)
+		return retval;
+	if (privacyList.size() == 0)
+		return PRIV_MGR_ERROR_NO_DATA;
+
+	for (std::list < std::string >::iterator iter = privacyList.begin(); iter != privacyList.end(); ++iter)
+	{
+		privacy_info_client_s *privacy_info_client_s = NULL;
+		retval = create_privacy_info_client_s(iter->c_str(), false, &privacy_info_client_s);
+		res = callback(privacy_info_client_s, user_data);
+		privacy_info_client_s_destroy(privacy_info_client_s);
+		if (!res)
+			break;
+	}
+
+	return PRIV_MGR_ERROR_SUCCESS;
+}
+
+int privacy_manager_client_foreach_package_list_by_privacy(const char *privacy_id, privacy_manager_client_packages_by_privacy_cb callback, void* user_data)
+{
+	int retval;
+	bool res;
+	PrivacyManagerClient* pInst = PrivacyManagerClient::getInstance();
+
+	std::list < std::pair < std::string, bool > > packageList;
+	retval = pInst->getAppPackagesbyPrivacyId(std::string(privacy_id), packageList);
+		for (std::list < std::pair < std::string, bool > >::iterator iter = packageList.begin(); iter != packageList.end(); ++iter)
+	{
+		LOGD("result : %s %d", iter->first.c_str(), iter->second);
+	}
+	if (retval != PRIV_MGR_ERROR_SUCCESS)
+		return retval;
+	if (packageList.size() == 0)
+		return PRIV_MGR_ERROR_NO_DATA;
+
+	for (std::list < std::pair < std::string, bool > >::iterator iter = packageList.begin(); iter != packageList.end(); ++iter)
+	{
+		res = callback(iter->first.c_str(), iter->second, user_data);
+		if (!res)
+			break;
+	}
+
+	return PRIV_MGR_ERROR_SUCCESS;
 }

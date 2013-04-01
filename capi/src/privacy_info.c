@@ -24,8 +24,33 @@
 
 static int _privacy_info_convert_error(int error)
 {
+	int ret = PRIV_MGR_ERROR_SUCCESS;
 
-	return PRIVACY_MANAGER_ERROR_NONE;
+	switch (error) 
+	{
+	case PRIV_MGR_ERROR_SUCCESS:
+		ret = PRIVACY_MANAGER_ERROR_NONE;
+		break;
+	case PRIV_MGR_ERROR_INVALID_PARAMETER:
+		ret = PRIVACY_MANAGER_ERROR_INVALID_PARAMETER;
+		break;
+	case PRIV_MGR_ERROR_OUT_OF_MEMORY:
+		ret = PRIVACY_MANAGER_ERROR_OUT_OF_MEMORY;
+		break;
+	case PRIV_MGR_ERROR_IO_ERROR:
+		ret = PRIVACY_MANAGER_ERROR_IO_ERROR;
+		break;
+	case PRIV_MGR_ERROR_NO_DATA:
+		ret = PRIVACY_MANAGER_ERROR_NO_DATA;
+		break;
+	case PRIV_MGR_ERROR_DB_ERROR:
+		ret = PRIVACY_MANAGER_ERROR_DB_FAILED;
+		break;
+	case PRIV_MGR_ERROR_IPC_ERROR:
+		ret = PRIVACY_MANAGER_ERROR_IPC_FAILED;
+		break;
+	}
+	return ret;
 }
 
 int privacy_info_destroy(privacy_info_h privacy_info)
@@ -72,4 +97,36 @@ int privacy_info_is_enabled(struct privacy_info_s* privacy_info, bool *enable)
 	int retval = privacy_info_client_is_enabled(privacy_info->privacy_info_client, enable);
 
 	return  _privacy_info_convert_error(retval);
+}
+
+int privacy_info_create(const char *privacy_id, privacy_info_h *privacy_info)
+{
+	int retval;
+	privacy_info_client_s* privacy_info_client = NULL;
+	
+	retval = create_privacy_info_client_s(privacy_id, false, &privacy_info_client);
+	if  (retval != PRIV_MGR_ERROR_SUCCESS)
+		return _privacy_info_convert_error(retval);
+
+	privacy_info_h privacy_info_temp = NULL;
+	privacy_info_temp = (struct privacy_info_s*) calloc(1, sizeof(struct privacy_info_s));
+	if (privacy_info_temp == NULL)
+		return PRIVACY_MANAGER_ERROR_OUT_OF_MEMORY;
+	
+	privacy_info_temp->privacy_info_client = privacy_info_client;
+
+	*privacy_info = privacy_info_temp;
+
+	return PRIVACY_MANAGER_ERROR_NONE;
+}
+
+int privacy_info_clone(privacy_info_h *clone, privacy_info_h privacy_info)
+{
+	int retval;
+	if (clone == NULL || privacy_info == NULL)
+		return PRIVACY_MANAGER_ERROR_INVALID_PARAMETER;
+	
+	retval = privacy_info_create(privacy_info->privacy_info_client->privacy_id, clone);
+
+	return retval;
 }

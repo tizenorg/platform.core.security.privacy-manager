@@ -274,7 +274,7 @@ PrivacyChecker::checkWithPrivilege(const std::string pkgId, const std::string pr
 	int res = PrivacyIdInfo::getPrivacyIdFromPrivilege(privilege, privacyId);
 	if (res == PRIV_MGR_ERROR_NO_DATA) {
 		LOGD("NOT privacy privilege");
-		return PRIV_MGR_ERROR_USER_NOT_CONSENTED;
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "getPrivacyIdFromPrivilege : %d", res);
@@ -292,7 +292,7 @@ PrivacyChecker::checkWithPrivilege(const std::string privilege)
 	std::string privacyId;
 	int res = PrivacyIdInfo::getPrivacyIdFromPrivilege(privilege, privacyId);
 	if (res == PRIV_MGR_ERROR_NO_DATA)
-		return PRIV_MGR_ERROR_USER_NOT_CONSENTED;
+		return PRIV_MGR_ERROR_SUCCESS;
 	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "getPrivacyIdFromPrivilege : %d", res);
 
 	LOGI("leave");
@@ -308,7 +308,7 @@ PrivacyChecker::checkWithDeviceCap(const std::string pkgId, const std::string de
 	std::string privacyId;
 	int res = PrivacyIdInfo::getPrivacyIdFromDeviceCap(deviceCap, privacyId);
 	if (res == PRIV_MGR_ERROR_NO_DATA)
-		return PRIV_MGR_ERROR_USER_NOT_CONSENTED;
+		return PRIV_MGR_ERROR_SUCCESS;
 	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "getPrivacyIdFromPrivilege : %d", res);
 
 	LOGI("leave");
@@ -324,7 +324,7 @@ PrivacyChecker::checkWithDeviceCap(const std::string deviceCap)
 	std::string privacyId;
 	int res = PrivacyIdInfo::getPrivacyIdFromDeviceCap(deviceCap, privacyId);
 	if (res == PRIV_MGR_ERROR_NO_DATA)
-		return PRIV_MGR_ERROR_USER_NOT_CONSENTED;
+		return PRIV_MGR_ERROR_SUCCESS;
 	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "getPrivacyIdFromPrivilege : %d", res);
 
 	LOGI("leave");

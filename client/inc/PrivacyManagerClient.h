@@ -55,6 +55,8 @@ public:
 	int isUserPrompted(const std::string pkgId, bool& isPrompted);
 
 	int setUserPrompted(const std::string pkgId, bool prompted);
+
+	int getAppPackagesbyPrivacyId(std::string privacyId, std::list < std::pair < std::string, bool > >& list);
 };
 
 #endif // _PRIVACY_MANAGER_H_

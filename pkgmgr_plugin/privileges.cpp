@@ -103,6 +103,8 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 	}
 
 	LOGI("leave");
+    
+    return 0;
 }
 
 extern "C"

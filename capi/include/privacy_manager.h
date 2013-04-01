@@ -69,6 +69,29 @@ typedef bool (*privacy_manager_privacy_packages_cb) (const char *package_id, voi
 typedef bool (*privacy_manager_privacy_info_cb) (privacy_info_h privacy_info, void* user_data);
 
 /**
+ * @brief Called to get all privacy info once.
+ * @remarks @a privacy_info will be automatically destroyed when the callback function returns. (Do not release @a privacy_info.)
+ * @param[in] privacy_info_h privacy info
+ * @param[in] user_data The user data passed from the foreach function
+ * @return @c true to continue with the next iteration of the loop, \n @c false to break out of the loop.
+ * @pre privacy_manager_foreach_all_privacy() will invoke this callback.
+ * @see privacy_manager_foreach_all_privacy()
+ */
+typedef bool (*privacy_manager_all_privacy_info_cb) (privacy_info_h privacy_info, void* user_data);
+
+/**
+ * @brief Called to get a package id and privacy enabled info once for each privacy ID.
+ * @remarks @a package_id will be automatically destroyed when the callback function returns. (Do not release @a package_id.)
+ * @param[in] package_id The package id which uses the specific privacy information.
+ * @param[in] is_enabled A Boolean value indicating whether the privacy setting of the package is enabled
+ * @param[in] user_data The user data passed from the foreach function
+ * @return @c true to continue with the next iteration of the loop, \n @c false to break out of the loop.
+ * @pre privacy_manager_foreach_package_list_by_privacy() will invoke this callback.
+ * @see privacy_manager_foreach_package_list_by_privacy()
+ */
+typedef bool (*privacy_manager_packages_by_privacy_cb) (const char *package_id, bool is_enabled, void* user_data);
+
+/**
  * @brief Retrieves privacy package list.
  * @param [in] callback The callback function to invoke
  * @param [in] user_data The user data to be passed to the callback function
@@ -111,6 +134,34 @@ EXPORT_API int privacy_manager_foreach_privacy_info(const char *package_id, priv
  * @retval #PRIVACY_MANAGER_ERROR_INVALID_PARAMETER invalid parameter
  */
 EXPORT_API int privacy_manager_set_package_privacy(const char *package_id, const char *privacy_id, bool enable);
+
+/**
+ * @brief Retrieves all privacy list.
+ * @param [in] callback The callback function to invoke
+ * @param [in] user_data The user data to be passed to the callback function
+ * @return 0 on success, otherwise a negative error value.
+ * @retval #PRIVACY_MANAGER_ERROR_NONE Successful
+ * @retval #PRIVACY_MANAGER_ERROR_IPC_FAILED IPC failed
+ * @retval #PRIVACY_MANAGER_ERROR_DB_FAILED DB operation failed
+ * @post	This function invokes privacy_manager_all_privacy_info_cb() repeatedly for each application context.
+ * @see privacy_manager_all_privacy_info_cb()
+ */
+EXPORT_API int privacy_manager_foreach_all_privacy(privacy_manager_all_privacy_info_cb callback, void* user_data);
+
+/**
+ * @brief Retrieves package list by the privacy id.
+ * @param [in] callback The callback function to invoke
+ * @param [in] user_data The user data to be passed to the callback function
+ * @return 0 on success, otherwise a negative error value.
+ * @retval #PRIVACY_MANAGER_ERROR_NONE Successful
+ * @retval #PRIVACY_MANAGER_ERROR_NO_DATA no package founded.
+ * @retval #PRIVACY_MANAGER_ERROR_IPC_FAILED IPC failed
+ * @retval #PRIVACY_MANAGER_ERROR_DB_FAILED DB operation failed
+ * @post	This function invokes privacy_manager_all_privacy_info_cb() repeatedly for each application context.
+ * @see privacy_manager_all_privacy_info_cb()
+ */
+EXPORT_API int privacy_manager_foreach_package_list_by_privacy(const char *privacy_id, privacy_manager_packages_by_privacy_cb callback, void* user_data);
+
 
 
 #ifdef __cplusplus

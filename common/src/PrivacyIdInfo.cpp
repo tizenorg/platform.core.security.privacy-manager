@@ -184,3 +184,24 @@ PrivacyIdInfo::getPrivacyIdListFromPrivilegeList(const std::list < std::string> 
 
 	return PRIV_MGR_ERROR_SUCCESS;
 }
+
+int
+PrivacyIdInfo::getAllPrivacyId(std::list < std::string >& privacyIdList)
+{
+	static const std::string sql("SELECT PRIVACY_ID from PrivacyInfo");
+
+	LOGI("enter");
+	
+	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
+	prepareDb(pDbHandler, sql.c_str(), pStmt);
+
+	int res;
+	while ( (res = sqlite3_step(pStmt.get())) == SQLITE_ROW )
+	{
+		const char* privacyId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
+		privacyIdList.push_back(std::string(privacyId));
+		LOGD(" privacy Id : %s", privacyId);
+	}
+
+	return PRIV_MGR_ERROR_SUCCESS;
+}

@@ -58,7 +58,7 @@ PrivacyDb::setPrivacySetting(const std::string pkgId, const std::string privacyI
 }
 
 int
-PrivacyDb::getPrivacyAppPackages(std::list <std::string>& list)
+PrivacyDb::getPrivacyAppPackages(std::list <std::string>& list) const
 {
 	LOGI("enter");
 
@@ -81,7 +81,7 @@ PrivacyDb::getPrivacyAppPackages(std::list <std::string>& list)
 }
 
 int
-PrivacyDb::getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair < std::string, bool > >& privacyInfoList)
+PrivacyDb::getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair < std::string, bool > >& privacyInfoList) const
 {
 	LOGI("enter");
 
@@ -186,7 +186,7 @@ PrivacyDb::removeAppPackagePrivacyInfo(const std::string pkgId)
 }
 
 int
-PrivacyDb::isUserPrompted(const std::string pkgId, bool& isPrompted)
+PrivacyDb::isUserPrompted(const std::string pkgId, bool& isPrompted) const
 {
 	LOGI("enter");
 
@@ -238,6 +238,38 @@ PrivacyDb::setUserPrompted(const std::string pkgId, bool prompted)
 
 	return 0;
 }
+
+int
+PrivacyDb::getAppPackagesbyPrivacyId(std::string privacyId, std::list < std::pair < std::string, bool > >& list) const
+{
+	LOGI("enter");
+
+	std::string sql = std::string("SELECT PKG_ID, IS_ENABLED from PrivacyInfo where PRIVACY_ID=?");
+
+	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	prepareDb(pDbHandler, sql.c_str(), pStmt);
+
+	LOGD("privacy id : %s", privacyId.c_str());
+	int res = sqlite3_bind_text(pStmt.get(), 1, privacyId.c_str(), -1, SQLITE_TRANSIENT);
+	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
+
+	while ( sqlite3_step(pStmt.get()) == SQLITE_ROW )
+	{
+		
+		const char* pPkgId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
+		bool isEnabled = sqlite3_column_int(pStmt.get(), 1) > 0 ? true : false;
+		LOGD("result : %s %d", pPkgId, isEnabled);
+		list.push_back( std::pair <std::string, bool >(std::string(pPkgId), isEnabled) );
+	}
+
+	
+
+
+	LOGI("leave %d", res);
+
+	return PRIV_MGR_ERROR_SUCCESS;
+}
+
 
 PrivacyDb::PrivacyDb(void)
 {

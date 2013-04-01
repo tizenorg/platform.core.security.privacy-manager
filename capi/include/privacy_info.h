@@ -86,6 +86,20 @@ EXPORT_API int privacy_info_get_privacy_description(privacy_info_h privacy_info,
  */
 EXPORT_API int privacy_info_is_enabled(privacy_info_h privacy_info, bool *enabled);
 
+/**
+ * @brief Creates and returns a copy of the given privacy info handle.
+ *
+ * @remarks A newly created service should be destroyed by calling privacy_info_destroy() if it is no longer needed.
+ *
+ * @param [out] clone If successful, a newly created privacy info handle will be returned.
+ * @param [in] privacy_info The privacy info handle
+ * @return 0 on success, otherwise a negative error value.
+ * @retval #PRIVACY_MANAGER_ERROR_NONE Successful
+ * @retval #PRIVACY_MANAGER_ERROR_INVALID_PARAMETER Invalid parameter
+ * @retval #PRIVACY_MANAGER_ERROR_OUT_OF_MEMORY Out of memory
+ * @see privacy_info_destroy()
+ */
+EXPORT_API int privacy_info_clone(privacy_info_h *clone, privacy_info_h privacy_info);
 
 #ifdef __cplusplus
 }

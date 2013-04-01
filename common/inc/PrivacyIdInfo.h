@@ -32,8 +32,8 @@ public:
 	static int initialize(void);
 	static int getPrivacyIdFromPrivilege(const std::string privilege, std::string& privacyId);
 	static int getPrivacyIdFromDeviceCap(const std::string deviceCap, std::string& privacyId);
-
 	static int getPrivacyIdListFromPrivilegeList(const std::list < std::string> privilegeList, std::list < std::string> & privacyIdList);
+	static int getAllPrivacyId(std::list < std::string >& privacyIdList);
 };
 
 #endif //_PRIVACY_ID_INFO_H_

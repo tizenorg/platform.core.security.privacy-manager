@@ -167,3 +167,9 @@ PrivacyManagerClient::setUserPrompted(const std::string pkgId, bool prompted)
 
 	return result;
 }
+
+int 
+PrivacyManagerClient::getAppPackagesbyPrivacyId(std::string privacyId, std::list < std::pair < std::string, bool > >& list)
+{
+	return PrivacyDb::getInstance()->getAppPackagesbyPrivacyId(privacyId, list);
+}

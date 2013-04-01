@@ -32,8 +32,6 @@
 #include "SocketConnection.h"
 
 const int SocketService::MAX_LISTEN = 5;
-const int SocketService::TIMEOUT_SEC = 0;
-const int SocketService::TIMEOUT_NSEC = 100000000;
 
 SocketService::SocketService(void)
 	: m_listenFd(-1)
@@ -153,7 +151,6 @@ SocketService::mainloop(void)
 	FD_ZERO(&allset);
 	FD_SET(m_listenFd, &allset);
 	FD_SET(signal_fd, &allset);
-	timespec timeout;
 	maxfd = (m_listenFd > signal_fd) ? (m_listenFd) : (signal_fd);
 	++maxfd;
 	//this will block SIGPIPE for this thread and every thread created in it
@@ -166,10 +163,8 @@ SocketService::mainloop(void)
 
 	while(1)
 	{
-		timeout.tv_sec = TIMEOUT_SEC;
-		timeout.tv_nsec = TIMEOUT_NSEC;
 		rset = allset;
-		if(pselect(maxfd, &rset, NULL, NULL, &timeout, NULL) == -1)
+		if(pselect(maxfd, &rset, NULL, NULL, NULL, NULL) == -1)
 		{
 			closeConnections();
 			LOGE("pselect()");

@@ -1,7 +1,7 @@
 Name:    privacy-manager-server
 Summary: Privacy Management
 Version: 0.0.2
-Release: 2
+Release: 3
 Group:   System/Libraries
 License: SAMSUNG
 Source0: %{name}-%{version}.tar.gz
@@ -112,8 +112,8 @@ install -D %{SOURCE4} %{buildroot}%{_datadir}/capi-security-privacy-manager.mani
 
 #mkdir -p %{buildroot}/etc/rc.d/rc3.d
 #mkdir -p %{buildroot}/etc/rc.d/rc5.d
-#ln -sf res/etc/rc.d/init.d/privacy-manager-server.sh %{buildroot}/etc/rc.d/rc3.d/S10privacy-manager-server.sh
-#ln -sf res/etc/rc.d/init.d/privacy-manager-server.sh %{buildroot}/etc/rc.d/rc5.d/S10privacy-manager-server.sh
+#ln -sf /etc/rc.d/init.d/privacy-manager-server.sh %{buildroot}/etc/rc.d/rc3.d/S10privacy-manager-server.sh
+#ln -sf /etc/rc.d/init.d/privacy-manager-server.sh %{buildroot}/etc/rc.d/rc5.d/S10privacy-manager-server.sh
 
 mkdir -p %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants
 install -m 0644 %{SOURCE3} %{buildroot}%{_libdir}/systemd/system/privacy-manager-server.service
