@@ -145,6 +145,7 @@ fi
 #/etc/rc.d/rc3.d/S10privacy-manager-server.sh
 #/etc/rc.d/rc5.d/S10privacy-manager-server.sh
 /usr/share/license/privacy-manager-server
+/opt/dbspace/.privacylist.db
 
 %files -n privacy-manager-server-devel
 %{_libdir}/pkgconfig/privacy-manager-server.pc
@@ -155,7 +156,6 @@ fi
 %{_libdir}/libprivacy-manager-client.so*
 /usr/share/license/privacy-manager-client
 /usr/etc/package-manager/parserlib/libprivileges.so
-/opt/dbspace/.privacylist.db
 
 %files -n privacy-manager-client-devel
 %defattr(-,root,root,-)

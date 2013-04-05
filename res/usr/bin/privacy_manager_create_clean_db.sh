@@ -26,6 +26,11 @@ do
     chown 0:0 /opt/dbspace/.$name.db-journal
     chmod 664 /opt/dbspace/.$name.db
     chmod 664 /opt/dbspace/.$name.db-journal
+    if [ -f /usr/lib/rpm-plugins/msm.so ]
+    then
+        chsmack -a "privacy-manager::db" /opt/dbspace/.$name.db
+        chsmack -a "privacy-manager::db" /opt/dbspace/.$name.db-journal
+    fi
 done
 
 
