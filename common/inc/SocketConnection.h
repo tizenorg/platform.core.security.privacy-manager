@@ -24,6 +24,7 @@
 #include <SocketStream.h>
 #include <PrivacyManagerTypes.h>
 #include <iostream>
+#include <Utils.h>
 /*
  * This class implements interface for generic read and write from given socket.
  * It does not maintain socket descriptor, so any connecting and disconnecting should be
@@ -44,199 +45,279 @@ public:
 	}
 
 	template<typename T, typename ...Args>
-	void read(T* out, const Args&... args )
+	int read(T* out, const Args&... args )
 	{
-		read(out);
-		read(args...);
+		int res = read(out);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "read : %d", res);
+		res = read(args...);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "read : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	template<typename T>
-	void read(T* out)
+	int read(T* out)
 	{
 		int length = 0;
-		int ret = m_socketStream.readStream(sizeof(length), &length);
-		char* pBuf = new char[length + 1];
-		m_socketStream.readStream(length, pBuf);
+		int res = m_socketStream.readStream(sizeof(length), &length);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "readStream : %d", res);
+		char* pBuf = new (std::nothrow) char[length + 1];
+		TryReturn(pBuf != NULL, PRIV_MGR_ERROR_OUT_OF_MEMORY, , "new : %d", PRIV_MGR_ERROR_OUT_OF_MEMORY);
+
+		res = m_socketStream.readStream(length, pBuf);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, delete[] pBuf, "readStream : %d", res);
+
 		pBuf[length] = 0;
 
 		out = T(pBuf);
 
 		delete[] pBuf;
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 	
-	void read(bool* pB)
-	{
-		
+	int read(bool* pB)
+	{		
 		int length = 0;
-		int ret = m_socketStream.readStream(sizeof(length), &length);
-		if (ret < 0)
-		{}
-		char* pBuf = new char[length + 1];
-		m_socketStream.readStream(length, pBuf);
+		int res = m_socketStream.readStream(sizeof(length), &length);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "readStream : %d", res);
+
+		char* pBuf = new (std::nothrow) char[length + 1];
+		TryReturn(pBuf != NULL, PRIV_MGR_ERROR_OUT_OF_MEMORY, , "new : %d", PRIV_MGR_ERROR_OUT_OF_MEMORY);
+
+		res = m_socketStream.readStream(length, pBuf);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, delete[] pBuf, "readStream : %d", res);
+
 		pBuf[length] = 0;
 
 		*pB = * reinterpret_cast <bool* > (pBuf);
 
 		delete[] pBuf;
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
-	void read(bool& b)
+	int read(bool& b)
 	{
-		read(&b);
+		return read(&b);
 	}
 	
-	void read(int& i)
+	int read(int& i)
 	{
-		read(&i);
+		return read(&i);
 	}
-	void read(int* pI)
+
+	int read(int* pI)
 	{
 		int length = 0;
-		int ret = m_socketStream.readStream(sizeof(length), &length);
-		if (ret < 0)
-		{}
-		char* pBuf = new char[length + 1];
-		m_socketStream.readStream(length, pBuf);
+		int res = m_socketStream.readStream(sizeof(length), &length);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "readStream : %d", res);
+
+		char* pBuf = new (std::nothrow) char[length + 1];
+		TryReturn(pBuf != NULL, PRIV_MGR_ERROR_OUT_OF_MEMORY, , "new : %d", PRIV_MGR_ERROR_OUT_OF_MEMORY);
+
+		res = m_socketStream.readStream(length, pBuf);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, delete[] pBuf, "readStream : %d", res);
+
 		pBuf[length] = 0;
 
 		*pI = * reinterpret_cast <int* > (pBuf);
 
 		delete[] pBuf;
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
-	void read(std::string* pStr)
+	int read(std::string* pStr)
 	{
 		int length = 0;
-		int ret = m_socketStream.readStream(sizeof(length), &length);
-		if (ret < 0)
-		{}
-		char* pBuf = new char[length + 1];
+		int res = m_socketStream.readStream(sizeof(length), &length);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "readStream : %d", res);
+
+		char* pBuf = new (std::nothrow) char[length + 1];
+		TryReturn(pBuf != NULL, PRIV_MGR_ERROR_OUT_OF_MEMORY, , "new : %d", PRIV_MGR_ERROR_OUT_OF_MEMORY);
+
 		m_socketStream.readStream(length, pBuf);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, delete[] pBuf, "readStream : %d", res);
+
 		pBuf[length] = 0;
 
 		*pStr = std::string(pBuf);
 		delete[] pBuf;
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 	
-	void read(std::string& str)
+	int read(std::string& str)
 	{
-		read(&str);
+		return read(&str);
 	}
 
 	template < typename T >
-	void read (std::list<T>& list) 
+	int  read (std::list<T>& list) 
 	{
 		int length;
-		read(length);
-		for (int i =0; i < length; ++i) 
+		int res = read(length);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "read : %d", res);
+
+		for (int i = 0; i < length; ++i) 
 		{
 			T obj;
-			read (obj);
+			res = read (obj);
+			TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "read : %d", res);
 			list.push_back(obj);
 		}
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	template < typename T >
-	void read (std::list<T>* pList) 
+	int read (std::list<T>* pList) 
 	{
-		read(*pList);
+		return read(*pList);
 	}
 
 	template < typename K, typename P >
 	void read (std::pair<K, P>& pair) 
 	{
-		read( pair.first);
-		read( pair.second);
+		int res = read( pair.first);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "read : %d", res);
+		res = read( pair.second);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "read : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	template < typename K, typename P >
-	void read (std::pair<K, P>* pPair) 
+	int read (std::pair<K, P>* pPair) 
 	{
-		read( *pPair);
+		return read( *pPair);
 	}
 
 	template<typename T, typename ...Args>
-	void write(const T& in, const Args&... args)
+	int write(const T& in, const Args&... args)
 	{
-		write(in);
-		write(args...);
+		int res = write(in);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "write : %d", res);
+		res = write(args...);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "write : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
-	void write(const std::string& in)
+	int write(const std::string& in)
 	{
 		int length = in.size();
-		m_socketStream.writeStream(sizeof(length), &length);
-		m_socketStream.writeStream(length, in.c_str());
+		int res = m_socketStream.writeStream(sizeof(length), &length);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "writeStream : %d", res);
+		res = m_socketStream.writeStream(length, in.c_str());
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "writeStream : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 	
-	void write(const unsigned int& in)
+	int write(const unsigned int& in)
 	{
 		int length = sizeof(in);
-		m_socketStream.writeStream(sizeof(length), &length);
-		m_socketStream.writeStream(length, &in);
+		int res = m_socketStream.writeStream(sizeof(length), &length);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "writeStream : %d", res);
+		res = m_socketStream.writeStream(length, &in);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "writeStream : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
-	void write(const int& in)
+	int write(const int& in)
 	{
 		int length = sizeof(in);
-		m_socketStream.writeStream(sizeof(length), &length);
-		m_socketStream.writeStream(length, &in);
+		int res = m_socketStream.writeStream(sizeof(length), &length);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "writeStream : %d", res);
+		res = m_socketStream.writeStream(length, &in);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "writeStream : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
-	void write(const bool& in)
+	int write(const bool& in)
 	{
 		int length = sizeof(in);
-		m_socketStream.writeStream(sizeof(length), &length);
-		m_socketStream.writeStream(length, &in);
+		int res = m_socketStream.writeStream(sizeof(length), &length);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "writeStream : %d", res);
+		res = m_socketStream.writeStream(length, &in);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "writeStream : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
-	void write(const char*& in)
+	int write(const char*& in)
 	{
 		int length = strlen(in);
-		m_socketStream.writeStream(sizeof(length), &length);
-		m_socketStream.writeStream(length, in);
+		int res = m_socketStream.writeStream(sizeof(length), &length);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "writeStream : %d", res);
+		LOGD(" write char : %s %d", in, length);
+		res = m_socketStream.writeStream(length, in);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "writeStream : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	template<typename T, typename ...Args>
-	void write(const T* in, const Args&... args)
+	int write(const T* in, const Args&... args)
 	{
-		write(in);
-		write(args...);
+		int res = write(in);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "write : %d", res);
+		res = write(args...);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "write : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	template<typename K, typename T>
-	void write(const std::pair<K, T> p)
+	int write(const std::pair<K, T> p)
 	{
-		write(p.first);
-		write(p.second);
+		int res = write(p.first);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "write : %d", res);
+		res = write(p.second);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "write : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	template<typename K, typename T>
-	void write(const std::pair<K, T&> p) 
+	int write(const std::pair<K, T&> p)
 	{
-		write(p.first);
-		write(p.second);
+		int res = write(p.first);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "write : %d", res);
+		res = write(p.second);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "write : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	template<typename K, typename T>
-	void write(const std::pair<K, T&>* pPair) 
+	int write(const std::pair<K, T&>* pPair) 
 	{
-		write(*pPair);
+		return write(*pPair);
 	}
 
 	template<typename T>
-	void write(const std::list <T> list) 
+	int write(const std::list <T> list) 
 	{
 		int length = list.size();
-		write(length);
-		for (typename std::list <T>::const_iterator iter = list.begin(); iter != list.end(); iter++)
-			write(*iter);
+		int res = write(length);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "write : %d", res);
+		for (typename std::list <T>::const_iterator iter = list.begin(); iter != list.end(); iter++) {
+			res = write(*iter);
+			TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "write : %d", res);
+		}
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	template<typename T>
-	void write(const std::list <T>* pList) 
+	int write(const std::list <T>* pList) 
 	{
-		write(*pList);
+		return write(*pList);
 	}
 
 

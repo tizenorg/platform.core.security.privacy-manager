@@ -113,8 +113,19 @@ int PKGMGR_PARSER_PLUGIN_UNINSTALL(xmlDocPtr docPtr, const char* packageId)
 {
 	LOGI("enter");
 
-	privacy_manager_client_uninstall_privacy(packageId);
+	int res = privacy_manager_client_uninstall_privacy_by_server(packageId);
+	if (res != PRIV_MGR_ERROR_SUCCESS)
+	{
+		LOGD("Failed to uninstall privacy in server: %d", res);
+		
+		res = privacy_manager_client_uninstall_privacy(packageId);
+		if (res != PRIV_MGR_ERROR_SUCCESS)
+		{
+			LOGD("Failed to uninstall privacy: %d", res);
+			return -EINVAL;
+		}
+	}
 
+	LOGI("leave");
 	return 0;
-	LOGI("leave");	
 }

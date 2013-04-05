@@ -25,6 +25,7 @@ static const std::string PRIVACY_INFO_DB_PATH("/opt/dbspace/.privacylist.db");
 static const std::string SERVER_ADDRESS ("/tmp/privacy_manager_server");
 static const std::string DBUS_PATH("/privacy_manager/dbus_notification");
 static const std::string DBUS_SIGNAL_INTERFACE("org.tizen.privacy_manager.signal");
-static const std::string DBUS_SIGNAL_NAME("privacy_setting_updated");
+static const std::string DBUS_SIGNAL_SETTING_CHANGED("privacy_setting_changed");
+static const std::string DBUS_SIGNAL_PKG_REMOVED("privacy_pkg_removed");
 
 #endif

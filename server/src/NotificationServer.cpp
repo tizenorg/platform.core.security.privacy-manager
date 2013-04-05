@@ -65,7 +65,7 @@ NotificationServer::initialize(void)
 }
 
 int
-NotificationServer::notify(const std::string pkgId, const std::string privacyId)
+NotificationServer::notifySettingChanged(const std::string pkgId, const std::string privacyId)
 {
 	LOGI("enter");
 
@@ -74,14 +74,44 @@ NotificationServer::notify(const std::string pkgId, const std::string privacyId)
 
 	char* pPkgId = const_cast <char*> (pkgId.c_str());
 	char* pPrivacyId = const_cast <char*> (privacyId.c_str());
-	LOGD("path: %s, inter: %s, name: %s", DBUS_PATH.c_str(), DBUS_SIGNAL_INTERFACE.c_str(), DBUS_SIGNAL_NAME.c_str());
-	DBusMessage* pMessage = dbus_message_new_signal(DBUS_PATH.c_str(), DBUS_SIGNAL_INTERFACE.c_str(), DBUS_SIGNAL_NAME.c_str());
+	LOGD("path: %s, inter: %s, name: %s", DBUS_PATH.c_str(), DBUS_SIGNAL_INTERFACE.c_str(), DBUS_SIGNAL_SETTING_CHANGED.c_str());
+	DBusMessage* pMessage = dbus_message_new_signal(DBUS_PATH.c_str(), DBUS_SIGNAL_INTERFACE.c_str(), DBUS_SIGNAL_SETTING_CHANGED.c_str());
 	TryReturn(pMessage != NULL, PRIV_MGR_ERROR_IPC_ERROR, , "dbus_message_new_signal");
 
 	dbus_bool_t r;
 	r = dbus_message_append_args(pMessage,
 		DBUS_TYPE_STRING, &pPkgId,
 		DBUS_TYPE_STRING, &pPrivacyId,
+		DBUS_TYPE_INVALID);
+	TryReturn(r, PRIV_MGR_ERROR_IPC_ERROR, , "dbus_message_append_args");
+
+	r = dbus_connection_send(m_pDBusConnection, pMessage, NULL);
+	TryReturn(r, PRIV_MGR_ERROR_IPC_ERROR, dbus_message_unref(pMessage);, "dbus_connection_send");
+
+	dbus_connection_flush(m_pDBusConnection);
+	dbus_message_unref(pMessage);
+
+	LOGI("leave");
+
+	return PRIV_MGR_ERROR_SUCCESS;
+}
+
+int
+NotificationServer::notifyPkgRemoved(const std::string pkgId)
+{
+	LOGI("enter");
+
+	if (!m_initialized)
+		return PRIV_MGR_ERROR_INVALID_STATE;
+
+	char* pPkgId = const_cast <char*> (pkgId.c_str());
+	LOGD("path: %s, inter: %s, name: %s", DBUS_PATH.c_str(), DBUS_SIGNAL_INTERFACE.c_str(), DBUS_SIGNAL_PKG_REMOVED.c_str());
+	DBusMessage* pMessage = dbus_message_new_signal(DBUS_PATH.c_str(), DBUS_SIGNAL_INTERFACE.c_str(), DBUS_SIGNAL_PKG_REMOVED.c_str());
+	TryReturn(pMessage != NULL, PRIV_MGR_ERROR_IPC_ERROR, , "dbus_message_new_signal");
+
+	dbus_bool_t r;
+	r = dbus_message_append_args(pMessage,
+		DBUS_TYPE_STRING, &pPkgId,
 		DBUS_TYPE_INVALID);
 	TryReturn(r, PRIV_MGR_ERROR_IPC_ERROR, , "dbus_message_append_args");
 

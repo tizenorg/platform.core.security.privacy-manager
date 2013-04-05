@@ -240,7 +240,12 @@ SocketService::connectionService(int fd)
 	SocketConnection connector = SocketConnection(fd);
 	std::string interfaceName, methodName;
 
-	connector.read(&interfaceName, &methodName);
+	int res = connector.read(&interfaceName, &methodName);
+	if (res != PRIV_MGR_ERROR_SUCCESS)
+	{
+		LOGE("read : %d", res);
+		return res;
+	}
 
 	LOGD("Got interface : %s", interfaceName.c_str());
 	LOGD("Got method : %s",  methodName.c_str());

@@ -48,7 +48,7 @@ int SocketClient::connect()
 {
 	struct sockaddr_un remote;
 	m_socketFd = socket(AF_UNIX, SOCK_STREAM,0);
-	TryReturn( m_socketFd != -1, -1, , "socket : %s", strerror(errno));
+	TryReturn( m_socketFd != -1, PRIV_MGR_ERROR_IPC_ERROR, , "socket : %s", strerror(errno));
 
 	int res;
 	//socket needs to be nonblocking, because read can block after select
@@ -56,19 +56,19 @@ int SocketClient::connect()
 	if ( (flags = fcntl(m_socketFd, F_GETFL, 0)) == -1 )
 		flags = 0;
 	res = fcntl(m_socketFd, F_SETFL, flags | O_NONBLOCK);
-	TryReturn( m_socketFd != -1, -1, , "fcntl : %s", strerror(errno));
+	TryReturn( m_socketFd != -1, PRIV_MGR_ERROR_IPC_ERROR, , "fcntl : %s", strerror(errno));
 
 	bzero(&remote, sizeof(remote));
 	remote.sun_family = AF_UNIX;
 	strcpy(remote.sun_path, m_serverAddress.c_str());
 	res = ::connect(m_socketFd, (struct sockaddr *)&remote, SUN_LEN(&remote));
-	TryReturn( res != -1, -1, , "connect : %s", strerror(errno));
+	TryReturn( res != -1, PRIV_MGR_ERROR_IPC_ERROR, , "connect : %s", strerror(errno));
 
 	m_socketConnector.reset(new SocketConnection(m_socketFd));
 	
 	LOGI("Client connected");
 
-	return 0;
+	return PRIV_MGR_ERROR_SUCCESS;
 }
 
 int SocketClient::disconnect()
@@ -78,5 +78,5 @@ int SocketClient::disconnect()
 	close(m_socketFd);
 	LOGI("Client disconnected");
 
-	return 0;
+	return PRIV_MGR_ERROR_SUCCESS;
 }

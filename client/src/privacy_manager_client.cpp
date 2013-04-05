@@ -55,7 +55,7 @@ int privacy_manager_client_install_privacy(const char *package_id, const char** 
 	while (*privacy_list[0] != '\0')
 		privacyList.push_back(std::string(*privacy_list++));
 
-	int retval = pInst->addAppPackagePrivacyInfo(std::string(package_id), privacyList);
+	int retval = pInst->addAppPackagePrivacyInfo(std::string(package_id), privacyList, false);
 
 	LOGI("leave");
 
@@ -66,7 +66,14 @@ int privacy_manager_client_uninstall_privacy(const char *package_id)
 {
 	if (package_id == NULL)
 		return PRIV_MGR_ERROR_INVALID_PARAMETER;
-	return PrivacyManagerClient::getInstance()->removeAppPackagePrivacyInfo(std::string(package_id));
+	return PrivacyManagerClient::getInstance()->removeAppPackagePrivacyInfo(std::string(package_id), false);
+}
+
+int privacy_manager_client_uninstall_privacy_by_server(const char *package_id)
+{
+	if (package_id == NULL)
+		return PRIV_MGR_ERROR_INVALID_PARAMETER;
+	return PrivacyManagerClient::getInstance()->removeAppPackagePrivacyInfo(std::string(package_id), true);
 }
 
 int privacy_manager_client_foreach_privacy_packages(privacy_manager_client_privacy_packages_cb callback, void *user_data)

@@ -55,7 +55,7 @@ PrivacyInfoService::setPrivacySetting(SocketConnection* pConnector)
 
 	std::string pkgId;
 	std::string privacyId;
-	bool enabled;
+	bool enabled = false;
 	pConnector->read(&pkgId, &privacyId, &enabled);
 
 	PrivacyManagerServer* pPrivacyManagerServer = PrivacyManagerServer::getInstance();
@@ -121,7 +121,7 @@ PrivacyInfoService::setUserPrompted(SocketConnection* pConnector)
 	LOGI("enter");
 
 	std::string pkgId;
-	bool prompted;
+	bool prompted = false;
 
 	pConnector->read(&pkgId, &prompted);
 	PrivacyManagerServer* pPrivacyManagerServer = PrivacyManagerServer::getInstance();

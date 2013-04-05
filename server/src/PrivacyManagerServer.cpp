@@ -33,11 +33,13 @@ PrivacyManagerServer::createDB(void)
 int
 PrivacyManagerServer::setPrivacySetting(const std::string pkgId, const std::string privacyId, bool enabled)
 {
+	LOGD("Set Privacy: %s, %s, %d", pkgId.c_str(), privacyId.c_str(), enabled);
+
 	int res = PrivacyDb::getInstance()->setPrivacySetting(pkgId, privacyId, enabled);
 	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "privacyDb::setPrivacySetting : %d", res);
 
-	res = m_notificationServer.notify(pkgId, privacyId);
-	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "NotificationServer::notify : %d", res);
+	res = m_notificationServer.notifySettingChanged(pkgId, privacyId);
+	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "NotificationServer::notifySettingChanged : %d", res);
 
 	return res;
 }
@@ -64,7 +66,13 @@ PrivacyManagerServer::addAppPackagePrivacyInfo(const std::string pkgId, const st
 int
 PrivacyManagerServer::removeAppPackagePrivacyInfo(const std::string pkgId)
 {
-	return PrivacyDb::getInstance()->removeAppPackagePrivacyInfo(pkgId);
+	int res = PrivacyDb::getInstance()->removeAppPackagePrivacyInfo(pkgId);
+	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "privacyDb::removeAppPackagePrivacyInfo : %d", res);
+
+	res = m_notificationServer.notifyPkgRemoved(pkgId);
+	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "NotificationServer::notifyPkgRemoved : %d", res);
+
+	return res;
 }
 
 int

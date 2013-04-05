@@ -150,7 +150,7 @@ PrivacyChecker::handleNotification(DBusConnection* connection, DBusMessage* mess
 
 	LOGI("enter");
 
-	if (dbus_message_is_signal(message, DBUS_SIGNAL_INTERFACE.c_str(), DBUS_SIGNAL_NAME.c_str()))
+	if (dbus_message_is_signal(message, DBUS_SIGNAL_INTERFACE.c_str(), DBUS_SIGNAL_SETTING_CHANGED.c_str()))
 	{
 		r = dbus_message_get_args(message, &error,
 			DBUS_TYPE_STRING, &pPkgId,
@@ -175,12 +175,30 @@ PrivacyChecker::handleNotification(DBusConnection* connection, DBusMessage* mess
 		}
 		
 	}
-	else
+	else if (dbus_message_is_signal(message, DBUS_SIGNAL_INTERFACE.c_str(), DBUS_SIGNAL_PKG_REMOVED.c_str()))
 	{
-		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+		r = dbus_message_get_args(message, &error,
+			DBUS_TYPE_STRING, &pPkgId,
+			DBUS_TYPE_INVALID);
+		TryReturn(r, DBUS_HANDLER_RESULT_NOT_YET_HANDLED, , "Fail to get data : %s", error.message);
+
+		std::lock_guard < std::mutex > guard(m_cacheMutex);
+
+		std::map < std::string, std::map < std::string, bool > > :: iterator iter = m_privacyInfoCache.find(std::string(pPkgId));
+		if (iter != m_privacyInfoCache.end())
+		{
+			LOGI("cache for pkg : %d is in cache", pPkgId);
+			m_privacyInfoCache.erase(iter);
+		}
 	}
+//	else
+//	{
+//		return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+//	}
 	
-	return DBUS_HANDLER_RESULT_HANDLED;
+
+	// This event is not only for specific handler. All handlers of daemons should be check it and handle it.
+	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
 int

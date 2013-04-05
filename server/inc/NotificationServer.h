@@ -34,7 +34,8 @@ public:
 	NotificationServer(void);
 	~NotificationServer(void);
 	int initialize(void);
-	int notify(const std::string pkgId, const std::string privacyId);
+	int notifySettingChanged(const std::string pkgId, const std::string privacyId);
+	int notifyPkgRemoved(const std::string pkgId);
 };
 
 

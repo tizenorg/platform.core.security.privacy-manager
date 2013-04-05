@@ -58,84 +58,89 @@ public:
 	int connect();
 	int disconnect();
 
-	void call(std::string methodName){
-		make_call(m_interfaceName);
-		make_call(methodName);
+	int call(std::string methodName)
+	{
+		int res = make_call(m_interfaceName);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "make_call : %d", res);
+
+		res = make_call(methodName);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "make_call : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	template<typename ...Args>
-	void call(std::string methodName, const Args&... args){
-		make_call(m_interfaceName);
-		make_call(methodName);
-		make_call(args...);
+	int call(std::string methodName, const Args&... args)
+	{
+		int res = make_call(m_interfaceName);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "make_call : %d", res);
+		res = make_call(methodName);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "make_call : %d", res);
+		res = make_call(args...);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "make_call : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	template<typename T>
-	void read(T* outvalue)
+	int read(T* outvalue)
 	{
-		 m_socketConnector->read(outvalue);
+		return m_socketConnector->read(outvalue);
 	}
 private:
 	template<typename T, typename ...Args>
-	void make_call(const T& invalue, const Args&... args)
+	int make_call(const T& invalue, const Args&... args)
 	{
-		make_call(invalue);
-		make_call(args...);
+		int res = make_call(invalue);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "make_call : %d", res);
+		res = make_call(args...);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "make_call : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	template<typename T>
-	void make_call(const T& invalue)
+	int make_call(const T& invalue)
 	{
-//		Try {
-			m_socketConnector->write(invalue);
- //	   }
-  //	  Catch (SocketConnection::Exception::SocketConnectionException){
- //		   LogError("Socket connection write error");
-  //		  ReThrowMsg(Exception::SocketClientException,"Socket connection write error");
- //	   }
+		return m_socketConnector->write(invalue);
 	}
 
 	template<typename T, typename ...Args>
-	void make_call(const T* invalue, const Args&... args)
+	int make_call(const T* invalue, const Args&... args)
 	{
-		make_call(invalue);
-		make_call(args...);
+		int res = make_call(invalue);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "make_call : %d", res);
+		res = make_call(args...);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "make_call : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	template<typename T>
-	void make_call(const T* invalue)
+	int make_call(const T* invalue)
 	{
-//		Try {
-			m_socketConnector->write(invalue);
-//		}
-//	   Catch (SocketConnection::Exception::SocketConnectionException){
-//			LogError("Socket connection write error");
-//		   ReThrowMsg(Exception::SocketClientException,"Socket connection write error");
-//		}
+		return m_socketConnector->write(invalue);
 	}
 
 	template<typename T, typename ...Args>
-	void make_call(T * outvalue, const Args&... args)
+	int make_call(T * outvalue, const Args&... args)
 	{
-		make_call(outvalue);
-		make_call(args...);
+		int res = make_call(outvalue);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "make_call : %d", res);
+		res = make_call(args...);
+		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "make_call : %d", res);
+
+		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
 	template<typename T>
-	void make_call(T* outvalue)
+	int make_call(T* outvalue)
 	{
-//		Try {
-			m_socketConnector->read(outvalue);
-//		}
-//		Catch (SocketConnection::Exception::SocketConnectionException){
-//			LogError("Socket connection read error");
-//			ReThrowMsg(Exception::SocketClientException,"Socket connection read error");
-//		}
-   }
+		return m_socketConnector->read(outvalue);
+    }
 
 
 private:
-	//int throwWithErrnoMessage(const std::string& specificInfo);
 	std::string m_serverAddress;
 	std::string m_interfaceName;
 	std::unique_ptr<SocketConnection> m_socketConnector;
