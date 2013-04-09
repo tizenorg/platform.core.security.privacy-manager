@@ -33,6 +33,8 @@ privacy-manager server devel
 
 %package -n privacy-manager-client
 summary: privacy-manager client
+Version: 0.0.2
+Release: 3
 Group: Development/Libraries
 Requires: privacy-manager-server = %{version}-%{release}
 
@@ -41,6 +43,8 @@ privacy-manager client
 
 %package -n privacy-manager-client-devel
 Summary:    privacy-manager client devel
+Version: 0.0.2
+Release: 3
 Group:      Development/Libraries
 BuildRequires:  pkgconfig(libxml-2.0)
 Requires:   privacy-manager-client = %{version}-%{release}
@@ -76,16 +80,21 @@ The Privacy Manager API provides functions to get/set information about privacy 
 
 %build
 #%{!?build_type:%define build_type "Release"}
+
 echo cmake . -DPREFIX=%{_prefix} \
         -DEXEC_PREFIX=%{_exec_prefix} \
         -DLIBDIR=%{_libdir} \
         -DINCLUDEDIR=%{_includedir} \
-        -DCMAKE_BUILD_TYPE=%{build_type}
+        -DCMAKE_BUILD_TYPE=%{build_type} \
+        -DVERSION=%{version} \
+        -DDPL_LOG="ON" 
 cmake . -DPREFIX=%{_prefix} \
         -DEXEC_PREFIX=%{_exec_prefix} \
         -DLIBDIR=%{_libdir} \
         -DINCLUDEDIR=%{_includedir} \
-        -DCMAKE_BUILD_TYPE=%{build_type}
+        -DCMAKE_BUILD_TYPE=%{build_type} \
+        -DVERSION=%{version} \
+        -DDPL_LOG="ON" 
 make %{?jobs:-j%jobs}
 
 %install

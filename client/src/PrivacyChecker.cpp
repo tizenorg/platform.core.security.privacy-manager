@@ -264,7 +264,7 @@ PrivacyChecker::check(const std::string pkgId, const std::string privacyId)
 	{
 		std::map < std::string, bool > pkgCacheMap;
 		res = updateCache(pkgId, pkgCacheMap);
-		TryReturn( res == PRIV_MGR_ERROR_SUCCESS, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
+		TryReturn( res == PRIV_MGR_ERROR_SUCCESS, PRIV_MGR_ERROR_DB_ERROR, , "updateCache : %d", res);
 
 		m_privacyInfoCache.insert( std::map < std::string, std::map < std::string, bool > >::value_type(std::string(pkgId), pkgCacheMap));
 		iter = m_privacyInfoCache.find(pkgId);

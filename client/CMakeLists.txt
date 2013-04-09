@@ -6,10 +6,6 @@ SET(PREFIX ${CMAKE_INSTALL_PREFIX})
 SET(EXEC_PREFIX "\${prefix}")
 SET(LIBDIR "\${prefix}/lib")
 SET(INCLUDEDIR "\${prefix}/include")
-SET(VERSION 0.0)
-
-SET(VERSION_MAJOR 0)
-SET(VERSION "${VERSION_MAJOR}.0.1")
 
 INCLUDE(FindPkgConfig)
 pkg_check_modules(pkgs REQUIRED dlog sqlite3 dbus-1 dbus-glib-1)
@@ -72,7 +68,7 @@ ADD_DEFINITIONS("-DLOG_TAG=\"PRIVACY-MANAGER-CLIENT\"")
 ADD_LIBRARY(privacy-manager-client SHARED ${PRIVACY_MANAGER_CLIENT_SOURCES})
 TARGET_LINK_LIBRARIES(privacy-manager-client ${pkgs_LDFLAGS} ${pkgs_LIBRARIES})
 SET_TARGET_PROPERTIES(privacy-manager-client PROPERTIES COMPILE_FLAGS "${PRIVACY_MANAGER_CLIENT_CFLAGS}")
-SET_TARGET_PROPERTIES(privacy-manager-client PROPERTIES SOVERSION ${VERSION_MAJOR})
+SET_TARGET_PROPERTIES(privacy-manager-client PROPERTIES SOVERSION ${API_VERSION})
 SET_TARGET_PROPERTIES(privacy-manager-client PROPERTIES VERSION ${VERSION})
 ###################################################################################################
 
