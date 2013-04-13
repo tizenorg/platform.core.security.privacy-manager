@@ -31,6 +31,8 @@ private:
 private:
 	void createDB(void);
 	
+	bool isFilteredPackage(const std::string pkgId) const;
+	
 	PrivacyDb(void);
 
 	~PrivacyDb(void);

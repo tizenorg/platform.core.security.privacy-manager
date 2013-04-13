@@ -8,7 +8,7 @@ SET(LIBDIR "\${prefix}/lib")
 SET(INCLUDEDIR "\${prefix}/include")
 
 INCLUDE(FindPkgConfig)
-pkg_check_modules(pkgs REQUIRED dlog sqlite3 dbus-1 dbus-glib-1)
+pkg_check_modules(privacy-manager-client REQUIRED dlog sqlite3 dbus-1 dbus-glib-1 db-util pkgmgr-info)
 
 FOREACH(flag ${pkgs_CFLAGS})
 	SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} ${flag}")
@@ -27,10 +27,10 @@ SET(client_src_dir "${CMAKE_SOURCE_DIR}/client/src")
 SET(client_include_dir "${CMAKE_SOURCE_DIR}/client/inc/")
 SET(common_src_dir "${CMAKE_SOURCE_DIR}/common/src/")
 SET(common_include_dir "${CMAKE_SOURCE_DIR}/common/inc/")
-SET(lib_include_dir 
-	"/usr/include/dbus-1.0"
-	"/usr/include/aul"
-)
+#SET(lib_include_dir 
+#	"/usr/include/dbus-1.0"
+#	"/usr/include/aul"
+#)
 
 ## Additional flag
 ADD_DEFINITIONS("-fvisibility=hidden")

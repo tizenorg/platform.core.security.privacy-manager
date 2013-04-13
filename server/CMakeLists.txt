@@ -8,7 +8,7 @@ SET(LIBDIR "\${prefix}/lib")
 SET(INCLUDEDIR "\${prefix}/include")
 
 INCLUDE(FindPkgConfig)
-pkg_check_modules(pkgs REQUIRED dlog sqlite3 dbus-1 dbus-glib-1)
+pkg_check_modules(pkgs REQUIRED dlog sqlite3 dbus-1 dbus-glib-1 db-util pkgmgr-info)
 
 FOREACH(flag ${pkgs_CFLAGS})
 	SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} ${flag}")

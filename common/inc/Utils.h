@@ -24,6 +24,7 @@
 #include <sqlite3.h>
 #include <memory>
 #include <string>
+#include <db-util.h>
 
 #define	TryCatchLogReturn(condition, expr, r, logFormat)	if (!(condition)) { \
 		LOGE(logFormat); \
@@ -46,22 +47,21 @@
 	} else {;}
 
 auto StmtDeleter = [&](sqlite3_stmt* pPtr) { /*LOGI("sqlite3_finalize");*/ sqlite3_reset (pPtr); sqlite3_finalize(pPtr); };
-auto DbDeleter = [&](sqlite3* pPtr) { /*LOGI("sqlite3_close");*/ sqlite3_close(pPtr); };
+auto DbDeleter = [&](sqlite3* pPtr) { /*LOGI("sqlite3_close");*/ /*sqlite3_close(pPtr);*/ db_util_close(pPtr); };
 
 #define setStmtToUniquePtr(x, y)		std::unique_ptr < sqlite3_stmt, decltype(StmtDeleter) > x (y, StmtDeleter);
 #define setDbToUniquePtr(x, y)			std::unique_ptr < sqlite3, decltype(DbDeleter) > x (y, DbDeleter);
 
 #define openDb(dbpath, pHandler, mode)	sqlite3* pHandler##Temp = NULL;\
 	{\
-		/*LOGI("sqlite3_open_v2");*/\
-		int res = sqlite3_open_v2(dbpath, &pHandler##Temp, mode , NULL);\
-		TryCatchResLogReturn( res == SQLITE_OK, , PRIV_MGR_ERROR_DB_ERROR, "sqlite3_open : %d", res);\
+		/*int res = sqlite3_open_v2(dbpath, &pHandler##Temp, mode , NULL);*/\
+		int res = db_util_open_with_options(dbpath, &pHandler##Temp, mode, NULL);\
+		TryCatchResLogReturn( res == SQLITE_OK, , PRIV_MGR_ERROR_DB_ERROR, "db_util_open_with_options : %d", res);\
 	}\
 	setDbToUniquePtr(pHandler, pHandler##Temp);\
 	
 #define prepareDb(pHandler, sql, pStmt)	sqlite3_stmt* pStmt##Temp;\
 	{\
-		/*LOGI("sqlite3_prepare_v2");*/\
 		int res = sqlite3_prepare_v2(pHandler.get(), sql, -1, & pStmt##Temp, NULL);\
 		TryCatchResLogReturn( res == SQLITE_OK, , PRIV_MGR_ERROR_DB_ERROR, "sqlite3_prepare_v2 : %d", res);\
 	}\

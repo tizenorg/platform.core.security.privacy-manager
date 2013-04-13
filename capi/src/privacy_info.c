@@ -111,7 +111,10 @@ int privacy_info_create(const char *privacy_id, privacy_info_h *privacy_info)
 	privacy_info_h privacy_info_temp = NULL;
 	privacy_info_temp = (struct privacy_info_s*) calloc(1, sizeof(struct privacy_info_s));
 	if (privacy_info_temp == NULL)
+	{
+		privacy_info_client_s_destroy(privacy_info_client);
 		return PRIVACY_MANAGER_ERROR_OUT_OF_MEMORY;
+	}
 	
 	privacy_info_temp->privacy_info_client = privacy_info_client;
 

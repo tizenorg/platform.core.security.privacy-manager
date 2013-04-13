@@ -20,6 +20,7 @@
 #include <PrivacyDb.h>
 #include <PrivacyManagerTypes.h>
 #include <sqlite3.h>
+#include <pkgmgr-info.h>
 
 std::mutex PrivacyDb::m_singletonMutex;
 PrivacyDb* PrivacyDb::m_pInstance = NULL;
@@ -28,6 +29,22 @@ void
 PrivacyDb::createDB(void)
 {
 
+}
+
+bool PrivacyDb::isFilteredPackage(const std::string pkgId) const
+{
+	pkgmgrinfo_pkginfo_h handle;
+
+	int res = pkgmgrinfo_pkginfo_get_pkginfo(pkgId.c_str(), &handle);
+
+	if (res != PMINFO_R_OK)
+		return false;
+
+	bool preloaded = false;
+	res = pkgmgrinfo_pkginfo_is_preload(handle, &preloaded);
+	pkgmgrinfo_pkginfo_destroy_pkginfo(handle);
+
+	return preloaded;
 }
 
 int
@@ -71,7 +88,14 @@ PrivacyDb::getPrivacyAppPackages(std::list <std::string>& list) const
 	{
 		const char* pValue =  reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
 
-		LOGD("AppId found : %s ", pValue);
+		LOGD("PkgId found : %s ", pValue);
+		std::string pkgId = std::string(pValue);
+
+		if (isFilteredPackage(pkgId))
+		{
+			LOGD("%s is Filtered", pValue);
+			continue;
+		}
 		list.push_back(std::string(pValue));
 	}
 
@@ -194,6 +218,12 @@ PrivacyDb::isUserPrompted(const std::string pkgId, bool& isPrompted) const
 
 	isPrompted = true;
 
+	if (isFilteredPackage(pkgId))
+	{
+		LOGD("%s is Filtered", pkgId.c_str());
+		return 0;
+	}
+
 	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, query.c_str(), pStmt);
 
@@ -262,14 +292,10 @@ PrivacyDb::getAppPackagesbyPrivacyId(std::string privacyId, std::list < std::pai
 		list.push_back( std::pair <std::string, bool >(std::string(pPkgId), isEnabled) );
 	}
 
-	
-
-
 	LOGI("leave %d", res);
 
 	return PRIV_MGR_ERROR_SUCCESS;
 }
-
 
 PrivacyDb::PrivacyDb(void)
 {

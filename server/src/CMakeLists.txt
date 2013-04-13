@@ -14,7 +14,7 @@ SET(VERSION "${VERSION_MAJOR}.0.1")
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/include)
 
 INCLUDE(FindPkgConfig)
-pkg_check_modules(pkgs REQUIRED dlog)
+pkg_check_modules(pkgs REQUIRED dlog pkgmgr-info)
 
 FOREACH(flag ${pkgs_CFLAGS})
 	SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} ${flag}")

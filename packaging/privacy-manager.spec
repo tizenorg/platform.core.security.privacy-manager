@@ -1,7 +1,7 @@
 Name:    privacy-manager-server
 Summary: Privacy Management
 Version: 0.0.2
-Release: 3
+Release: 4
 Group:   System/Libraries
 License: SAMSUNG
 Source0: %{name}-%{version}.tar.gz
@@ -16,6 +16,9 @@ BuildRequires: pkgconfig(sqlite3)
 BuildRequires: pkgconfig(capi-base-common)
 BuildRequires: pkgconfig(dbus-1)
 BuildRequires: pkgconfig(dbus-glib-1)
+BuildRequires: pkgconfig(db-util)
+BuildRequires: pkgconfig(pkgmgr-info)
+BuildRequires: gettext-tools
 
 Requires(post):   /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
