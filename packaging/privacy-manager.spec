@@ -9,6 +9,7 @@ Source1: privacy-manager-server.manifest
 Source2: privacy-manager-client.manifest
 Source3: privacy-manager-server.service
 Source4: capi-security-privacy-manager.manifest
+Source5: tizenprv00.privacy-popup.manifest
 BuildRequires: cmake
 BuildRequires: pkgconfig(dlog)
 BuildRequires: pkgconfig(glib-2.0)
@@ -78,6 +79,35 @@ Requires: privacy-manager-client = %{version}-%{release}
 %description -n capi-security-privacy-manager-devel
 The Privacy Manager API provides functions to get/set information about privacy information of installed packages.(DEV)
 
+%package -n tizenprv00.privacy-popup
+Summary:  Privacy Popup
+Group:    TO_BE/FILLED_IN
+Requires(post):   /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+BuildRequires: cmake
+BuildRequires: gettext-tools
+BuildRequires: edje-tools
+BuildRequires: pkgconfig(aul)
+BuildRequires: pkgconfig(dlog)
+BuildRequires: pkgconfig(ail)
+BuildRequires: pkgconfig(appcore-efl)
+BuildRequires: pkgconfig(capi-appfw-application)
+BuildRequires: pkgconfig(pkgmgr-info)
+BuildRequires: pkgconfig(dlog)
+BuildRequires: pkgconfig(edje)
+BuildRequires: pkgconfig(eina)
+BuildRequires: pkgconfig(elementary)
+BuildRequires: pkgconfig(evas)
+BuildRequires: pkgconfig(glib-2.0)
+BuildRequires: pkgconfig(ui-gadget-1)
+BuildRequires: pkgconfig(icu-i18n)
+BuildRequires: pkgconfig(bundle)
+BuildRequires: pkgconfig(glib-2.0)
+BuildRequires: pkgconfig(privacy-manager-client)
+
+%description -n tizenprv00.privacy-popup
+The Privacy popup provides UI to set privacy information of application.
+
 %prep
 %setup -q
 
@@ -121,6 +151,9 @@ install -D %{SOURCE1} %{buildroot}%{_datadir}/privacy-manager-server.manifest
 
 %make_install -n capi-security-privacy-manager
 install -D %{SOURCE4} %{buildroot}%{_datadir}/capi-security-privacy-manager.manifest
+
+%make_install -n privacy-manager-privacy-popup
+install -D %{SOURCE5} %{buildroot}%{_datadir}/tizenprv00.privacy-popup.manifest
 
 #mkdir -p %{buildroot}/etc/rc.d/rc3.d
 #mkdir -p %{buildroot}/etc/rc.d/rc5.d
@@ -182,3 +215,10 @@ fi
 %{_includedir}/privacymgr/*.h
 %{_libdir}/libcapi-security-privacy-manager.so
 %{_libdir}/pkgconfig/capi-security-privacy-manager.pc
+
+%files -n tizenprv00.privacy-popup
+%manifest %{_datadir}/tizenprv00.privacy-popup.manifest
+%defattr(-,root,root,-)
+/usr/bin/tizenprv00.privacy-popup
+/usr/share/packages/tizenprv00.privacy-popup.xml
+#/etc/smack/accesses2.d/tizenprv00.privacy-popup.rule

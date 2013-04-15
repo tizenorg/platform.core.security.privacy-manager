@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://tizen.org/ns/packages" package="tizenprv00.privacy-popup" version="0.1.0" install-location="internal-only">
+	<label>privacy-popup</label>
+	<author email="jc815.lee@samsung.com" href="www.samsung.com">Jaechul Lee</author>
+	<description>privacy popup</description>
+	<ui-application appid="tizenprv00.privacy-popup" exec="/usr/bin/tizenprv00.privacy-popup" nodisplay="true" multiple="false" type="capp" taskmanage="false">
+		<label>privacy-popup</label>
+	</ui-application>
+</manifest>
