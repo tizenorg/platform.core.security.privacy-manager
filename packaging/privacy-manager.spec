@@ -1,7 +1,7 @@
 Name:    privacy-manager-server
 Summary: Privacy Management
-Version: 0.0.2
-Release: 4
+Version: 0.0.3
+Release: 0
 Group:   System/Libraries
 License: SAMSUNG
 Source0: %{name}-%{version}.tar.gz
