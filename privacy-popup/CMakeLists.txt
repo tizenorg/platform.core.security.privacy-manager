@@ -1,6 +1,5 @@
 INCLUDE(FindPkgConfig)
-pkg_check_modules(privacy-popup-ug-test_pkgs
-#pkg_check_modules(privacy-popup_pkgs
+pkg_check_modules(privacy-popup_pkgs
     REQUIRED
     elementary
     evas
@@ -11,17 +10,15 @@ pkg_check_modules(privacy-popup-ug-test_pkgs
 	appcore-efl
 )
 SET (this_target tizenprv00.privacy-popup)
-#SET (this_target privacy-manager-privacy-popup)
 
 SET(SRCS
     privacy-popup.c
 )
 
 #SET(INCLUDEDIR "\${prefix}/include")
-#INCLUDE_DIRECTORIES(${privacy-popup_pkgs_INCLUDE_DIRS})
-INCLUDE_DIRECTORIES(${privacy-popup-ug-test_pkgs_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${privacy-popup_pkgs_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/inc)
-INCLUDE_DIRECTORIES(${ug-privacy-popup-ug-efl_pkgs_INCLUDE_DIRS} /usr/include/privacy_manager)
+INCLUDE_DIRECTORIES(/usr/include/privacy_manager)
 
 
 FIND_PROGRAM(UNAME NAMES uname)
@@ -44,15 +41,15 @@ SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed")
 ADD_EXECUTABLE(${this_target} ${SRCS})
 
 #TARGET_LINK_LIBRARIES(${this_target} --as-needed -pie)
-#TARGET_LINK_LIBRARIES(${this_target} ${privacy-popup_pkgs_LDFLAGS} ${privacy-popup_pkgs_LIBRARIES})
+
+ADD_DEPENDENCIES(${this_target} privacy-manager-client)
+TARGET_LINK_LIBRARIES(${this_target} ${privacy-popup_pkgs_LDFLAGS} ${privacy-popup_pkgs_LIBRARIES})
 TARGET_LINK_LIBRARIES(${this_target} "-lpkgmgr-info")
-TARGET_LINK_LIBRARIES(${this_target} "-lprivacy-manager-client")
-TARGET_LINK_LIBRARIES(${this_target} ${privacy-popup-ug-test_pkgs_LDFLAGS} ${privacy-popup-ug-test_pkgs_LIBRARIES})
+TARGET_LINK_LIBRARIES(${this_target} "-lprivacy-manager-client" "-L../client")
 
 
 TARGET_LINK_LIBRARIES(${this_target}
-	#${privacy-popup_LIBRARIES}
-	${privacy-popup-ug-test_LIBRARIES}
+	${privacy-popup_LIBRARIES}
 )
 
 
