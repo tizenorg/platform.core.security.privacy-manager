@@ -37,8 +37,6 @@ privacy-manager server devel
 
 %package -n privacy-manager-client
 summary: privacy-manager client
-Version: 0.0.2
-Release: 3
 Group: Development/Libraries
 Requires: privacy-manager-server = %{version}-%{release}
 
@@ -47,8 +45,6 @@ privacy-manager client
 
 %package -n privacy-manager-client-devel
 Summary:    privacy-manager client devel
-Version: 0.0.2
-Release: 3
 Group:      Development/Libraries
 BuildRequires:  pkgconfig(libxml-2.0)
 Requires:   privacy-manager-client = %{version}-%{release}
