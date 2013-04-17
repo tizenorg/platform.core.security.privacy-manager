@@ -123,7 +123,7 @@ ui_gadget_h create_ug(appdata *data) {
 	service_add_extra_data(service, KEY_PACKAGE_ID, package_id);
 
     data->ug = ug_create(NULL, "setting-privacy-efl", UG_MODE_FULLVIEW, service, &cbs);
-	service_destroy(&service);
+	service_destroy(service);
 
 	if(!data->ug){
 		LOGE("ug_create failed!");
@@ -248,7 +248,7 @@ static int app_reset(bundle *b, void *data)
 	LOGD("app_reset");
 	evas_object_show(ad.win);
 
-	//AUL pass appid in bundle b
+	//AUL pass appid 
 	const char *appid = bundle_get_val(b, "__AUL_PRIVACY_APPID__");
 
 	if(!appid){
