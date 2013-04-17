@@ -47,8 +47,6 @@ int create_privacy_info_client_s(const char* privacy_id, bool enabled, privacy_i
 
 int privacy_manager_client_install_privacy(const char *package_id, const char** privacy_list)
 {
-	LOGI("enter");
-
 	PrivacyManagerClient* pInst = PrivacyManagerClient::getInstance();
 	std::list < std::string > privacyList;
 
@@ -56,8 +54,6 @@ int privacy_manager_client_install_privacy(const char *package_id, const char** 
 		privacyList.push_back(std::string(*privacy_list++));
 
 	int retval = pInst->addAppPackagePrivacyInfo(std::string(package_id), privacyList, false);
-
-	LOGI("leave");
 
 	return retval;
 }
@@ -176,10 +172,7 @@ int privacy_manager_client_foreach_package_list_by_privacy(const char *privacy_i
 
 	std::list < std::pair < std::string, bool > > packageList;
 	retval = pInst->getAppPackagesbyPrivacyId(std::string(privacy_id), packageList);
-		for (std::list < std::pair < std::string, bool > >::iterator iter = packageList.begin(); iter != packageList.end(); ++iter)
-	{
-		LOGD("result : %s %d", iter->first.c_str(), iter->second);
-	}
+
 	if (retval != PRIV_MGR_ERROR_SUCCESS)
 		return retval;
 	if (packageList.size() == 0)

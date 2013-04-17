@@ -56,7 +56,7 @@ NotificationServer::initialize(void)
 	std::unique_ptr < char[] > pRule(new char[MAX_LOCAL_BUF_SIZE]);
 
 	snprintf(pRule.get(), MAX_LOCAL_BUF_SIZE, "path='%s',type='signal',interface='%s'", DBUS_PATH.c_str(), DBUS_SIGNAL_INTERFACE.c_str());
-	LOGD("rule : %s" ,pRule.get());
+
 	dbus_bus_add_match(m_pDBusConnection, pRule.get(), &error);
 	TryReturn(!dbus_error_is_set(&error), PRIV_MGR_ERROR_SYSTEM_ERROR, dbus_error_free(&error), "dbus_bus_add_match : %s", error.message);
 
@@ -74,7 +74,7 @@ NotificationServer::notifySettingChanged(const std::string pkgId, const std::str
 
 	char* pPkgId = const_cast <char*> (pkgId.c_str());
 	char* pPrivacyId = const_cast <char*> (privacyId.c_str());
-	LOGD("path: %s, inter: %s, name: %s", DBUS_PATH.c_str(), DBUS_SIGNAL_INTERFACE.c_str(), DBUS_SIGNAL_SETTING_CHANGED.c_str());
+
 	DBusMessage* pMessage = dbus_message_new_signal(DBUS_PATH.c_str(), DBUS_SIGNAL_INTERFACE.c_str(), DBUS_SIGNAL_SETTING_CHANGED.c_str());
 	TryReturn(pMessage != NULL, PRIV_MGR_ERROR_IPC_ERROR, , "dbus_message_new_signal");
 
@@ -105,7 +105,7 @@ NotificationServer::notifyPkgRemoved(const std::string pkgId)
 		return PRIV_MGR_ERROR_INVALID_STATE;
 
 	char* pPkgId = const_cast <char*> (pkgId.c_str());
-	LOGD("path: %s, inter: %s, name: %s", DBUS_PATH.c_str(), DBUS_SIGNAL_INTERFACE.c_str(), DBUS_SIGNAL_PKG_REMOVED.c_str());
+
 	DBusMessage* pMessage = dbus_message_new_signal(DBUS_PATH.c_str(), DBUS_SIGNAL_INTERFACE.c_str(), DBUS_SIGNAL_PKG_REMOVED.c_str());
 	TryReturn(pMessage != NULL, PRIV_MGR_ERROR_IPC_ERROR, , "dbus_message_new_signal");
 

@@ -88,8 +88,6 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 		memcpy(ppPrivilegeList[i], iter->c_str(), strlen(iter->c_str()));
 		++iter;
 	}
-	for (int i = 0; i < privilegeList.size(); ++i)
-		LOGD(" values : %s", ppPrivilegeList[i]);
 
 	ppPrivilegeList[privilegeList.size()] = (char*)calloc (2, sizeof(char));
 	memcpy(ppPrivilegeList[privilegeList.size()], "\0", 1);

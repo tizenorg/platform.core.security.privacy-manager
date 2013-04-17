@@ -145,10 +145,6 @@ PrivacyManagerClient::getAppPackagePrivacyInfo(const std::string pkgId, std::lis
 	pSocketClient->disconnect();
 	TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "disconnect : %d", res);
 
-	for (std::list < std::pair <std::string, bool > >::const_iterator iter = list.begin(); iter != list.end(); ++iter){
-		LOGD(" %s : %d", iter->first.c_str(), iter->second);
-	}
-
 	return result;
 #endif 
 

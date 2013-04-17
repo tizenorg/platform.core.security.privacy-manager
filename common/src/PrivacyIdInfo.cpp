@@ -122,7 +122,6 @@ PrivacyIdInfo::initialize(void)
 		const char* privilegeId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmtPrivilege.get(), 0));
 		const char* privacyId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmtPrivilege.get(), 1));
 		m_privilegeToPrivacyMap.insert(std::map < std::string, std::string >::value_type(std::string(privilegeId), std::string(privacyId)));
-		LOGD(" %s : %s", privilegeId, privacyId);
 	}
 
 	prepareDb(pDbHandler, sqlDeviceCap.c_str(), pStmtDeviceCap);
@@ -189,8 +188,6 @@ int
 PrivacyIdInfo::getAllPrivacyId(std::list < std::string >& privacyIdList)
 {
 	static const std::string sql("SELECT PRIVACY_ID from PrivacyInfo");
-
-	LOGI("enter");
 	
 	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, sql.c_str(), pStmt);

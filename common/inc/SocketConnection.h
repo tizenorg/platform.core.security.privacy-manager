@@ -254,7 +254,6 @@ public:
 		int length = strlen(in);
 		int res = m_socketStream.writeStream(sizeof(length), &length);
 		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "writeStream : %d", res);
-		LOGD(" write char : %s %d", in, length);
 		res = m_socketStream.writeStream(length, in);
 		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "writeStream : %d", res);
 

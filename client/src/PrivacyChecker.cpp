@@ -204,16 +204,12 @@ PrivacyChecker::handleNotification(DBusConnection* connection, DBusMessage* mess
 int
 PrivacyChecker::check(const std::string privacyId, std::map < std::string, bool >& privacyMap)
 {
-	LOGI("enter, %d", privacyMap.size());
+	LOGI("enter");
 
 	TryReturn(m_isInitialized, PRIV_MGR_ERROR_NOT_INITIALIZED, , "Not initialized");
 
 	std::map < std::string, bool >::iterator iter;
 
-	for (iter = privacyMap.begin(); iter != privacyMap.end(); ++iter)
-	{
-		LOGD("data: %s, %d", iter->first.c_str(), iter->second);
-	}
 	iter = privacyMap.find(privacyId);
 	if (iter == privacyMap.end() )
 	{
@@ -272,7 +268,7 @@ PrivacyChecker::check(const std::string pkgId, const std::string privacyId)
 
 	if (iter->second.size() == 0)
 	{
-		LOGD("NO PRIVACY contained");
+		LOGD("No privacy contained");
 		return PRIV_MGR_ERROR_USER_NOT_CONSENTED;
 	}
 
@@ -291,7 +287,7 @@ PrivacyChecker::checkWithPrivilege(const std::string pkgId, const std::string pr
 	std::string privacyId;
 	int res = PrivacyIdInfo::getPrivacyIdFromPrivilege(privilege, privacyId);
 	if (res == PRIV_MGR_ERROR_NO_DATA) {
-		LOGD("NOT privacy privilege");
+		LOGD("%s is not privacy privilege", privilege.c_str());
 		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
@@ -309,8 +305,11 @@ PrivacyChecker::checkWithPrivilege(const std::string privilege)
 
 	std::string privacyId;
 	int res = PrivacyIdInfo::getPrivacyIdFromPrivilege(privilege, privacyId);
-	if (res == PRIV_MGR_ERROR_NO_DATA)
+	if (res == PRIV_MGR_ERROR_NO_DATA) {
+		LOGD("%s is not privacy privilege", privilege.c_str());
 		return PRIV_MGR_ERROR_SUCCESS;
+	}
+
 	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "getPrivacyIdFromPrivilege : %d", res);
 
 	LOGI("leave");
@@ -327,6 +326,7 @@ PrivacyChecker::checkWithDeviceCap(const std::string pkgId, const std::string de
 	int res = PrivacyIdInfo::getPrivacyIdFromDeviceCap(deviceCap, privacyId);
 	if (res == PRIV_MGR_ERROR_NO_DATA)
 		return PRIV_MGR_ERROR_SUCCESS;
+
 	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "getPrivacyIdFromPrivilege : %d", res);
 
 	LOGI("leave");
@@ -343,6 +343,7 @@ PrivacyChecker::checkWithDeviceCap(const std::string deviceCap)
 	int res = PrivacyIdInfo::getPrivacyIdFromDeviceCap(deviceCap, privacyId);
 	if (res == PRIV_MGR_ERROR_NO_DATA)
 		return PRIV_MGR_ERROR_SUCCESS;
+
 	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "getPrivacyIdFromPrivilege : %d", res);
 
 	LOGI("leave");
@@ -368,7 +369,6 @@ PrivacyChecker::finalize(void)
 		g_main_context_unref(m_pHandlerGMainContext);
 		m_pHandlerGMainContext = NULL;
 	}
-
 
 	m_isInitialized = false;
 
@@ -404,7 +404,7 @@ PrivacyChecker::updateCache(const std::string pkgId, std::string privacyId, std:
 	{
 		bool privacyEnabled = sqlite3_column_int(pPrivacyStmt.get(), 0) > 0 ? true : false;
 
-		LOGI("Set result : %s : %d", privacyId.c_str(), privacyEnabled );
+		LOGD("Set result : %s : %d", privacyId.c_str(), privacyEnabled );
 		pkgCacheMap.erase(privacyId);
 		pkgCacheMap.insert(std::map < std::string, bool >::value_type(privacyId, privacyEnabled));
 	}

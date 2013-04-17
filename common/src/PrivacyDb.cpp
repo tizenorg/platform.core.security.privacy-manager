@@ -117,8 +117,6 @@ PrivacyDb::getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pa
 	int res = sqlite3_bind_text(pStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
 	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_int : %d", res);
 
-	LOGI("start");
-
 	while ( (res= sqlite3_step(pStmt.get())) == SQLITE_ROW )
 	{
 		const char* privacyId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
@@ -238,7 +236,7 @@ PrivacyDb::isUserPrompted(const std::string pkgId, bool& isPrompted) const
 	}
 	else
 	{
-		LOGE("The package[%s] doesnt access privacy", pkgId.c_str());
+		LOGE("The package[%s] can not access privacy", pkgId.c_str());
 		return PRIV_MGR_ERROR_SUCCESS;
 	}
 
@@ -248,7 +246,7 @@ PrivacyDb::isUserPrompted(const std::string pkgId, bool& isPrompted) const
 int
 PrivacyDb::setUserPrompted(const std::string pkgId, bool prompted)
 {
-	LOGI("enter :%s - %d", pkgId.c_str(), prompted);
+	LOGI("enter");
 
 	std::string query = std::string("UPDATE PackageInfo set IS_SET =? where PKG_ID=?");
 
@@ -265,6 +263,8 @@ PrivacyDb::setUserPrompted(const std::string pkgId, bool prompted)
 
 	res = sqlite3_step(pStmt.get());
 	TryReturn( res == SQLITE_DONE, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_step : %d", res);
+
+	LOGI("leave");
 
 	return 0;
 }
@@ -288,11 +288,11 @@ PrivacyDb::getAppPackagesbyPrivacyId(std::string privacyId, std::list < std::pai
 		
 		const char* pPkgId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
 		bool isEnabled = sqlite3_column_int(pStmt.get(), 1) > 0 ? true : false;
-		LOGD("result : %s %d", pPkgId, isEnabled);
+		LOGD("result : %s - %d", pPkgId, isEnabled);
 		list.push_back( std::pair <std::string, bool >(std::string(pPkgId), isEnabled) );
 	}
 
-	LOGI("leave %d", res);
+	LOGI("leave");
 
 	return PRIV_MGR_ERROR_SUCCESS;
 }

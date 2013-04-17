@@ -25,13 +25,6 @@
 #include "SocketClient.h"
 #include <Utils.h>
 
-
-/*int
-SocketClient::throwWithErrnoMessage(const std::string& specificInfo){
-	LOGE("%s : %s", specificInfo.c_str(), strerror(errno));
-	return -1;
-}*/
-
 #define throwWithErrnoMessage(specificInfo)	do {\
 												LOGE("%s : %s", specificInfo, strerror(errno)); \
 												return -1; \

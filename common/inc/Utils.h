@@ -46,8 +46,8 @@
 		return r; \
 	} else {;}
 
-auto StmtDeleter = [&](sqlite3_stmt* pPtr) { /*LOGI("sqlite3_finalize");*/ sqlite3_reset (pPtr); sqlite3_finalize(pPtr); };
-auto DbDeleter = [&](sqlite3* pPtr) { /*LOGI("sqlite3_close");*/ /*sqlite3_close(pPtr);*/ db_util_close(pPtr); };
+auto StmtDeleter = [&](sqlite3_stmt* pPtr) {  sqlite3_reset (pPtr); sqlite3_finalize(pPtr); };
+auto DbDeleter = [&](sqlite3* pPtr) { /*sqlite3_close(pPtr);*/ db_util_close(pPtr); };
 
 #define setStmtToUniquePtr(x, y)		std::unique_ptr < sqlite3_stmt, decltype(StmtDeleter) > x (y, StmtDeleter);
 #define setDbToUniquePtr(x, y)			std::unique_ptr < sqlite3, decltype(DbDeleter) > x (y, DbDeleter);

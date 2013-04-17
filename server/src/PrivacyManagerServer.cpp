@@ -33,8 +33,6 @@ PrivacyManagerServer::createDB(void)
 int
 PrivacyManagerServer::setPrivacySetting(const std::string pkgId, const std::string privacyId, bool enabled)
 {
-	LOGD("Set Privacy: %s, %s, %d", pkgId.c_str(), privacyId.c_str(), enabled);
-
 	int res = PrivacyDb::getInstance()->setPrivacySetting(pkgId, privacyId, enabled);
 	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "privacyDb::setPrivacySetting : %d", res);
 
