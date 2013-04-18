@@ -104,8 +104,8 @@ static void destroy_cb(ui_gadget_h ug, void *priv) {
     if (!ug || !priv)
         return;
 
-	ug_destroy(ug);
-	destroy_privacy_popup();
+	//ug_destroy(ug);
+	//destroy_privacy_popup();
 }
 
 ui_gadget_h create_ug(appdata *data) {
