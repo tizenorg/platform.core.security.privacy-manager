@@ -79,12 +79,6 @@ The Privacy Manager API provides functions to get/set information about privacy 
 Summary:  Privacy Popup
 Group:    TO_BE/FILLED_IN
 Requires(post): /sbin/ldconfig
-Requires(post): org.tizen.indicator
-Requires(post): isf
-Requires(post): org.tizen.setting
-Requires(post): system-server
-#Requires(post): svi-data
-Requires(post): ail
 Requires(postun): /sbin/ldconfig
 BuildRequires: cmake
 BuildRequires: gettext-tools

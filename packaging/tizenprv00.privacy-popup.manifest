@@ -1,23 +1,6 @@
 <manifest>
 	<define>
 		<domain name="tizenprv00.privacy-popup" />
-		<request>
-			<smack request="system::homedir" type="rwax" />
-			<smack request="system::use_internet" type="rwax" /> 
-			<smack request="system::homedir" type="rwax" />
-			<smack request="isf" type="rwax" />
-			<smack request="device::app_logging" type="rawx" />
-			<smack request="ail::db" type="rawx" />
-			<smack request="system::vconf" type="rawx" />
-			<smack request="_" type="rawx" />
-			<smack request="ug_bluetooth" type="rwax" />
-			<smack request="org.tizen.setting" type="rx" />
-			<smack request="privacy-manager::daemon" type="rw" />
-			<smack request="svi-data" type="x" />
-			<smack request="system-server" type="rwa" />
-			<smack request="privacy-manager::db" type="rwa" />
-			<smack request="org.tizen.indicator" type="rw" />
-		</request>
 	</define>
 	<assign>
 		<filesystem path="/usr/bin/tizenprv00.privacy-popup" label="tizenprv00.privacy-popup" exec_label="tizenprv00.privacy-popup" />
