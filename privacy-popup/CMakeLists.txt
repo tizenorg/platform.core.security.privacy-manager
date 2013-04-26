@@ -18,7 +18,9 @@ SET(SRCS
 #SET(INCLUDEDIR "\${prefix}/include")
 INCLUDE_DIRECTORIES(${privacy-popup_pkgs_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/inc)
-INCLUDE_DIRECTORIES(/usr/include/privacy_manager)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/common/inc/)
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/client/inc/)
+#INCLUDE_DIRECTORIES(/usr/include/privacy_manager)
 
 
 FIND_PROGRAM(UNAME NAMES uname)

@@ -99,7 +99,6 @@ BuildRequires: pkgconfig(ui-gadget-1)
 BuildRequires: pkgconfig(icu-i18n)
 BuildRequires: pkgconfig(bundle)
 BuildRequires: pkgconfig(glib-2.0)
-BuildRequires: pkgconfig(privacy-manager-client)
 
 %description -n tizenprv00.privacy-popup
 The Privacy popup provides UI to set privacy information of application.
