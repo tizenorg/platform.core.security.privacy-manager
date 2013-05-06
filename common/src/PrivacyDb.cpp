@@ -288,8 +288,14 @@ PrivacyDb::getAppPackagesbyPrivacyId(std::string privacyId, std::list < std::pai
 		
 		const char* pPkgId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
 		bool isEnabled = sqlite3_column_int(pStmt.get(), 1) > 0 ? true : false;
-		LOGD("result : %s - %d", pPkgId, isEnabled);
-		list.push_back( std::pair <std::string, bool >(std::string(pPkgId), isEnabled) );
+        std::string pkgId = std::string(pPkgId);
+		if (isFilteredPackage(pkgId))
+		{
+			LOGD("%s is Filtered", pPkgId);
+			continue;
+		}
+
+		list.push_back( std::pair <std::string, bool >(pkgId, isEnabled) );
 	}
 
 	LOGI("leave");
