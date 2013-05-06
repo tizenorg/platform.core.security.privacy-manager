@@ -318,40 +318,6 @@ PrivacyChecker::checkWithPrivilege(const std::string privilege)
 }
 
 int
-PrivacyChecker::checkWithDeviceCap(const std::string pkgId, const std::string deviceCap)
-{
-	LOGI("enter");
-
-	std::string privacyId;
-	int res = PrivacyIdInfo::getPrivacyIdFromDeviceCap(deviceCap, privacyId);
-	if (res == PRIV_MGR_ERROR_NO_DATA)
-		return PRIV_MGR_ERROR_SUCCESS;
-
-	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "getPrivacyIdFromPrivilege : %d", res);
-
-	LOGI("leave");
-
-	return check(pkgId ,privacyId);
-}
-
-int
-PrivacyChecker::checkWithDeviceCap(const std::string deviceCap)
-{
-	LOGI("enter");
-
-	std::string privacyId;
-	int res = PrivacyIdInfo::getPrivacyIdFromDeviceCap(deviceCap, privacyId);
-	if (res == PRIV_MGR_ERROR_NO_DATA)
-		return PRIV_MGR_ERROR_SUCCESS;
-
-	TryReturn( res == PRIV_MGR_ERROR_SUCCESS, res, , "getPrivacyIdFromPrivilege : %d", res);
-
-	LOGI("leave");
-
-	return check(privacyId);
-}
-
-int
 PrivacyChecker::finalize(void)
 {
 	std::lock_guard <std::mutex> guard (m_cacheMutex);

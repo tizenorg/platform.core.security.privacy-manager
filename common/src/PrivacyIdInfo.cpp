@@ -20,96 +20,15 @@
 #include <dlog.h>
 #include <set>
 #include <Utils.h>
-
+#include <libintl.h>
 
 std::map <std::string, std::string> PrivacyIdInfo::m_privilegeToPrivacyMap;
-std::map <std::string, std::string> PrivacyIdInfo::m_deviceCapToPrivacyMap;
 bool PrivacyIdInfo:: m_isInitialized;
-
-
-struct PrivacyPrivilegePair
-{
-	char privilege[128];
-	char privacy[128];
-};
-
-struct PrivacyDeviceCapPair
-{
-	char DeviceCap[128];
-	char privacy[128];
-};
-/*
-static struct PrivacyPrivilegePair DeviceCapToPrivacyTable[] =
-{
-	{"bluetooth.admin", 			"http://tizen.org/privacy/bluetooth"},
-	{"bluetooth.gap", 				"http://tizen.org/privacy/bluetooth"},
-	{"bluetooth.spp", 				"http://tizen.org/privacy/bluetooth"},
-	{"bluetoothmanager", 			"http://tizen.org/privacy/bluetooth"},
-
-	{"calendar.read", 				"http://tizen.org/privacy/calender"},
-	{"calendar.write", 				"http://tizen.org/privacy/calender"},
-
-	{"contact.read", 				"http://tizen.org/privacy/contact"},
-	{"contact.write", 				"http://tizen.org/privacy/contact"},
-
-	{"messaging.read", 				"http://tizen.org/privacy/messaging"},
-	{"messaging.write", 			"http://tizen.org/privacy/messaging"},
-	{"messaging.send", 				"http://tizen.org/privacy/messaging"},
-
-	{"nfc.admin", 					"http://tizen.org/privacy/nfc"},
-	{"nfcmanager.cardemulation", 	"http://tizen.org/privacy/nfc"},
-	{"nfc.common", 					"http://tizen.org/privacy/nfc"},
-	{"nfc.p2p", 					"http://tizen.org/privacy/nfc"},
-	{"nfc.tag", 					"http://tizen.org/privacy/nfc"},
-
-	{"XMLHttpRequest", 				"http://tizen.org/privacy/internet"},
-	{"externalNetworkAccess", 		"http://tizen.org/privacy/internet"},
-
-	{"\0", "\0"}
-};
-
-static struct PrivacyPrivilegePair PrivilegeToPrivacyTable[] =
-{
-	{"http://tizen.org/privilege/bluetooth.admin", 			"http://tizen.org/privacy/bluetooth"},
-	{"http://tizen.org/privilege/bluetooth.gap", 			"http://tizen.org/privacy/bluetooth"},
-	{"http://tizen.org/privilege/bluetooth.health",			"http://tizen.org/privacy/bluetooth"},
-	{"http://tizen.org/privilege/bluetooth.opp", 			"http://tizen.org/privacy/bluetooth"},
-	{"http://tizen.org/privilege/bluetooth.spp", 			"http://tizen.org/privacy/bluetooth"},
-	{"http://tizen.org/privilege/bluetoothmanager",			"http://tizen.org/privacy/bluetooth"},
-
-	{"http://tizen.org/privilege/calendar.read", 			"http://tizen.org/privacy/calender"},
-	{"http://tizen.org/privilege/calendar.write", 			"http://tizen.org/privacy/calender"},
-
-	{"http://tizen.org/privilege/contact.read", 			"http://tizen.org/privacy/contact"},
-	{"http://tizen.org/privilege/contact.write", 			"http://tizen.org/privacy/contact"},
-
-	{"http://tizen.org/privilege/contextmanager.privacy", 	"http://tizen.org/privacy/context"},
-	{"http://tizen.org/privilege/contextmanager.upload", 	"http://tizen.org/privacy/context"},
-
-	{"http://tizen.org/privilege/location", 				"http://tizen.org/privacy/location"},
-
-	{"http://tizen.org/privilege/messaging.read", 			"http://tizen.org/privacy/messaging"},
-	{"http://tizen.org/privilege/messaging.write", 			"http://tizen.org/privacy/messaging"},
-
-	{"http://tizen.org/privilege/nfc.admin", 				"http://tizen.org/privacy/nfc"},
-	{"http://tizen.org/privilege/nfcmanager.cardemulation", "http://tizen.org/privacy/nfc"},
-	{"http://tizen.org/privilege/nfc.common", 				"http://tizen.org/privacy/nfc"},
-	{"http://tizen.org/privilege/nfc.p2p", 					"http://tizen.org/privacy/nfc"},
-	{"http://tizen.org/privilege/nfc.tag", 					"http://tizen.org/privacy/nfc"},
-
-	{"http://tizen.org/privilege/http", 					"http://tizen.org/privacy/internet"},
-	{"http://tizen.org/privilege/socket", 					"http://tizen.org/privacy/internet"},
-	{"http://tizen.org/privilege/web.service", 				"http://tizen.org/privacy/internet"},
-
-	{"\0", "\0"}
-};
-*/
 
 int
 PrivacyIdInfo::initialize(void)
 {
 	static const std::string sqlPrivilege("SELECT PRIVILEGE_ID, PRIVACY_ID from PrivilegeToPrivacyTable");
-	static const std::string sqlDeviceCap("SELECT DEVICE_CAP, PRIVACY_ID from DeviceCapToPrivacyTable");
 
 	LOGI("enter");
 	
@@ -124,13 +43,6 @@ PrivacyIdInfo::initialize(void)
 		m_privilegeToPrivacyMap.insert(std::map < std::string, std::string >::value_type(std::string(privilegeId), std::string(privacyId)));
 	}
 
-	prepareDb(pDbHandler, sqlDeviceCap.c_str(), pStmtDeviceCap);
-	while ( (res = sqlite3_step(pStmtDeviceCap.get())) == SQLITE_ROW )
-	{
-		const char* DeviceCap =  reinterpret_cast < const char* > (sqlite3_column_text(pStmtDeviceCap.get(), 0));
-		const char* privacyId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmtDeviceCap.get(), 1));
-		m_deviceCapToPrivacyMap.insert(std::map < std::string, std::string >::value_type(std::string(DeviceCap), std::string(privacyId)));
-	}
 	m_isInitialized = true;
 
 	return PRIV_MGR_ERROR_SUCCESS;
@@ -150,20 +62,11 @@ PrivacyIdInfo::getPrivacyIdFromPrivilege(const std::string privilege, std::strin
 }
 
 int
-PrivacyIdInfo::getPrivacyIdFromDeviceCap(const std::string deviceCap, std::string& privacyId)
+PrivacyIdInfo::getPrivacyIdListFromPrivilegeList(const std::list < std::string> privilegeList, std::list < std::string> & privacyIdList)
 {
 	if (!m_isInitialized)
 		initialize();
-	std::map < std::string, std::string >::iterator iter = m_deviceCapToPrivacyMap.find(deviceCap);
-	if (iter == m_deviceCapToPrivacyMap.end())
-		return PRIV_MGR_ERROR_NO_DATA;
-	privacyId =  iter->second;
-	return PRIV_MGR_ERROR_SUCCESS;
-}
 
-int
-PrivacyIdInfo::getPrivacyIdListFromPrivilegeList(const std::list < std::string> privilegeList, std::list < std::string> & privacyIdList)
-{
 	privacyIdList.clear();
 
 	std::set <std::string> privacyIdSet;
@@ -188,6 +91,9 @@ int
 PrivacyIdInfo::getAllPrivacyId(std::list < std::string >& privacyIdList)
 {
 	static const std::string sql("SELECT PRIVACY_ID from PrivacyInfo");
+
+	if (!m_isInitialized)
+		initialize();	
 	
 	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, sql.c_str(), pStmt);
@@ -199,6 +105,90 @@ PrivacyIdInfo::getAllPrivacyId(std::list < std::string >& privacyIdList)
 		privacyIdList.push_back(std::string(privacyId));
 		LOGD(" privacy Id : %s", privacyId);
 	}
+
+	return PRIV_MGR_ERROR_SUCCESS;
+}
+
+int
+PrivacyIdInfo::getPrivaycDisplayName(const std::string privacyId, std::string& displayName)
+{
+	LOGI("enter");
+
+	if (!m_isInitialized)
+		initialize();
+	//bindtextdomain("privacy-manager", "/usr/share/locale");
+	//setlocale(LC_ALL, "");
+
+	std::string sql = std::string("SELECT STR_MODULE_ID, STR_NAME_ID from PrivacyInfo where PRIVACY_ID=?");
+
+	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
+	prepareDb(pDbHandler, sql.c_str(), pStmt);
+
+	LOGD("privacy id : %s", privacyId.c_str());
+	int res = sqlite3_bind_text(pStmt.get(), 1, privacyId.c_str(), -1, SQLITE_TRANSIENT);
+	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
+
+	if ( sqlite3_step(pStmt.get()) == SQLITE_ROW )
+	{
+		const char* pModuleId = reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
+		const char* pNameId = reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 1));
+
+		LOGD("result : [%s] [%s]", pModuleId, pNameId);
+
+		if (pNameId == NULL)
+			displayName = privacyId;
+		else
+			displayName = std::string(dgettext("privacy-manager", pNameId));
+
+		LOGD("name : %s", displayName.c_str());
+	}
+	else
+	{
+		LOGI("Cannot find privacy string %s ", privacyId.c_str());
+
+		// Todo : return no_data.
+		displayName = privacyId;
+ 		return PRIV_MGR_ERROR_SUCCESS;
+	}
+
+	LOGI("leave %d", res);
+
+	return PRIV_MGR_ERROR_SUCCESS;
+}
+
+int
+PrivacyIdInfo::getPrivaycDescription(const std::string privacyId, std::string& displayName)
+{
+	LOGI("enter");
+
+	if (!m_isInitialized)
+		initialize();
+
+	std::string sql = std::string("SELECT STR_MODULE_ID, STR_NAME_ID from PrivacyInfo where PRIVACY_ID=?");
+
+	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
+	prepareDb(pDbHandler, sql.c_str(), pStmt);
+
+	LOGD("privacy id : %s", privacyId.c_str());
+	int res = sqlite3_bind_text(pStmt.get(), 1, privacyId.c_str(), -1, SQLITE_TRANSIENT);
+	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
+
+	if ( sqlite3_step(pStmt.get()) == SQLITE_ROW )
+	{
+		const char* pModuleId = reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
+		const char* pNameId = reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
+
+		LOGD("result : %s %s", pModuleId, pNameId);
+
+		displayName = std::string(dgettext(pModuleId, pNameId));
+	}
+	else
+	{
+		LOGI("Cannot find privacy string %s ", privacyId.c_str());
+		return PRIV_MGR_ERROR_NO_DATA;
+	}
+
+	LOGI("leave %d", res);
 
 	return PRIV_MGR_ERROR_SUCCESS;
 }

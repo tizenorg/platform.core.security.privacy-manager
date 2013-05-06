@@ -26,11 +26,9 @@ extern "C" {
 EXTERN_API int privacy_checker_initialize(const char *package_id);
 EXTERN_API int privacy_checker_check_privacy(const char *privacy_id);
 EXTERN_API int privacy_checker_check_by_privilege(const char *privilege_id);
-EXTERN_API int privacy_checker_check_by_device_cap(const char *device_cap);
 EXTERN_API int privacy_checker_finalize(void);
 
 EXTERN_API int privacy_checker_check_package_by_privilege(const char* package_id, const char *privilege_id);
-EXTERN_API int privacy_checker_check_package_by_device_cap(const char* package_id, const char *device_cap);
 
 EXTERN_API int privacy_checker_finalize(void);
 

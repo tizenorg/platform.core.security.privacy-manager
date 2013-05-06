@@ -46,14 +46,13 @@ int privacy_info_client_get_privacy_id(privacy_info_client_s* privacy_info, char
 
 int privacy_info_client_get_privacy_display_name(privacy_info_client_s* privacy_info, char **name)
 {
-	// TODO: Modify to use STMS
-	std::string temp = std::string(privacy_info->privacy_id);
-	int startIndex = temp.find_last_of("/");
-	std::string displayName = temp.substr(startIndex + 1, temp.size());
+	std::string displayName;
+	int res = PrivacyManagerClient::getInstance()->getPrivaycDisplayName(std::string(privacy_info->privacy_id), displayName);
+	if (res != PRIV_MGR_ERROR_SUCCESS)
+		return res;
 
 	int size = strlen(displayName.c_str());
 	*name = (char*) calloc(1, size + 1);
-
 	memcpy (*name, displayName.c_str(), size);
 
 	return PRIV_MGR_ERROR_SUCCESS;
@@ -61,12 +60,14 @@ int privacy_info_client_get_privacy_display_name(privacy_info_client_s* privacy_
 
 int privacy_info_client_get_privacy_description(privacy_info_client_s* privacy_info, char **description)
 {
-	// TODO: Modify to use STMS
-	char tempDesc[] = "Undefined";
-	int size = strlen(tempDesc);
-	*description = (char*) calloc(1, size + 1);
+	std::string desc;
+	int res = PrivacyManagerClient::getInstance()->getPrivaycDisplayName(std::string(privacy_info->privacy_id), desc);
+	if (res != PRIV_MGR_ERROR_SUCCESS)
+		return res;
 
-	memcpy (*description, tempDesc, size);
+	int size = strlen(desc.c_str());
+	*description = (char*) calloc(1, size + 1);
+	memcpy (*description, desc.c_str(), size);
 
 	return PRIV_MGR_ERROR_SUCCESS;
 }

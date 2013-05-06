@@ -109,7 +109,7 @@ PrivacyManagerClient::setPrivacySetting(const std::string pkgId, const std::stri
 }
 	
 int
-PrivacyManagerClient::getPrivacyAppPackages(std::list < std::string >& list)
+PrivacyManagerClient::getPrivacyAppPackages(std::list < std::string >& list) const
 {
 #ifdef __READ_DB_IPC__
 
@@ -132,7 +132,7 @@ PrivacyManagerClient::getPrivacyAppPackages(std::list < std::string >& list)
 }
 
 int
-PrivacyManagerClient::getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair <std::string, bool > > & list)
+PrivacyManagerClient::getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair <std::string, bool > > & list) const
 {
 #ifdef __READ_DB_IPC__
 	std::unique_ptr <SocketClient> pSocketClient (new SocketClient(INTERFACE_NAME));
@@ -152,7 +152,7 @@ PrivacyManagerClient::getAppPackagePrivacyInfo(const std::string pkgId, std::lis
 }
 
 int
-PrivacyManagerClient::isUserPrompted(const std::string pkgId, bool& isPrompted)
+PrivacyManagerClient::isUserPrompted(const std::string pkgId, bool& isPrompted) const
 {
 #ifdef __READ_DB_IPC__
 	LOGI("enter");
@@ -194,8 +194,20 @@ PrivacyManagerClient::setUserPrompted(const std::string pkgId, bool prompted)
 	return result;
 }
 
-int 
-PrivacyManagerClient::getAppPackagesbyPrivacyId(std::string privacyId, std::list < std::pair < std::string, bool > >& list)
+int
+PrivacyManagerClient::getAppPackagesbyPrivacyId(const std::string privacyId, std::list < std::pair < std::string, bool > >& list) const
 {
 	return PrivacyDb::getInstance()->getAppPackagesbyPrivacyId(privacyId, list);
+}
+
+int
+PrivacyManagerClient::getPrivaycDisplayName(const std::string privacyId, std::string& displayName) const
+{
+	return PrivacyIdInfo::getPrivaycDisplayName(privacyId, displayName);
+}
+
+int
+PrivacyManagerClient::getPrivaycDescription(const std::string privacyId, std::string& description) const
+{
+	return PrivacyIdInfo::getPrivaycDescription(privacyId, description);
 }

@@ -48,15 +48,19 @@ public:
 
 	int setPrivacySetting(const std::string pkgId, const std::string privacyId, bool isEnabled);
 	
-	int getPrivacyAppPackages(std::list < std::string >& list);
+	int getPrivacyAppPackages(std::list < std::string >& list) const;
 
-	int	getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair <std::string, bool > > & list);
+	int	getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair <std::string, bool > > & list) const;
 
-	int isUserPrompted(const std::string pkgId, bool& isPrompted);
+	int isUserPrompted(const std::string pkgId, bool& isPrompted) const;
 
 	int setUserPrompted(const std::string pkgId, bool prompted);
 
-	int getAppPackagesbyPrivacyId(std::string privacyId, std::list < std::pair < std::string, bool > >& list);
+	int getAppPackagesbyPrivacyId(const std::string privacyId, std::list < std::pair < std::string, bool > >& list) const;
+
+	int getPrivaycDisplayName(const std::string privacyId, std::string& displayName) const;
+
+	int getPrivaycDescription(const std::string privacyId, std::string& description) const;
 };
 
 #endif // _PRIVACY_MANAGER_H_

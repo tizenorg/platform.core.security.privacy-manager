@@ -25,15 +25,16 @@ class PrivacyIdInfo
 {
 private:
 	static std::map <std::string, std::string> m_privilegeToPrivacyMap;
-	static std::map <std::string, std::string> m_deviceCapToPrivacyMap;
 	static bool m_isInitialized;
 
 public:
 	static int initialize(void);
 	static int getPrivacyIdFromPrivilege(const std::string privilege, std::string& privacyId);
-	static int getPrivacyIdFromDeviceCap(const std::string deviceCap, std::string& privacyId);
 	static int getPrivacyIdListFromPrivilegeList(const std::list < std::string> privilegeList, std::list < std::string> & privacyIdList);
 	static int getAllPrivacyId(std::list < std::string >& privacyIdList);
+
+	static int getPrivaycDisplayName(const std::string privacyId, std::string& displayName);
+	static int getPrivaycDescription(const std::string privacyId, std::string& description);
 };
 
 #endif //_PRIVACY_ID_INFO_H_

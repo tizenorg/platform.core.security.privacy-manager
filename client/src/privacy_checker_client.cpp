@@ -41,11 +41,6 @@ int privacy_checker_check_by_privilege(const char *privilege_id)
 	return PrivacyChecker::checkWithPrivilege(privilege_id);
 }
 
-int privacy_checker_check_by_device_cap(const char *device_cap)
-{
-	return PrivacyChecker::checkWithPrivilege(device_cap);
-}
-
 int privacy_checker_finalize(void)
 {
 	return PrivacyChecker::finalize();
@@ -54,9 +49,4 @@ int privacy_checker_finalize(void)
 int privacy_checker_check_package_by_privilege(const char* package_id, const char *privilege_id)
 {
 	return PrivacyChecker::checkWithPrivilege(package_id,privilege_id);
-}
-
-int privacy_checker_check_package_by_device_cap(const char* package_id, const char *device_cap)
-{
-	return PrivacyChecker::checkWithDeviceCap(package_id, device_cap);
 }
