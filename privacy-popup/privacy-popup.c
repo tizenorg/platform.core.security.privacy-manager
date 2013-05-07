@@ -119,7 +119,7 @@ ui_gadget_h create_ug(appdata *data) {
 
 	service_create(&service);
 	LOGD("package_id : %s", package_id);
-	service_set_operation(service, KEY_SERVICE_OPERATION);
+	service_add_extra_data(service, "privacy_category", "service");
 	service_add_extra_data(service, KEY_PACKAGE_ID, package_id);
 
     data->ug = ug_create(NULL, "setting-privacy-efl", UG_MODE_FULLVIEW, service, &cbs);
