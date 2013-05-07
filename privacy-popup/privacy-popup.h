@@ -51,7 +51,6 @@ typedef struct appdata_t {
 } appdata;
 
 const char *KEY_PACKAGE_ID = "pkg_id";
-const char *KEY_SERVICE_OPERATION = "http://tizen.org/appcontrol/operation/configure/privacy/service";
 const char *KEY_RESULT_EXIT = "exit";
 const char *KEY_RESULT_OK = "ok";
 const char *KEY_RESULT_CANCEL = "cancel";
