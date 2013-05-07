@@ -202,6 +202,7 @@ EAPI_MAIN int elm_main() {
 	}
 
     UG_INIT_EFL(win, UG_OPT_INDICATOR_ENABLE);
+	elm_win_indicator_mode_set(win, ELM_WIN_INDICATOR_HIDE);
     evas_object_show(win);
 
 	ad.win = win;
@@ -249,7 +250,7 @@ static int app_reset(bundle *b, void *data)
 	evas_object_show(ad.win);
 
 	//AUL pass appid 
-	const char *appid = bundle_get_val(b, "__AUL_PRIVACY_APPID__");
+	const char *appid = bundle_get_val(b, AUL_K_PRIVACY_APPID);
 
 	if(!appid){
 		LOGE("appid is null! ");
