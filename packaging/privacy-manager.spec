@@ -5,11 +5,7 @@ Release: 1
 Group:   System/Libraries
 License: SAMSUNG
 Source0: %{name}-%{version}.tar.gz
-Source1: privacy-manager-server.manifest
-Source2: privacy-manager-client.manifest
-Source3: privacy-manager-server.service
-Source4: capi-security-privacy-manager.manifest
-Source5: tizenprv00.privacy-popup.manifest
+Source1: privacy-manager-server.service
 BuildRequires: cmake
 BuildRequires: pkgconfig(dlog)
 BuildRequires: pkgconfig(glib-2.0)
@@ -138,25 +134,14 @@ cp res/opt/dbspace/.privacylist.db /%{buildroot}/opt/dbspace/
 #mkdir -p %{buildroot}/etc/rc.d/init.d
 #cp res/etc/rc.d/init.d/* %{buildroot}/etc/rc.d/init.d/
 
-%make_install -n privacy-manager-client
-install -D %{SOURCE2} %{buildroot}%{_datadir}/privacy-manager-client.manifest
-
-%make_install -n privacy-manager
-install -D %{SOURCE1} %{buildroot}%{_datadir}/privacy-manager-server.manifest
-
-%make_install -n capi-security-privacy-manager
-install -D %{SOURCE4} %{buildroot}%{_datadir}/capi-security-privacy-manager.manifest
-
-%make_install -n privacy-manager-privacy-popup
-install -D %{SOURCE5} %{buildroot}%{_datadir}/tizenprv00.privacy-popup.manifest
-
+%make_install
 #mkdir -p %{buildroot}/etc/rc.d/rc3.d
 #mkdir -p %{buildroot}/etc/rc.d/rc5.d
 #ln -sf /etc/rc.d/init.d/privacy-manager-server.sh %{buildroot}/etc/rc.d/rc3.d/S10privacy-manager-server.sh
 #ln -sf /etc/rc.d/init.d/privacy-manager-server.sh %{buildroot}/etc/rc.d/rc5.d/S10privacy-manager-server.sh
 
 mkdir -p %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants
-install -m 0644 %{SOURCE3} %{buildroot}%{_libdir}/systemd/system/privacy-manager-server.service
+install -m 0644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/privacy-manager-server.service
 ln -sf /usr/lib/systemd/system/privacy-manager-server.service %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants/privacy-manager-server.service
 
 %clean
@@ -177,7 +162,7 @@ fi
 
 %files -n privacy-manager-server
 %defattr(-,root,root,-)
-%manifest %{_datadir}/privacy-manager-server.manifest
+%manifest packaging/privacy-manager-server.manifest
 %{_bindir}/*
 %{_libdir}/systemd/*
 #/etc/rc.d/init.d/privacy-manager-server.sh
@@ -192,7 +177,7 @@ fi
 
 %files -n privacy-manager-client
 %defattr(-,root,root,-)
-%manifest %{_datadir}/privacy-manager-client.manifest
+%manifest packaging/privacy-manager-client.manifest
 %{_libdir}/libprivacy-manager-client.so*
 /usr/share/license/privacy-manager-client
 /usr/etc/package-manager/parserlib/libprivileges.so
@@ -204,7 +189,7 @@ fi
 
 %files -n capi-security-privacy-manager
 %{_libdir}/libcapi-security-privacy-manager.so.*
-%manifest %{_datadir}/capi-security-privacy-manager.manifest
+%manifest packaging/capi-security-privacy-manager.manifest
 
 %files -n capi-security-privacy-manager-devel
 %{_includedir}/privacymgr/*.h
@@ -212,7 +197,7 @@ fi
 %{_libdir}/pkgconfig/capi-security-privacy-manager.pc
 
 %files -n tizenprv00.privacy-popup
-%manifest %{_datadir}/tizenprv00.privacy-popup.manifest
+%manifest packaging/tizenprv00.privacy-popup.manifest
 %defattr(-,root,root,-)
 /usr/bin/tizenprv00.privacy-popup
 /usr/share/packages/tizenprv00.privacy-popup.xml
