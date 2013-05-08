@@ -42,7 +42,7 @@ private:
 public:
 	static PrivacyManagerClient* getInstance(void);
 
-	int addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string >& list, bool isServerOperation = true);
+	int addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string >& list, bool privacyPopupRequired,  bool isServerOperation = true);
 
 	int removeAppPackagePrivacyInfo(const std::string pkgId, bool isServerOperation = true);
 

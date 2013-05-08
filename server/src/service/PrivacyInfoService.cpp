@@ -26,10 +26,11 @@ PrivacyInfoService::addPrivacyInfo(SocketConnection* pConnector)
 
 	std::string pkgId;
 	std::list < std::string > list;
-	pConnector->read(&pkgId, &list);
+	bool privacyPopupRequired = true;
+	pConnector->read(&pkgId, &list, &privacyPopupRequired);
 
 	PrivacyManagerServer* pPrivacyManagerServer = PrivacyManagerServer::getInstance();
-	int result = pPrivacyManagerServer->addAppPackagePrivacyInfo(pkgId, list);
+	int result = pPrivacyManagerServer->addAppPackagePrivacyInfo(pkgId, list, privacyPopupRequired);
 
 	pConnector->write(result);
 }

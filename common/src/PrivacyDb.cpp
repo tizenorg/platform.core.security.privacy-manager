@@ -134,7 +134,7 @@ PrivacyDb::getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pa
 
 
 int
-PrivacyDb::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string > privilegeList)
+PrivacyDb::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string > privilegeList, bool privacyPopupRequired)
 {
 	LOGI("enter");
 
@@ -147,7 +147,7 @@ PrivacyDb::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < s
 	int res = sqlite3_bind_text(pPkgInfoStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
 	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
 	
-	res = sqlite3_bind_int(pPkgInfoStmt.get(), 2, 0);
+	res = sqlite3_bind_int(pPkgInfoStmt.get(), 2, privacyPopupRequired ? 0 : 1);
 	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_int : %d", res);
 
 	res = sqlite3_step(pPkgInfoStmt.get());

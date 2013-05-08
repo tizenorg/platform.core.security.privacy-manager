@@ -29,7 +29,7 @@ class SocketClient;
 class EXTERN_API IPrivacyManager
 {
 public:
-	int addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string >& pList);
+	int addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string >& pList, bool privacyPopupRequired);
 
 	int removeAppPackagePrivacyInfo(const std::string pkgId);
 

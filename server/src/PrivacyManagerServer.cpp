@@ -56,9 +56,9 @@ PrivacyManagerServer::getAppPackagePrivacyInfo(const std::string pkgId, std::lis
 
 
 int
-PrivacyManagerServer::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string > privilegeList)
+PrivacyManagerServer::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string > privilegeList, bool privacyPopupRequired)
 {
-	return PrivacyDb::getInstance()->addAppPackagePrivacyInfo(pkgId, privilegeList);
+	return PrivacyDb::getInstance()->addAppPackagePrivacyInfo(pkgId, privilegeList, privacyPopupRequired);
 }
 
 int

@@ -45,15 +45,15 @@ int create_privacy_info_client_s(const char* privacy_id, bool enabled, privacy_i
 	return PRIV_MGR_ERROR_SUCCESS;
 }
 
-int privacy_manager_client_install_privacy(const char *package_id, const char** privacy_list)
+int privacy_manager_client_install_privacy(const char *package_id, const char** privacy_list, bool privacy_popup_required)
 {
 	PrivacyManagerClient* pInst = PrivacyManagerClient::getInstance();
-	std::list < std::string > privacyList;
+	std::list < std::string > privacyList; 
 
 	while (*privacy_list[0] != '\0')
 		privacyList.push_back(std::string(*privacy_list++));
 
-	int retval = pInst->addAppPackagePrivacyInfo(std::string(package_id), privacyList, false);
+	int retval = pInst->addAppPackagePrivacyInfo(std::string(package_id), privacyList, privacy_popup_required, false);
 
 	return retval;
 }

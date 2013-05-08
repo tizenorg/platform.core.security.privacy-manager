@@ -29,7 +29,7 @@ typedef bool (*privacy_manager_client_privacy_info_cb) (privacy_info_client_s* p
 typedef bool (*privacy_manager_client_all_privacy_info_cb) (privacy_info_client_s* privacy_info, void* user_data);
 typedef bool (*privacy_manager_client_packages_by_privacy_cb) (const char *package_id, bool is_enabled, void* user_data);
 
-EXTERN_API int privacy_manager_client_install_privacy(const char *package_id, const char** privacy_list);
+EXTERN_API int privacy_manager_client_install_privacy(const char *package_id, const char** privacy_list, bool privacy_popup_required);
 EXTERN_API int privacy_manager_client_uninstall_privacy(const char *package_id);
 EXTERN_API int privacy_manager_client_uninstall_privacy_by_server(const char *package_id);
 EXTERN_API int privacy_manager_client_foreach_privacy_packages(privacy_manager_client_privacy_packages_cb callback, void *user_data);

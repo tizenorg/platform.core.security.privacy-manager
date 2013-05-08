@@ -45,7 +45,7 @@ PrivacyManagerClient::getInstance(void)
 }
 
 int
-PrivacyManagerClient::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string >& list, bool isServerOperation)
+PrivacyManagerClient::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string >& list, bool privacyPopupRequired, bool isServerOperation)
 {
 
 	std::list < std::string > privacyList;
@@ -62,7 +62,7 @@ PrivacyManagerClient::addAppPackagePrivacyInfo(const std::string pkgId, const st
 		int result = PRIV_MGR_ERROR_SUCCESS;
 		res = m_pSocketClient->connect();
 		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "connect : %d", res);
-		res = m_pSocketClient->call("addPrivacyInfo", pkgId, privacyList, &result);
+		res = m_pSocketClient->call("addPrivacyInfo", pkgId, privacyList, privacyPopupRequired, &result);
 		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, m_pSocketClient->disconnect(), "call : %d", res);
 		res = m_pSocketClient->disconnect();
 		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "disconnect : %d", res);
@@ -71,7 +71,7 @@ PrivacyManagerClient::addAppPackagePrivacyInfo(const std::string pkgId, const st
 	}
 	else
 	{
-		return PrivacyDb::getInstance()->addAppPackagePrivacyInfo(pkgId, privacyList);
+		return PrivacyDb::getInstance()->addAppPackagePrivacyInfo(pkgId, privacyList, privacyPopupRequired);
 	}
 }
 
