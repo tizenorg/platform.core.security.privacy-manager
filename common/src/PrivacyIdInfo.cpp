@@ -138,7 +138,7 @@ PrivacyIdInfo::getPrivaycDisplayName(const std::string privacyId, std::string& d
 		if (pNameId == NULL)
 			displayName = privacyId;
 		else
-			displayName = std::string(dgettext("privacy-manager", pNameId));
+			displayName = std::string(dgettext(pModuleId, pNameId));
 
 		LOGD("name : %s", displayName.c_str());
 	}

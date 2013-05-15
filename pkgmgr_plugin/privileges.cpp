@@ -73,6 +73,7 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 			}
             if (strncmp(reinterpret_cast<char*>(pPrivilege), TEST_AUTOMATION_PRIVILEGE, strlen(TEST_AUTOMATION_PRIVILEGE) ) == 0 )
             {
+            	LOGD("No privacy popup");
                 privacyPopupRequired = false;
             }
             else 
