@@ -1,3 +1,6 @@
+* Sat May 18 2013 Anas Nashif <anas.nashif@intel.com> submit/tizen/20130518.173311@005c01c
+- fix hardcoding in cmake files
+
 * Sat May 18 2013 Anas Nashif <anas.nashif@intel.com> submit/tizen/20130517.045140@2a5ab27
 - Fixed build on 64 bit systems
 
