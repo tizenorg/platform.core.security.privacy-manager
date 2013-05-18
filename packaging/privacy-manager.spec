@@ -3,10 +3,12 @@ Summary: Privacy Management
 Version: 0.0.3
 Release: 1
 Group:   System/Libraries
-License: SAMSUNG
+License: Apache-2.0
 Source0: %{name}-%{version}.tar.gz
 Source1: privacy-manager-server.service
 BuildRequires: cmake
+BuildRequires:  pkgconfig(capi-base-common)
+BuildRequires: pkgconfig(libxml-2.0)
 BuildRequires: pkgconfig(dlog)
 BuildRequires: pkgconfig(glib-2.0)
 BuildRequires: pkgconfig(sqlite3)
@@ -16,6 +18,18 @@ BuildRequires: pkgconfig(dbus-glib-1)
 BuildRequires: pkgconfig(db-util)
 BuildRequires: pkgconfig(pkgmgr-info)
 BuildRequires: gettext-tools
+BuildRequires: edje-tools
+BuildRequires: pkgconfig(aul)
+BuildRequires: pkgconfig(ail)
+BuildRequires: pkgconfig(appcore-efl)
+BuildRequires: pkgconfig(capi-appfw-application)
+BuildRequires: pkgconfig(edje)
+BuildRequires: pkgconfig(eina)
+BuildRequires: pkgconfig(elementary)
+BuildRequires: pkgconfig(evas)
+BuildRequires: pkgconfig(ui-gadget-1)
+BuildRequires: pkgconfig(icu-i18n)
+BuildRequires: pkgconfig(bundle)
 
 Requires(post):   /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -24,7 +38,7 @@ Requires(postun): /sbin/ldconfig
 Privacy Management
 
 %package -n privacy-manager-server-devel
-summary: privacy-manager server
+Summary: privacy-manager server
 Group: Development/Libraries
 Requires: privacy-manager-server = %{version}-%{release}
 
@@ -32,8 +46,8 @@ Requires: privacy-manager-server = %{version}-%{release}
 privacy-manager server devel
 
 %package -n privacy-manager-client
-summary: privacy-manager client
-Group: Development/Libraries
+Summary: privacy-manager client
+Group: System/Libraries
 Requires: privacy-manager-server = %{version}-%{release}
 
 %description -n privacy-manager-client
@@ -42,7 +56,6 @@ privacy-manager client
 %package -n privacy-manager-client-devel
 Summary:    privacy-manager client devel
 Group:      Development/Libraries
-BuildRequires:  pkgconfig(libxml-2.0)
 Requires:   privacy-manager-client = %{version}-%{release}
 
 %description -n privacy-manager-client-devel
@@ -50,14 +63,8 @@ Privacy Management(development files)
 
 %package -n capi-security-privacy-manager
 Summary:    Privacy Manager API
-Group:      TO_BE/FILLED_IN
-License:    TO BE FILLED IN
-BuildRequires:  cmake
-BuildRequires:  pkgconfig(dlog)
-BuildRequires:  pkgconfig(capi-base-common)
-BuildRequires:  pkgconfig(glib-2.0)
-Requires(post): /sbin/ldconfig  
-Requires(postun): /sbin/ldconfig
+Group:      API/C API
+License:    Apache-2.0
 Requires: privacy-manager-client = %{version}-%{release}
 
 %description -n capi-security-privacy-manager
@@ -65,36 +72,15 @@ The Privacy Manager API provides functions to get/set information about privacy 
 
 %package  -n capi-security-privacy-manager-devel
 Summary:  Privacy Manager API (Development)
-Group:    TO_BE/FILLED_IN
-Requires: privacy-manager-client = %{version}-%{release}
+Group:    API/C API
+Requires: capi-security-privacy-manager = %{version}-%{release}
 
 %description -n capi-security-privacy-manager-devel
 The Privacy Manager API provides functions to get/set information about privacy information of installed packages.(DEV)
 
 %package -n tizenprv00.privacy-popup
 Summary:  Privacy Popup
-Group:    TO_BE/FILLED_IN
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
-BuildRequires: cmake
-BuildRequires: gettext-tools
-BuildRequires: edje-tools
-BuildRequires: pkgconfig(aul)
-BuildRequires: pkgconfig(dlog)
-BuildRequires: pkgconfig(ail)
-BuildRequires: pkgconfig(appcore-efl)
-BuildRequires: pkgconfig(capi-appfw-application)
-BuildRequires: pkgconfig(pkgmgr-info)
-BuildRequires: pkgconfig(dlog)
-BuildRequires: pkgconfig(edje)
-BuildRequires: pkgconfig(eina)
-BuildRequires: pkgconfig(elementary)
-BuildRequires: pkgconfig(evas)
-BuildRequires: pkgconfig(glib-2.0)
-BuildRequires: pkgconfig(ui-gadget-1)
-BuildRequires: pkgconfig(icu-i18n)
-BuildRequires: pkgconfig(bundle)
-BuildRequires: pkgconfig(glib-2.0)
+Group:    System/Security
 
 %description -n tizenprv00.privacy-popup
 The Privacy popup provides UI to set privacy information of application.
@@ -144,11 +130,19 @@ fi
 
 %postun -p /sbin/ldconfig
 
+%post -n privacy-manager-client -p /sbin/ldconfig
+
+%postun -n privacy-manager-client -p /sbin/ldconfig
+
+%post -n capi-security-privacy-manager -p /sbin/ldconfig
+
+%postun -n capi-security-privacy-manager -p /sbin/ldconfig
+
 %files -n privacy-manager-server
 %defattr(-,root,root,-)
 %manifest packaging/privacy-manager-server.manifest
 %{_bindir}/*
-%{_libdir}/systemd/*
+%{_prefix}/lib/systemd/*
 /usr/share/license/privacy-manager-server
 /opt/dbspace/.privacylist.db
 
@@ -166,6 +160,8 @@ fi
 %defattr(-,root,root,-)
 %{_includedir}/*
 %{_libdir}/pkgconfig/privacy-manager-client.pc
+
+
 
 %files -n capi-security-privacy-manager
 %{_libdir}/libcapi-security-privacy-manager.so.*
