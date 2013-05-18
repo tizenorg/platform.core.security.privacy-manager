@@ -4,7 +4,6 @@ SET(fw_name "capi-security-privacy-manager")
 
 PROJECT(${fw_name})
 
-SET(CMAKE_INSTALL_PREFIX /usr)
 SET(PREFIX ${CMAKE_INSTALL_PREFIX})
 
 SET(INC_DIR include)
@@ -32,7 +31,6 @@ ENDIF("${ARCH}" STREQUAL "arm")
 ADD_DEFINITIONS("-DPREFIX=\"${CMAKE_INSTALL_PREFIX}\"")
 ADD_DEFINITIONS("-DSLP_DEBUG")
 
-SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed -Wl,--rpath=/usr/lib")
 
 aux_source_directory(src SOURCES)
 ADD_LIBRARY(${fw_name} SHARED ${SOURCES})
@@ -46,7 +44,7 @@ SET_TARGET_PROPERTIES(${fw_name}
     CLEAN_DIRECT_OUTPUT 1
 )
 
-INSTALL(TARGETS ${fw_name} DESTINATION ../lib)
+INSTALL(TARGETS ${fw_name} DESTINATION ${LIB_INSTALL_DIR})
 INSTALL(
         DIRECTORY ${INC_DIR}/ DESTINATION ../include/privacymgr
         FILES_MATCHING
@@ -66,7 +64,7 @@ SET(PC_CFLAGS -I\${includedir}/privacymgr)
 #)
 CONFIGURE_FILE(../capi-security-privacy-manager.pc.in capi-security-privacy-manager.pc @ONLY)
 
-INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${fw_name}.pc DESTINATION ../lib/pkgconfig)
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/${fw_name}.pc DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
 
 IF(UNIX)
 

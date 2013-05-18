@@ -105,14 +105,7 @@ The Privacy popup provides UI to set privacy information of application.
 %build
 #%{!?build_type:%define build_type "Release"}
 
-echo cmake . -DPREFIX=%{_prefix} \
-        -DEXEC_PREFIX=%{_exec_prefix} \
-        -DLIBDIR=%{_libdir} \
-        -DINCLUDEDIR=%{_includedir} \
-        -DCMAKE_BUILD_TYPE=%{build_type} \
-        -DVERSION=%{version} \
-        -DDPL_LOG="ON" 
-cmake . -DPREFIX=%{_prefix} \
+%cmake . -DPREFIX=%{_prefix} \
         -DEXEC_PREFIX=%{_exec_prefix} \
         -DLIBDIR=%{_libdir} \
         -DINCLUDEDIR=%{_includedir} \
@@ -131,21 +124,13 @@ mkdir -p %{buildroot}/usr/bin
 cp res/usr/bin/* %{buildroot}/usr/bin/
 mkdir -p %{buildroot}/opt/dbspace
 cp res/opt/dbspace/.privacylist.db /%{buildroot}/opt/dbspace/
-#mkdir -p %{buildroot}/etc/rc.d/init.d
-#cp res/etc/rc.d/init.d/* %{buildroot}/etc/rc.d/init.d/
 
 %make_install
-#mkdir -p %{buildroot}/etc/rc.d/rc3.d
-#mkdir -p %{buildroot}/etc/rc.d/rc5.d
-#ln -sf /etc/rc.d/init.d/privacy-manager-server.sh %{buildroot}/etc/rc.d/rc3.d/S10privacy-manager-server.sh
-#ln -sf /etc/rc.d/init.d/privacy-manager-server.sh %{buildroot}/etc/rc.d/rc5.d/S10privacy-manager-server.sh
 
 mkdir -p %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants
 install -m 0644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/privacy-manager-server.service
 ln -sf /usr/lib/systemd/system/privacy-manager-server.service %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants/privacy-manager-server.service
 
-%clean
-rm -rf %{buildroot}
 
 %post -n privacy-manager-server
 /sbin/ldconfig
@@ -157,18 +142,13 @@ then
 	/usr/bin/privacy_manager_create_clean_db.sh
 fi
 
-%postun
-/sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files -n privacy-manager-server
 %defattr(-,root,root,-)
 %manifest packaging/privacy-manager-server.manifest
 %{_bindir}/*
 %{_libdir}/systemd/*
-#/etc/rc.d/init.d/privacy-manager-server.sh
-#%attr(755,root,root) /etc/rc.d/init.d/privacy-manager-server.sh
-#/etc/rc.d/rc3.d/S10privacy-manager-server.sh
-#/etc/rc.d/rc5.d/S10privacy-manager-server.sh
 /usr/share/license/privacy-manager-server
 /opt/dbspace/.privacylist.db
 

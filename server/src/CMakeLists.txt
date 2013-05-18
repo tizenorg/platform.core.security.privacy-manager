@@ -4,7 +4,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 SET(CMAKE_INSTALL_PREFIX /usr)
 SET(PREFIX ${CMAKE_INSTALL_PREFIX})
 SET(EXEC_PREFIX "\${prefix}")
-SET(LIBDIR "\${prefix}/lib")
+SET(LIBDIR ${LIB_INSTALL_DIR})
 SET(INCLUDEDIR "\${prefix}/include")
 SET(VERSION 0.0)
 
@@ -68,6 +68,6 @@ SET_TARGET_PROPERTIES(privacy-manager-server PROPERTIES VERSION ${VERSION})
 
 CONFIGURE_FILE(../../privacy-manager-server.pc.in privacy-manager-server.pc @ONLY)
 
-INSTALL(TARGETS privacy-manager-server DESTINATION ../lib COMPONENT RuntimeLibraries)
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/privacy-manager-server.pc DESTINATION ../lib/pkgconfig)
+INSTALL(TARGETS privacy-manager-server DESTINATION ${LIB_INSTALL_DIR} COMPONENT RuntimeLibraries)
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/privacy-manager-server.pc DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
 INSTALL(FILES ${PRIVACY_MANAGER_SERVER_HEADERS} DESTINATION ../include)

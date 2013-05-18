@@ -76,5 +76,5 @@ SET_TARGET_PROPERTIES(privacy-manager-server PROPERTIES COMPILE_FLAGS "${PRIVACY
 CONFIGURE_FILE(../privacy-manager-server.pc.in privacy-manager-server.pc @ONLY)
 
 INSTALL(TARGETS privacy-manager-server DESTINATION ../bin COMPONENT RuntimeLibraries)
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/privacy-manager-server.pc DESTINATION ../lib/pkgconfig)
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/privacy-manager-server.pc DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
 INSTALL(FILES ${PRIVACY_MANAGER_SERVER_HEADERS} DESTINATION ../include/privacy_manager/server)
