@@ -46,7 +46,7 @@ SET_TARGET_PROPERTIES(${fw_name}
 
 INSTALL(TARGETS ${fw_name} DESTINATION ${LIB_INSTALL_DIR})
 INSTALL(
-        DIRECTORY ${INC_DIR}/ DESTINATION ../include/privacymgr
+    DIRECTORY ${INC_DIR}/ DESTINATION ${INCLUDE_INSTALL_DIR}/privacymgr
         FILES_MATCHING
         PATTERN "*_private.h" EXCLUDE
         PATTERN "${INC_DIR}/*.h"

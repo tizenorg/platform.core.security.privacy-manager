@@ -154,7 +154,7 @@ fi
 %manifest packaging/privacy-manager-client.manifest
 %{_libdir}/libprivacy-manager-client.so*
 /usr/share/license/privacy-manager-client
-/usr/etc/package-manager/parserlib/libprivileges.so
+/etc/package-manager/parserlib/libprivileges.so
 
 %files -n privacy-manager-client-devel
 %defattr(-,root,root,-)
