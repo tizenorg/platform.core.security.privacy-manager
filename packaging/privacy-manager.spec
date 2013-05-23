@@ -127,8 +127,6 @@ mkdir -p %{buildroot}/usr/share/license
 cp LICENSE.APLv2 %{buildroot}/usr/share/license/privacy-manager-server
 mkdir -p %{buildroot}/usr/share/license
 cp LICENSE.APLv2 %{buildroot}/usr/share/license/privacy-manager-client
-mkdir -p %{buildroot}/usr/bin
-cp res/usr/bin/* %{buildroot}/usr/bin/
 mkdir -p %{buildroot}/opt/dbspace
 cp res/opt/dbspace/.privacylist.db /%{buildroot}/opt/dbspace/
 #mkdir -p %{buildroot}/etc/rc.d/init.d
@@ -141,8 +139,8 @@ cp res/opt/dbspace/.privacylist.db /%{buildroot}/opt/dbspace/
 #ln -sf /etc/rc.d/init.d/privacy-manager-server.sh %{buildroot}/etc/rc.d/rc5.d/S10privacy-manager-server.sh
 
 mkdir -p %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants
-install -m 0644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/privacy-manager-server.service
-ln -sf /usr/lib/systemd/system/privacy-manager-server.service %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants/privacy-manager-server.service
+#install -m 0644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/privacy-manager-server.service
+#ln -sf /usr/lib/systemd/system/privacy-manager-server.service %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants/privacy-manager-server.service
 
 %clean
 rm -rf %{buildroot}
@@ -163,16 +161,12 @@ fi
 %files -n privacy-manager-server
 %defattr(-,root,root,-)
 %manifest packaging/privacy-manager-server.manifest
-%{_bindir}/*
-%{_libdir}/systemd/*
-#/etc/rc.d/init.d/privacy-manager-server.sh
-#%attr(755,root,root) /etc/rc.d/init.d/privacy-manager-server.sh
-#/etc/rc.d/rc3.d/S10privacy-manager-server.sh
-#/etc/rc.d/rc5.d/S10privacy-manager-server.sh
+%{_libdir}/libprivacy-manager-server.so*
 /usr/share/license/privacy-manager-server
 /opt/dbspace/.privacylist.db
 
 %files -n privacy-manager-server-devel
+%{_includedir}/privacy_manager/privacy_manager_daemon.h
 %{_libdir}/pkgconfig/privacy-manager-server.pc
 
 %files -n privacy-manager-client
@@ -184,8 +178,15 @@ fi
 
 %files -n privacy-manager-client-devel
 %defattr(-,root,root,-)
-%{_includedir}/*
 %{_libdir}/pkgconfig/privacy-manager-client.pc
+
+%{_includedir}/privacy_manager/PrivacyManagerClient.h
+%{_includedir}/privacy_manager/PrivacyChecker.h
+%{_includedir}/privacy_manager/privacy_info_client.h
+%{_includedir}/privacy_manager/privacy_manager_client.h
+%{_includedir}/privacy_manager/privacy_checker_client.h
+%{_includedir}/privacy_manager/privacy_manager_client_types.h
+
 
 %files -n capi-security-privacy-manager
 %{_libdir}/libcapi-security-privacy-manager.so.*

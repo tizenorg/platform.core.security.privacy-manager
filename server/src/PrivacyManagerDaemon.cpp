@@ -18,6 +18,7 @@
 #include <PrivacyManagerDaemon.h>
 #include <PrivacyInfoService.h>
 #include <PrivacyManagerServer.h>
+#include <SocketService.h>
 
 PrivacyManagerDaemon* PrivacyManagerDaemon::pInstance = NULL;
 
@@ -42,7 +43,7 @@ PrivacyManagerDaemon::getInstance(void)
 }
 
 int
-PrivacyManagerDaemon::inialize(void)
+PrivacyManagerDaemon::initialize(void)
 {
 	if (pSocketService == NULL)
 		pSocketService = new SocketService();
