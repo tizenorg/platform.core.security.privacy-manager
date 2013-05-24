@@ -127,6 +127,8 @@ mkdir -p %{buildroot}/usr/share/license
 cp LICENSE.APLv2 %{buildroot}/usr/share/license/privacy-manager-server
 mkdir -p %{buildroot}/usr/share/license
 cp LICENSE.APLv2 %{buildroot}/usr/share/license/privacy-manager-client
+mkdir -p %{buildroot}/usr/bin
+cp res/usr/bin/* %{buildroot}/usr/bin/
 mkdir -p %{buildroot}/opt/dbspace
 cp res/opt/dbspace/.privacylist.db /%{buildroot}/opt/dbspace/
 #mkdir -p %{buildroot}/etc/rc.d/init.d
@@ -164,6 +166,7 @@ fi
 %{_libdir}/libprivacy-manager-server.so*
 /usr/share/license/privacy-manager-server
 /opt/dbspace/.privacylist.db
+/usr/bin/*
 
 %files -n privacy-manager-server-devel
 %{_includedir}/privacy_manager/privacy_manager_daemon.h
