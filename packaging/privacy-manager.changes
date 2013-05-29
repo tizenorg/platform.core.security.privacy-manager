@@ -1,3 +1,6 @@
+* Wed May 29 2013 Anas Nashif <anas.nashif@intel.com> accepted/tizen/20130520.103512@520eeab
+- Install systemd unit files in unitdir
+
 * Sat May 18 2013 Anas Nashif <anas.nashif@intel.com> submit/tizen/20130518.173311@005c01c
 - fix hardcoding in cmake files
 

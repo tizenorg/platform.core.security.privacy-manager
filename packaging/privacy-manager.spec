@@ -2,7 +2,7 @@ Name:    privacy-manager-server
 Summary: Privacy Management
 Version: 0.0.3
 Release: 1
-Group:   System/Libraries
+Group:   Security/Libraries
 License: Apache-2.0
 Source0: %{name}-%{version}.tar.gz
 Source1: privacy-manager-server.service
@@ -102,10 +102,6 @@ make %{?jobs:-j%jobs}
 
 %install
 rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/share/license
-cp LICENSE.APLv2 %{buildroot}/usr/share/license/privacy-manager-server
-mkdir -p %{buildroot}/usr/share/license
-cp LICENSE.APLv2 %{buildroot}/usr/share/license/privacy-manager-client
 mkdir -p %{buildroot}/usr/bin
 cp res/usr/bin/* %{buildroot}/usr/bin/
 mkdir -p %{buildroot}/opt/dbspace
@@ -113,9 +109,9 @@ cp res/opt/dbspace/.privacylist.db /%{buildroot}/opt/dbspace/
 
 %make_install
 
-mkdir -p %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants
-install -m 0644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/privacy-manager-server.service
-ln -sf /usr/lib/systemd/system/privacy-manager-server.service %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants/privacy-manager-server.service
+mkdir -p %{buildroot}%{_unitdir}/multi-user.target.wants
+install -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/privacy-manager-server.service
+ln -sf %{_unitdir}/privacy-manager-server.service %{buildroot}%{_unitdir}/multi-user.target.wants/privacy-manager-server.service
 
 
 %post -n privacy-manager-server
@@ -139,21 +135,21 @@ fi
 %postun -n capi-security-privacy-manager -p /sbin/ldconfig
 
 %files -n privacy-manager-server
+%license  LICENSE.APLv2
 %defattr(-,root,root,-)
 %manifest packaging/privacy-manager-server.manifest
 %{_bindir}/*
 %{_prefix}/lib/systemd/*
-/usr/share/license/privacy-manager-server
 /opt/dbspace/.privacylist.db
 
 %files -n privacy-manager-server-devel
 %{_libdir}/pkgconfig/privacy-manager-server.pc
 
 %files -n privacy-manager-client
+%license  LICENSE.APLv2
 %defattr(-,root,root,-)
 %manifest packaging/privacy-manager-client.manifest
 %{_libdir}/libprivacy-manager-client.so*
-/usr/share/license/privacy-manager-client
 /etc/package-manager/parserlib/libprivileges.so
 
 %files -n privacy-manager-client-devel
@@ -164,6 +160,7 @@ fi
 
 
 %files -n capi-security-privacy-manager
+%license  LICENSE.APLv2
 %{_libdir}/libcapi-security-privacy-manager.so.*
 %manifest packaging/capi-security-privacy-manager.manifest
 
@@ -173,6 +170,7 @@ fi
 %{_libdir}/pkgconfig/capi-security-privacy-manager.pc
 
 %files -n tizenprv00.privacy-popup
+%license  LICENSE.APLv2
 %manifest packaging/tizenprv00.privacy-popup.manifest
 %defattr(-,root,root,-)
 /usr/bin/tizenprv00.privacy-popup
