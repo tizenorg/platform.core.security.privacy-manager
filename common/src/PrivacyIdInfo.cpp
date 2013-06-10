@@ -124,7 +124,6 @@ PrivacyIdInfo::getPrivaycDisplayName(const std::string privacyId, std::string& d
 	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, sql.c_str(), pStmt);
 
-	LOGD("privacy id : %s", privacyId.c_str());
 	int res = sqlite3_bind_text(pStmt.get(), 1, privacyId.c_str(), -1, SQLITE_TRANSIENT);
 	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
 
@@ -139,8 +138,6 @@ PrivacyIdInfo::getPrivaycDisplayName(const std::string privacyId, std::string& d
 			displayName = privacyId;
 		else
 			displayName = std::string(dgettext(pModuleId, pNameId));
-
-		LOGD("name : %s", displayName.c_str());
 	}
 	else
 	{
@@ -169,7 +166,6 @@ PrivacyIdInfo::getPrivaycDescription(const std::string privacyId, std::string& d
 	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, sql.c_str(), pStmt);
 
-	LOGD("privacy id : %s", privacyId.c_str());
 	int res = sqlite3_bind_text(pStmt.get(), 1, privacyId.c_str(), -1, SQLITE_TRANSIENT);
 	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
 
