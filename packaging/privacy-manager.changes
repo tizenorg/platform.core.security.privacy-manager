@@ -1,3 +1,6 @@
+* Tue Jun 11 2013 Xavier Roche <xavrock.os@gmail.com> accepted/tizen/20130529.193233@535bafb
+- Fix hardcoded lib path in CMakeLists
+
 * Wed May 29 2013 Anas Nashif <anas.nashif@intel.com> accepted/tizen/20130520.103512@520eeab
 - Install systemd unit files in unitdir
 
