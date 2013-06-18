@@ -105,7 +105,7 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 	destroy_char_list(ppPrivilegeList, privilegeList.size() + 1);
 	if (ret != PRIV_MGR_ERROR_SUCCESS)
 	{
-		LOGD("Failed to install privacy : %d", ret);
+		LOGD("Failed to install privacy info: %d", ret);
 		return -EINVAL;
 	}
 
@@ -123,16 +123,36 @@ int PKGMGR_PARSER_PLUGIN_UNINSTALL(xmlDocPtr docPtr, const char* packageId)
 	int res = privacy_manager_client_uninstall_privacy_by_server(packageId);
 	if (res != PRIV_MGR_ERROR_SUCCESS)
 	{
-		LOGD("Failed to uninstall privacy in server: %d", res);
+		LOGD("Failed to uninstall privacy info in server: %d", res);
 		
 		res = privacy_manager_client_uninstall_privacy(packageId);
 		if (res != PRIV_MGR_ERROR_SUCCESS)
 		{
-			LOGD("Failed to uninstall privacy: %d", res);
+			LOGD("Failed to uninstall privacy info: %d", res);
 			return -EINVAL;
 		}
 	}
 
 	LOGI("leave");
 	return 0;
+}
+
+extern "C"
+__attribute__ ((visibility("default")))
+int PKGMGR_PARSER_PLUGIN_UPGRADE(xmlDocPtr docPtr, const char* packageId)
+{
+	int res = 0;
+
+	res = PKGMGR_PARSER_PLUGIN_UNINSTALL(docPtr, packageId);
+	if (res != 0)
+	{
+		LOGD("Privacy info can be already uninstalled");
+	}
+
+	res = PKGMGR_PARSER_PLUGIN_INSTALL(docPtr, packageId);
+	if (res != 0)
+	{
+		LOGD("Failed to install privacy Info: %d", res);
+	}
+	return res;
 }

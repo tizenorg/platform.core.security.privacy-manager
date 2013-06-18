@@ -1,7 +1,7 @@
 Name:    privacy-manager-server
 Summary: Privacy Management
 Version: 0.0.3
-Release: 4
+Release: 5
 Group:   System/Libraries
 License: SAMSUNG
 Source0: %{name}-%{version}.tar.gz
@@ -110,15 +110,13 @@ echo cmake . -DPREFIX=%{_prefix} \
         -DLIBDIR=%{_libdir} \
         -DINCLUDEDIR=%{_includedir} \
         -DCMAKE_BUILD_TYPE=%{build_type} \
-        -DVERSION=%{version} \
-        -DDPL_LOG="ON" 
+        -DVERSION=%{version} 
 cmake . -DPREFIX=%{_prefix} \
         -DEXEC_PREFIX=%{_exec_prefix} \
         -DLIBDIR=%{_libdir} \
         -DINCLUDEDIR=%{_includedir} \
         -DCMAKE_BUILD_TYPE=%{build_type} \
-        -DVERSION=%{version} \
-        -DDPL_LOG="ON" 
+        -DVERSION=%{version} 
 make %{?jobs:-j%jobs}
 
 %install
