@@ -71,34 +71,6 @@ Requires: privacy-manager-client = %{version}-%{release}
 %description -n capi-security-privacy-manager-devel
 The Privacy Manager API provides functions to get/set information about privacy information of installed packages.(DEV)
 
-%package -n tizenprv00.privacy-popup
-Summary:  Privacy Popup
-Group:    TO_BE/FILLED_IN
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
-BuildRequires: cmake
-BuildRequires: gettext-tools
-BuildRequires: edje-tools
-BuildRequires: pkgconfig(aul)
-BuildRequires: pkgconfig(dlog)
-BuildRequires: pkgconfig(ail)
-BuildRequires: pkgconfig(appcore-efl)
-BuildRequires: pkgconfig(capi-appfw-application)
-BuildRequires: pkgconfig(pkgmgr-info)
-BuildRequires: pkgconfig(dlog)
-BuildRequires: pkgconfig(edje)
-BuildRequires: pkgconfig(eina)
-BuildRequires: pkgconfig(elementary)
-BuildRequires: pkgconfig(evas)
-BuildRequires: pkgconfig(glib-2.0)
-BuildRequires: pkgconfig(ui-gadget-1)
-BuildRequires: pkgconfig(icu-i18n)
-BuildRequires: pkgconfig(bundle)
-BuildRequires: pkgconfig(glib-2.0)
-
-%description -n tizenprv00.privacy-popup
-The Privacy popup provides UI to set privacy information of application.
-
 %prep
 %setup -q
 
@@ -197,10 +169,3 @@ fi
 %{_includedir}/privacymgr/*.h
 %{_libdir}/libcapi-security-privacy-manager.so
 %{_libdir}/pkgconfig/capi-security-privacy-manager.pc
-
-%files -n tizenprv00.privacy-popup
-%manifest packaging/tizenprv00.privacy-popup.manifest
-%defattr(-,root,root,-)
-/usr/bin/tizenprv00.privacy-popup
-/usr/share/packages/tizenprv00.privacy-popup.xml
-#/etc/smack/accesses2.d/tizenprv00.privacy-popup.rule
