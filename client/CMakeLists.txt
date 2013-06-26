@@ -36,6 +36,11 @@ SET(common_include_dir "${CMAKE_SOURCE_DIR}/common/inc/")
 ADD_DEFINITIONS("-fvisibility=hidden")
 ADD_DEFINITIONS("-Wall -Werror")
 ADD_DEFINITIONS("-DDLOG_ERROR_ENABLED")
+OPTION (FILTER_LISTED_PKG "FILTER PKG BY LIST" ON)
+IF(FILTER_LISTED_PKG)
+    MESSAGE("FILTER PKGs BY FILTERING LIST")
+    ADD_DEFINITIONS("-D__FILTER_LISTED_PKG")
+ENDIF(FILTER_LISTED_PKG)
 
 ###################################################################################################
 ## for libprivacy-manager-client (executable)

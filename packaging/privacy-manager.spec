@@ -1,7 +1,7 @@
 Name:    privacy-manager-server
 Summary: Privacy Management
-Version: 0.0.3
-Release: 5
+Version: 0.0.4
+Release: 0
 Group:   System/Libraries
 License: SAMSUNG
 Source0: %{name}-%{version}.tar.gz
@@ -82,13 +82,15 @@ echo cmake . -DPREFIX=%{_prefix} \
         -DLIBDIR=%{_libdir} \
         -DINCLUDEDIR=%{_includedir} \
         -DCMAKE_BUILD_TYPE=%{build_type} \
-        -DVERSION=%{version} 
+        -DVERSION=%{version} \
+        -DFILTER_LISTED_PKG=ON
 cmake . -DPREFIX=%{_prefix} \
         -DEXEC_PREFIX=%{_exec_prefix} \
         -DLIBDIR=%{_libdir} \
         -DINCLUDEDIR=%{_includedir} \
         -DCMAKE_BUILD_TYPE=%{build_type} \
-        -DVERSION=%{version} 
+        -DVERSION=%{version} \
+        -DFILTER_LISTED_PKG=ON
 make %{?jobs:-j%jobs}
 
 %install
@@ -101,6 +103,8 @@ mkdir -p %{buildroot}/usr/bin
 cp res/usr/bin/* %{buildroot}/usr/bin/
 mkdir -p %{buildroot}/opt/dbspace
 cp res/opt/dbspace/.privacylist.db /%{buildroot}/opt/dbspace/
+mkdir -p %{buildroot}/usr/share/privacy-manager/
+cp res/usr/share/privacy-manager/privacy-filter-list.ini %{buildroot}/usr/share/privacy-manager/
 #mkdir -p %{buildroot}/etc/rc.d/init.d
 #cp res/etc/rc.d/init.d/* %{buildroot}/etc/rc.d/init.d/
 
@@ -147,6 +151,7 @@ fi
 %manifest packaging/privacy-manager-client.manifest
 %{_libdir}/libprivacy-manager-client.so*
 /usr/share/license/privacy-manager-client
+/usr/share/privacy-manager/privacy-filter-list.ini
 /usr/etc/package-manager/parserlib/libprivileges.so
 
 %files -n privacy-manager-client-devel

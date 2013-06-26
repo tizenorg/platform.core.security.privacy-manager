@@ -370,7 +370,7 @@ PrivacyChecker::updateCache(const std::string pkgId, std::string privacyId, std:
 	{
 		bool privacyEnabled = sqlite3_column_int(pPrivacyStmt.get(), 0) > 0 ? true : false;
 
-		LOGD("Set result : %s : %d", privacyId.c_str(), privacyEnabled );
+		SECURE_LOGD("Set result : %s : %d", privacyId.c_str(), privacyEnabled );
 		pkgCacheMap.erase(privacyId);
 		pkgCacheMap.insert(std::map < std::string, bool >::value_type(privacyId, privacyEnabled));
 	}
@@ -401,7 +401,7 @@ PrivacyChecker::updateCache(std::string pkgId, std::map < std::string, bool >& p
 
 		pkgCacheMap.insert(std::map < std::string, bool >::value_type(std::string(privacyId), privacyEnabled));
 
-		LOGD("Privacy found : %s %d", privacyId, privacyEnabled);
+		SECURE_LOGD("Privacy found : %s %d", privacyId, privacyEnabled);
 	}
 	LOGI("leave : %d", res);
 	return PRIV_MGR_ERROR_SUCCESS;

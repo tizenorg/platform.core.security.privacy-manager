@@ -33,6 +33,11 @@ SET(dbus_include_dir "/usr/include/dbus-1.0")
 ADD_DEFINITIONS("-fvisibility=hidden")
 ADD_DEFINITIONS("-Wall -Werror")
 ADD_DEFINITIONS("-DDLOG_ERROR_ENABLED")
+OPTION (FILTER_LISTED_PKG "FILTER PKG BY LIST" ON)
+IF(FILTER_LISTED_PKG)
+    MESSAGE("FILTER PKGs BY FILTERING LIST")
+    ADD_DEFINITIONS("-D__FILTER_LISTED_PKG")
+ENDIF(FILTER_LISTED_PKG)
 
 ###################################################################################################
 ## for privacy-manager-server (executable)

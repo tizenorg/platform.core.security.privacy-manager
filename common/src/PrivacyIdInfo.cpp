@@ -103,7 +103,7 @@ PrivacyIdInfo::getAllPrivacyId(std::list < std::string >& privacyIdList)
 	{
 		const char* privacyId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
 		privacyIdList.push_back(std::string(privacyId));
-		LOGD(" privacy Id : %s", privacyId);
+		SECURE_LOGD(" privacy Id : %s", privacyId);
 	}
 
 	return PRIV_MGR_ERROR_SUCCESS;

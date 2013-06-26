@@ -65,7 +65,7 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 		if (xmlStrcmp(curPtr->name, _NODE_PRIVILEGE) == 0)
 		{
 			xmlChar* pPrivilege = xmlNodeListGetString(docPtr, curPtr->xmlChildrenNode, 1);
-			LOGD(" value= %s", reinterpret_cast<char*>(pPrivilege));
+			SECURE_LOGD(" value= %s", reinterpret_cast<char*>(pPrivilege));
 			if (pPrivilege == NULL)
 			{
 				LOGE("Failed to get value");
@@ -73,7 +73,7 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 			}
             if (strncmp(reinterpret_cast<char*>(pPrivilege), TEST_AUTOMATION_PRIVILEGE, strlen(TEST_AUTOMATION_PRIVILEGE) ) == 0 )
             {
-            	LOGD("No privacy popup");
+            	SECURE_LOGD("No privacy popup");
                 privacyPopupRequired = false;
             }
             else 
