@@ -67,8 +67,6 @@ NotificationServer::initialize(void)
 int
 NotificationServer::notifySettingChanged(const std::string pkgId, const std::string privacyId)
 {
-	LOGI("enter");
-
 	if (!m_initialized)
 		return PRIV_MGR_ERROR_INVALID_STATE;
 
@@ -91,16 +89,12 @@ NotificationServer::notifySettingChanged(const std::string pkgId, const std::str
 	dbus_connection_flush(m_pDBusConnection);
 	dbus_message_unref(pMessage);
 
-	LOGI("leave");
-
 	return PRIV_MGR_ERROR_SUCCESS;
 }
 
 int
 NotificationServer::notifyPkgRemoved(const std::string pkgId)
 {
-	LOGI("enter");
-
 	if (!m_initialized)
 		return PRIV_MGR_ERROR_INVALID_STATE;
 
@@ -120,8 +114,6 @@ NotificationServer::notifyPkgRemoved(const std::string pkgId)
 
 	dbus_connection_flush(m_pDBusConnection);
 	dbus_message_unref(pMessage);
-
-	LOGI("leave");
 
 	return PRIV_MGR_ERROR_SUCCESS;
 }

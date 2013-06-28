@@ -18,7 +18,7 @@
 #include <PrivacyDb.h>
 #include <SocketClient.h>
 #include <PrivacyIdInfo.h>
-#include <algorithm> 
+#include <algorithm>
 #include <memory>
 #include <Utils.h>
 
@@ -146,7 +146,7 @@ PrivacyManagerClient::getAppPackagePrivacyInfo(const std::string pkgId, std::lis
 	TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "disconnect : %d", res);
 
 	return result;
-#endif 
+#endif
 
 	return PrivacyDb::getInstance()->getAppPackagePrivacyInfo(pkgId, list);
 }
@@ -155,8 +155,6 @@ int
 PrivacyManagerClient::isUserPrompted(const std::string pkgId, bool& isPrompted) const
 {
 #ifdef __READ_DB_IPC__
-	LOGI("enter");
-
 	std::unique_ptr <SocketClient> pSocketClient (new SocketClient(INTERFACE_NAME));
 
 	int result = PRIV_MGR_ERROR_SUCCESS;
@@ -167,8 +165,6 @@ PrivacyManagerClient::isUserPrompted(const std::string pkgId, bool& isPrompted) 
 	res = pSocketClient->disconnect();
 	TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "disconnect : %d", res);
 
-	LOGI("leave");
-
 	return result;
 #endif
 	return PrivacyDb::getInstance()->isUserPrompted(pkgId, isPrompted);
@@ -177,8 +173,6 @@ PrivacyManagerClient::isUserPrompted(const std::string pkgId, bool& isPrompted) 
 int
 PrivacyManagerClient::setUserPrompted(const std::string pkgId, bool prompted)
 {
-	LOGI("enter");
-
 	std::unique_ptr <SocketClient> pSocketClient (new SocketClient(INTERFACE_NAME));
 
 	int result = PRIV_MGR_ERROR_SUCCESS;
@@ -188,8 +182,6 @@ PrivacyManagerClient::setUserPrompted(const std::string pkgId, bool prompted)
 	TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, m_pSocketClient->disconnect(), "call : %d", res);
 	res = pSocketClient->disconnect();
 	TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "disconnect : %d", res);
-
-	LOGI("leave");
 
 	return result;
 }

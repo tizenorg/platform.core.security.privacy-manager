@@ -44,11 +44,9 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 {
 	int ret;
     bool privacyPopupRequired = true;
-	LOGI("enter");
 
 	// Node: <privileges>
 	xmlNodePtr curPtr = xmlFirstElementChild(xmlDocGetRootElement(docPtr));
-	LOGD("Node: %s", curPtr->name);
 
 	curPtr = curPtr->xmlChildrenNode;
 	if (curPtr == NULL)
@@ -60,12 +58,10 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 	std::list <std::string> privilegeList;
 	while (curPtr != NULL)
 	{
-		LOGD("Node: %s", curPtr->name);
-
 		if (xmlStrcmp(curPtr->name, _NODE_PRIVILEGE) == 0)
 		{
 			xmlChar* pPrivilege = xmlNodeListGetString(docPtr, curPtr->xmlChildrenNode, 1);
-			SECURE_LOGD(" value= %s", reinterpret_cast<char*>(pPrivilege));
+            
 			if (pPrivilege == NULL)
 			{
 				LOGE("Failed to get value");
@@ -109,8 +105,6 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 		return -EINVAL;
 	}
 
-	LOGI("leave");
-    
     return 0;
 }
 
@@ -118,8 +112,6 @@ extern "C"
 __attribute__ ((visibility("default")))
 int PKGMGR_PARSER_PLUGIN_UNINSTALL(xmlDocPtr docPtr, const char* packageId)
 {
-	LOGI("enter");
-
 	int res = privacy_manager_client_uninstall_privacy_by_server(packageId);
 	if (res != PRIV_MGR_ERROR_SUCCESS)
 	{
@@ -133,7 +125,6 @@ int PKGMGR_PARSER_PLUGIN_UNINSTALL(xmlDocPtr docPtr, const char* packageId)
 		}
 	}
 
-	LOGI("leave");
 	return 0;
 }
 
@@ -142,6 +133,8 @@ __attribute__ ((visibility("default")))
 int PKGMGR_PARSER_PLUGIN_UPGRADE(xmlDocPtr docPtr, const char* packageId)
 {
 	int res = 0;
+    
+    LOGD("Update privacy Info");
 
 	res = PKGMGR_PARSER_PLUGIN_UNINSTALL(docPtr, packageId);
 	if (res != 0)

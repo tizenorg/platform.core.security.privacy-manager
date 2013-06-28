@@ -77,7 +77,7 @@ public:
 	}
 	
 	int read(bool* pB)
-	{		
+	{
 		int length = 0;
 		int res = m_socketStream.readStream(sizeof(length), &length);
 		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "readStream : %d", res);
@@ -154,7 +154,7 @@ public:
 	}
 
 	template < typename T >
-	int  read (std::list<T>& list) 
+	int  read (std::list<T>& list)
 	{
 		int length;
 		int res = read(length);
@@ -172,13 +172,13 @@ public:
 	}
 
 	template < typename T >
-	int read (std::list<T>* pList) 
+	int read (std::list<T>* pList)
 	{
 		return read(*pList);
 	}
 
 	template < typename K, typename P >
-	void read (std::pair<K, P>& pair) 
+	void read (std::pair<K, P>& pair)
 	{
 		int res = read( pair.first);
 		TryReturn(res == PRIV_MGR_ERROR_SUCCESS, res, , "read : %d", res);
@@ -189,7 +189,7 @@ public:
 	}
 
 	template < typename K, typename P >
-	int read (std::pair<K, P>* pPair) 
+	int read (std::pair<K, P>* pPair)
 	{
 		return read( *pPair);
 	}
@@ -294,13 +294,13 @@ public:
 	}
 
 	template<typename K, typename T>
-	int write(const std::pair<K, T&>* pPair) 
+	int write(const std::pair<K, T&>* pPair)
 	{
 		return write(*pPair);
 	}
 
 	template<typename T>
-	int write(const std::list <T> list) 
+	int write(const std::list <T> list)
 	{
 		int length = list.size();
 		int res = write(length);
@@ -314,7 +314,7 @@ public:
 	}
 
 	template<typename T>
-	int write(const std::list <T>* pList) 
+	int write(const std::list <T>* pList)
 	{
 		return write(*pList);
 	}

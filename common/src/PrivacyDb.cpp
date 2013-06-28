@@ -60,7 +60,7 @@ bool PrivacyDb::isFilteredPackage(const std::string pkgId) const
 	if ( (it = m_filteredPkgList.find(pkgId)) != m_filteredPkgList.end())
 		return true;
 
-    return false;
+	return false;
 #else
     return false;
 #endif
@@ -69,8 +69,6 @@ bool PrivacyDb::isFilteredPackage(const std::string pkgId) const
 int
 PrivacyDb::setPrivacySetting(const std::string pkgId, const std::string privacyId, bool enabled)
 {
-	LOGI("enter");
-
 	static const std::string query = std::string("UPDATE PrivacyInfo set IS_ENABLED =? where PKG_ID=? and PRIVACY_ID=?");
 
 	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
@@ -88,16 +86,12 @@ PrivacyDb::setPrivacySetting(const std::string pkgId, const std::string privacyI
 	res = sqlite3_step(pStmt.get());
 	TryReturn( res == SQLITE_DONE, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_step : %d", res);
 
-	LOGI("leave");
-
 	return 0;
 }
 
 int
 PrivacyDb::getPrivacyAppPackages(std::list <std::string>& list) const
 {
-	LOGI("enter");
-
 	std::string query = "SELECT PKG_ID from PackageInfo";
 
 	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
@@ -118,16 +112,12 @@ PrivacyDb::getPrivacyAppPackages(std::list <std::string>& list) const
 		list.push_back(std::string(pValue));
 	}
 
-	LOGI("leave");
-
 	return 0;
 }
 
 int
 PrivacyDb::getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pair < std::string, bool > >& privacyInfoList) const
 {
-	LOGI("enter");
-
 	static const std::string query = "SELECT PRIVACY_ID, IS_ENABLED from PrivacyInfo where PKG_ID=?";
 
 	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
@@ -146,8 +136,6 @@ PrivacyDb::getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pa
 		SECURE_LOGD("Privacy found : %s %d", privacyId, privacyEnabled);
 	}
 
-	LOGI("leave");
-
 	return 0;
 }
 
@@ -155,8 +143,6 @@ PrivacyDb::getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pa
 int
 PrivacyDb::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < std::string > privilegeList, bool privacyPopupRequired)
 {
-	LOGI("enter");
-
 	static const std::string pkgInfoQuery("INSERT INTO PackageInfo(PKG_ID, IS_SET) VALUES(?, ?)");
 	static const std::string privacyQuery("INSERT INTO PrivacyInfo(PKG_ID, PRIVACY_ID, IS_ENABLED) VALUES(?, ?, ?)");
 	
@@ -174,7 +160,7 @@ PrivacyDb::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < s
 	
 	for ( std::list <std::string>::const_iterator iter = privilegeList.begin(); iter != privilegeList.end(); ++iter)
 	{
-		SECURE_LOGD(" install privacy: %s", iter->c_str());
+		SECURE_LOGD("install privacy: %s", iter->c_str());
 		prepareDb(pDbHandler, privacyQuery.c_str(), pPrivacyStmt);
 		
 		res = sqlite3_bind_text(pPrivacyStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
@@ -199,8 +185,6 @@ PrivacyDb::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < s
 int
 PrivacyDb::removeAppPackagePrivacyInfo(const std::string pkgId)
 {
-	LOGI("enter");
-
 	static const std::string pkgInfoQuery("DELETE FROM PackageInfo WHERE PKG_ID=?");
 	static const std::string privacyQuery("DELETE FROM PrivacyInfo WHERE PKG_ID=?");
 
@@ -229,8 +213,6 @@ PrivacyDb::removeAppPackagePrivacyInfo(const std::string pkgId)
 int
 PrivacyDb::isUserPrompted(const std::string pkgId, bool& isPrompted) const
 {
-	LOGI("enter");
-
 	static const std::string query = "SELECT IS_SET from PackageInfo where PKG_ID=?";
 
 	isPrompted = true;
@@ -265,8 +247,6 @@ PrivacyDb::isUserPrompted(const std::string pkgId, bool& isPrompted) const
 int
 PrivacyDb::setUserPrompted(const std::string pkgId, bool prompted)
 {
-	LOGI("enter");
-
 	std::string query = std::string("UPDATE PackageInfo set IS_SET =? where PKG_ID=?");
 
 	int res;
@@ -283,16 +263,12 @@ PrivacyDb::setUserPrompted(const std::string pkgId, bool prompted)
 	res = sqlite3_step(pStmt.get());
 	TryReturn( res == SQLITE_DONE, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_step : %d", res);
 
-	LOGI("leave");
-
 	return 0;
 }
 
 int
 PrivacyDb::getAppPackagesbyPrivacyId(std::string privacyId, std::list < std::pair < std::string, bool > >& list) const
 {
-	LOGI("enter");
-
 	std::string sql = std::string("SELECT PKG_ID, IS_ENABLED from PrivacyInfo where PRIVACY_ID=?");
 
 	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
@@ -316,8 +292,6 @@ PrivacyDb::getAppPackagesbyPrivacyId(std::string privacyId, std::list < std::pai
 
 		list.push_back( std::pair <std::string, bool >(pkgId, isEnabled) );
 	}
-
-	LOGI("leave");
 
 	return PRIV_MGR_ERROR_SUCCESS;
 }
@@ -358,15 +332,12 @@ PrivacyDb::~PrivacyDb(void)
 PrivacyDb*
 PrivacyDb::getInstance(void)
 {
-	LOGI("enter");
 	std::lock_guard < std::mutex > guard(m_singletonMutex);
 
 	if (m_pInstance == NULL)
 	{	
 		m_pInstance = new PrivacyDb();
 	}
-
-	LOGI("leave");
 
 	return m_pInstance;
 }

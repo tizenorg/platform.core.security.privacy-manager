@@ -30,7 +30,7 @@
 												return -1; \
 											} while(0)
 
-SocketClient::SocketClient(const std::string& interfaceName) 
+SocketClient::SocketClient(const std::string& interfaceName)
 {
 	m_interfaceName = interfaceName;
 	m_serverAddress = SERVER_ADDRESS;
@@ -66,7 +66,7 @@ int SocketClient::connect()
 
 int SocketClient::disconnect()
 {
-	//Socket should be already closed by server side, 
+	//Socket should be already closed by server side,
 	//even though we should close it in case of any errors
 	close(m_socketFd);
 	LOGI("Client disconnected");

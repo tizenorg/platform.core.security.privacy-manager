@@ -23,7 +23,7 @@
 class EXTERN_API SocketStream
 {
 public:
-	explicit SocketStream(int socket_fd) 
+	explicit SocketStream(int socket_fd)
 		: m_socketFd(socket_fd)
 		, m_bytesRead(0)
 		,m_bytesWrote(0)
