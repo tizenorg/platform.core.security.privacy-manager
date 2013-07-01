@@ -6,6 +6,7 @@ Group:   Security/Libraries
 License: Apache-2.0
 Source0: %{name}-%{version}.tar.gz
 Source1: privacy-manager-server.service
+Source1001: 	privacy-manager.manifest
 BuildRequires: cmake
 BuildRequires:  pkgconfig(capi-base-common)
 BuildRequires: pkgconfig(libxml-2.0)
@@ -87,6 +88,7 @@ The Privacy popup provides UI to set privacy information of application.
 
 %prep
 %setup -q
+cp %{SOURCE1001} .
 
 %build
 #%{!?build_type:%define build_type "Release"}
@@ -135,6 +137,7 @@ fi
 %postun -n capi-security-privacy-manager -p /sbin/ldconfig
 
 %files -n privacy-manager-server
+%manifest %{name}.manifest
 %license  LICENSE.APLv2
 %defattr(-,root,root,-)
 %manifest packaging/privacy-manager-server.manifest
@@ -143,9 +146,11 @@ fi
 /opt/dbspace/.privacylist.db
 
 %files -n privacy-manager-server-devel
+%manifest %{name}.manifest
 %{_libdir}/pkgconfig/privacy-manager-server.pc
 
 %files -n privacy-manager-client
+%manifest %{name}.manifest
 %license  LICENSE.APLv2
 %defattr(-,root,root,-)
 %manifest packaging/privacy-manager-client.manifest
@@ -153,6 +158,7 @@ fi
 /etc/package-manager/parserlib/libprivileges.so
 
 %files -n privacy-manager-client-devel
+%manifest %{name}.manifest
 %defattr(-,root,root,-)
 %{_includedir}/*
 %{_libdir}/pkgconfig/privacy-manager-client.pc
@@ -160,16 +166,19 @@ fi
 
 
 %files -n capi-security-privacy-manager
+%manifest %{name}.manifest
 %license  LICENSE.APLv2
 %{_libdir}/libcapi-security-privacy-manager.so.*
 %manifest packaging/capi-security-privacy-manager.manifest
 
 %files -n capi-security-privacy-manager-devel
+%manifest %{name}.manifest
 %{_includedir}/privacymgr/*.h
 %{_libdir}/libcapi-security-privacy-manager.so
 %{_libdir}/pkgconfig/capi-security-privacy-manager.pc
 
 %files -n tizenprv00.privacy-popup
+%manifest %{name}.manifest
 %license  LICENSE.APLv2
 %manifest packaging/tizenprv00.privacy-popup.manifest
 %defattr(-,root,root,-)
