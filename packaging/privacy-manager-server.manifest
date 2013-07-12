@@ -1,22 +1,5 @@
 <manifest>
-        <define>
-                <domain name="privacy-manager" />
-                <provide>
-                        <label name="privacy-manager::daemon" />
-                        <label name="privacy-manager::db" />
-                </provide>
-        </define>
-        <request>
-                <domain name="privacy-manager" />
-        </request>
-        <assign>
-		        <filesystem path="/usr/bin/privacy-manager-server" label="privacy-manager::daemon" exec_label="privacy-manager::daemon"/>
-		        <filesystem path="/usr/share/license/privacy-manager-server" label="_"/>
-		        <filesystem path="/etc/rc.d/init.d/privacy-manager-server.sh" label="_" exec_label="none"/>
-		        <filesystem path="/etc/rc.d/rc3.d/S10privacy-manager-server.sh" label="_" exec_label="none"/>
-		        <filesystem path="/etc/rc.d/rc5.d/S10privacy-manager-server.sh" label="_" exec_label="none"/>
-		        <filesystem path="/usr/lib/systemd/system/privacy-manager-server.service" label="_" exec_label="none" />
-		        <filesystem path="/usr/lib/systemd/system/multi-user.target.wants/privacy-manager-server.service" label="_" exec_label="none" />
-		        <filesystem path="/opt/dbspace/.privacylist.db" label="privacy-manager::db" exec_label="none" />
-		</assign>
+ <request>
+    <domain name="_"/>
+ </request>
 </manifest>
