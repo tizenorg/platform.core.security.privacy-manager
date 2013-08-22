@@ -32,6 +32,11 @@ SET(dbus_include_dir "/usr/include/dbus-1.0")
 ADD_DEFINITIONS("-fvisibility=hidden")
 ADD_DEFINITIONS("-Wall -Werror")
 ADD_DEFINITIONS("-DDLOG_ERROR_ENABLED")
+OPTION (FILTER_LISTED_PKG "FILTER PKG BY LIST" ON)
+IF(FILTER_LISTED_PKG)
+    MESSAGE("FILTER PKGs BY FILTERING LIST")
+    ADD_DEFINITIONS("-D__FILTER_LISTED_PKG")
+ENDIF(FILTER_LISTED_PKG)
 
 ###################################################################################################
 ## for privacy-manager-server (executable)
@@ -46,15 +51,16 @@ SET(PRIVACY_MANAGER_SERVER_SOURCES
 	${common_src_dir}/SocketConnection.cpp
 	${common_src_dir}/SocketStream.cpp
 	${common_src_dir}/PrivacyDb.cpp
-	${server_src_dir}/main.cpp
+    #	${server_src_dir}/main.cpp
 	${server_src_dir}/SocketService.cpp
 	${server_src_dir}/PrivacyManagerDaemon.cpp
 	${server_src_dir}/service/PrivacyInfoService.cpp
 	${server_src_dir}/PrivacyManagerServer.cpp
 	${server_src_dir}/NotificationServer.cpp
-
+	${server_src_dir}/privacy_manager_daemon.cpp
 	)
 SET(PRIVACY_MANAGER_SERVER_HEADERS
+	${server_include_dir}/privacy_manager_daemon.h
     #	${server_include_dir}/SocketService.h
     #   ${server_include_dir}/PrivacyManagerDaemon.h
     #	${common_include_dir}/SocketConnection.h
@@ -65,12 +71,17 @@ SET(PRIVACY_MANAGER_SERVER_CFLAGS  " ${CFLAGS} -fPIC ")
 #SET(PRIVACY_MANAGER_SERVER_LIBADD " ")
 
 ADD_DEFINITIONS("-DLOG_TAG=\"PRIVACY-MANAGER-SERVER\"")
-ADD_EXECUTABLE(privacy-manager-server ${PRIVACY_MANAGER_SERVER_SOURCES})
+ADD_LIBRARY(privacy-manager-server SHARED ${PRIVACY_MANAGER_SERVER_SOURCES})
 TARGET_LINK_LIBRARIES(privacy-manager-server ${pkgs_LDFLAGS} ${pkgs_LIBRARIES})
 SET_TARGET_PROPERTIES(privacy-manager-server PROPERTIES COMPILE_FLAGS "${PRIVACY_MANAGER_SERVER_CFLAGS}")
-#SET_TARGET_PROPERTIES(privacy-manager-client PROPERTIES SOVERSION ${API_VERSION})
-#SET_TARGET_PROPERTIES(privacy-manager-client PROPERTIES VERSION ${VERSION})
+SET_TARGET_PROPERTIES(privacy-manager-server PROPERTIES SOVERSION ${API_VERSION})
+SET_TARGET_PROPERTIES(privacy-manager-server PROPERTIES VERSION ${VERSION})
 ###################################################################################################
+
+SET(PC_NAME privacy-manager-server)
+SET(PC_DESCRIPTION "Privacy Manager Server API")
+SET(PC_LDFLAGS -lprivacy-manager-server)
+SET(PC_CFLAGS -I\${includedir}/privacy_manager)
 
 CONFIGURE_FILE(../privacy-manager-server.pc.in privacy-manager-server.pc @ONLY)
 

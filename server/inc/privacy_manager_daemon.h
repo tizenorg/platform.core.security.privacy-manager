@@ -14,8 +14,8 @@
  * limitations under the License. 
  */
 
-#ifndef _PRIVACY_CHECKER_CLIENT_H
-#define _PRIVACY_CHECKER_CLIENT_H
+#ifndef __PRIVACY_MANAGER_DAEMON_H__
+#define __PRIVACY_MANAGER_DAEMON_H__
 
 #include <privacy_manager_client_types.h>
 
@@ -23,18 +23,15 @@
 extern "C" {
 #endif
 
-EXTERN_API int privacy_checker_initialize(const char *package_id);
-EXTERN_API int privacy_checker_check_privacy(const char *privacy_id);
-EXTERN_API int privacy_checker_check_by_privilege(const char *privilege_id);
-EXTERN_API int privacy_checker_finalize(void);
-
-EXTERN_API int privacy_checker_check_package_by_privilege(const char* package_id, const char *privilege_id);
-
-EXTERN_API int privacy_checker_finalize(void);
+int EXTERN_API privacy_manager_daemon_initialize(void);
+int EXTERN_API privacy_manager_daemon_start(void);
+int EXTERN_API privacy_manager_daemon_stop(void);
+int EXTERN_API privacy_manager_daemon_shutdown(void);
 
 #ifdef __cplusplus
 }
 #endif
 
 
-#endif //_PRIVACY_CHECKER_CLIENT_H
+#endif //__PRIVACY_MANAGER_DAEMON_H__
+

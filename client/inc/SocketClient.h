@@ -50,7 +50,7 @@
 #include <string>
 #include <PrivacyManagerTypes.h>
 
-class EXTERN_API SocketClient 
+class EXTERN_API SocketClient
 {
 public:
 

@@ -21,12 +21,20 @@
 #include <memory>
 #include <list>
 #include <mutex>
+#ifdef __FILTER_LISTED_PKG
+#include <map>
+#endif
 
 class PrivacyDb
 {
 private:
 	static std::mutex m_singletonMutex;
 	static PrivacyDb* m_pInstance;
+#ifdef __FILTER_LISTED_PKG
+    const static std::string PRIVACY_FILTER_LIST_FILE;
+    const static std::string FILTER_KEY;
+    static std::map < std::string, bool > m_filteredPkgList;
+#endif
 
 private:
 	void createDB(void);

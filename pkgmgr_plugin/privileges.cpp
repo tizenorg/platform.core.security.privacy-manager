@@ -44,11 +44,9 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 {
 	int ret;
     bool privacyPopupRequired = true;
-	LOGI("enter");
 
 	// Node: <privileges>
 	xmlNodePtr curPtr = xmlFirstElementChild(xmlDocGetRootElement(docPtr));
-	LOGD("Node: %s", curPtr->name);
 
 	curPtr = curPtr->xmlChildrenNode;
 	if (curPtr == NULL)
@@ -60,12 +58,10 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 	std::list <std::string> privilegeList;
 	while (curPtr != NULL)
 	{
-		LOGD("Node: %s", curPtr->name);
-
 		if (xmlStrcmp(curPtr->name, _NODE_PRIVILEGE) == 0)
 		{
 			xmlChar* pPrivilege = xmlNodeListGetString(docPtr, curPtr->xmlChildrenNode, 1);
-			LOGD(" value= %s", reinterpret_cast<char*>(pPrivilege));
+            
 			if (pPrivilege == NULL)
 			{
 				LOGE("Failed to get value");
@@ -73,6 +69,7 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 			}
             if (strncmp(reinterpret_cast<char*>(pPrivilege), TEST_AUTOMATION_PRIVILEGE, strlen(TEST_AUTOMATION_PRIVILEGE) ) == 0 )
             {
+            	SECURE_LOGD("No privacy popup");
                 privacyPopupRequired = false;
             }
             else 
@@ -104,12 +101,10 @@ int PKGMGR_PARSER_PLUGIN_INSTALL(xmlDocPtr docPtr, const char* packageId)
 	destroy_char_list(ppPrivilegeList, privilegeList.size() + 1);
 	if (ret != PRIV_MGR_ERROR_SUCCESS)
 	{
-		LOGD("Failed to install privacy : %d", ret);
+		LOGD("Failed to install privacy info: %d", ret);
 		return -EINVAL;
 	}
 
-	LOGI("leave");
-    
     return 0;
 }
 
@@ -117,21 +112,40 @@ extern "C"
 __attribute__ ((visibility("default")))
 int PKGMGR_PARSER_PLUGIN_UNINSTALL(xmlDocPtr docPtr, const char* packageId)
 {
-	LOGI("enter");
-
 	int res = privacy_manager_client_uninstall_privacy_by_server(packageId);
 	if (res != PRIV_MGR_ERROR_SUCCESS)
 	{
-		LOGD("Failed to uninstall privacy in server: %d", res);
+		LOGD("Failed to uninstall privacy info in server: %d", res);
 		
 		res = privacy_manager_client_uninstall_privacy(packageId);
 		if (res != PRIV_MGR_ERROR_SUCCESS)
 		{
-			LOGD("Failed to uninstall privacy: %d", res);
+			LOGD("Failed to uninstall privacy info: %d", res);
 			return -EINVAL;
 		}
 	}
 
-	LOGI("leave");
 	return 0;
+}
+
+extern "C"
+__attribute__ ((visibility("default")))
+int PKGMGR_PARSER_PLUGIN_UPGRADE(xmlDocPtr docPtr, const char* packageId)
+{
+	int res = 0;
+    
+    LOGD("Update privacy Info");
+
+	res = PKGMGR_PARSER_PLUGIN_UNINSTALL(docPtr, packageId);
+	if (res != 0)
+	{
+		LOGD("Privacy info can be already uninstalled");
+	}
+
+	res = PKGMGR_PARSER_PLUGIN_INSTALL(docPtr, packageId);
+	if (res != 0)
+	{
+		LOGD("Failed to install privacy Info: %d", res);
+	}
+	return res;
 }

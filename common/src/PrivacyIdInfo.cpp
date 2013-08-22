@@ -30,8 +30,6 @@ PrivacyIdInfo::initialize(void)
 {
 	static const std::string sqlPrivilege("SELECT PRIVILEGE_ID, PRIVACY_ID from PrivilegeToPrivacyTable");
 
-	LOGI("enter");
-	
 	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, sqlPrivilege.c_str(), pStmtPrivilege);
 
@@ -93,7 +91,7 @@ PrivacyIdInfo::getAllPrivacyId(std::list < std::string >& privacyIdList)
 	static const std::string sql("SELECT PRIVACY_ID from PrivacyInfo");
 
 	if (!m_isInitialized)
-		initialize();	
+		initialize();
 	
 	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, sql.c_str(), pStmt);
@@ -103,7 +101,7 @@ PrivacyIdInfo::getAllPrivacyId(std::list < std::string >& privacyIdList)
 	{
 		const char* privacyId =  reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
 		privacyIdList.push_back(std::string(privacyId));
-		LOGD(" privacy Id : %s", privacyId);
+		SECURE_LOGD(" privacy Id : %s", privacyId);
 	}
 
 	return PRIV_MGR_ERROR_SUCCESS;
@@ -112,19 +110,14 @@ PrivacyIdInfo::getAllPrivacyId(std::list < std::string >& privacyIdList)
 int
 PrivacyIdInfo::getPrivaycDisplayName(const std::string privacyId, std::string& displayName)
 {
-	LOGI("enter");
-
 	if (!m_isInitialized)
 		initialize();
-	//bindtextdomain("privacy-manager", "/usr/share/locale");
-	//setlocale(LC_ALL, "");
 
 	std::string sql = std::string("SELECT STR_MODULE_ID, STR_NAME_ID from PrivacyInfo where PRIVACY_ID=?");
 
 	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, sql.c_str(), pStmt);
 
-	LOGD("privacy id : %s", privacyId.c_str());
 	int res = sqlite3_bind_text(pStmt.get(), 1, privacyId.c_str(), -1, SQLITE_TRANSIENT);
 	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
 
@@ -133,25 +126,16 @@ PrivacyIdInfo::getPrivaycDisplayName(const std::string privacyId, std::string& d
 		const char* pModuleId = reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
 		const char* pNameId = reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 1));
 
-		LOGD("result : [%s] [%s]", pModuleId, pNameId);
-
 		if (pNameId == NULL)
 			displayName = privacyId;
 		else
-			displayName = std::string(dgettext("privacy-manager", pNameId));
-
-		LOGD("name : %s", displayName.c_str());
+			displayName = std::string(dgettext(pModuleId, pNameId));
 	}
 	else
 	{
 		LOGI("Cannot find privacy string %s ", privacyId.c_str());
-
-		// Todo : return no_data.
-		displayName = privacyId;
- 		return PRIV_MGR_ERROR_SUCCESS;
+		return PRIV_MGR_ERROR_NO_DATA;
 	}
-
-	LOGI("leave %d", res);
 
 	return PRIV_MGR_ERROR_SUCCESS;
 }
@@ -159,8 +143,6 @@ PrivacyIdInfo::getPrivaycDisplayName(const std::string privacyId, std::string& d
 int
 PrivacyIdInfo::getPrivaycDescription(const std::string privacyId, std::string& displayName)
 {
-	LOGI("enter");
-
 	if (!m_isInitialized)
 		initialize();
 
@@ -169,7 +151,6 @@ PrivacyIdInfo::getPrivaycDescription(const std::string privacyId, std::string& d
 	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, sql.c_str(), pStmt);
 
-	LOGD("privacy id : %s", privacyId.c_str());
 	int res = sqlite3_bind_text(pStmt.get(), 1, privacyId.c_str(), -1, SQLITE_TRANSIENT);
 	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
 
@@ -178,8 +159,6 @@ PrivacyIdInfo::getPrivaycDescription(const std::string privacyId, std::string& d
 		const char* pModuleId = reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
 		const char* pNameId = reinterpret_cast < const char* > (sqlite3_column_text(pStmt.get(), 0));
 
-		LOGD("result : %s %s", pModuleId, pNameId);
-
 		displayName = std::string(dgettext(pModuleId, pNameId));
 	}
 	else
@@ -187,8 +166,6 @@ PrivacyIdInfo::getPrivaycDescription(const std::string privacyId, std::string& d
 		LOGI("Cannot find privacy string %s ", privacyId.c_str());
 		return PRIV_MGR_ERROR_NO_DATA;
 	}
-
-	LOGI("leave %d", res);
 
 	return PRIV_MGR_ERROR_SUCCESS;
 }

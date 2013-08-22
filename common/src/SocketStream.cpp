@@ -76,7 +76,7 @@ SocketStream::readStream(size_t num, void* pBytes)
 				continue;
 			LOGD("pselect : %s", strerror(errno));
 			return -1;
-		}	
+		}
 		//This means pselect got timedout
 		//This is not a proper behavior in reading data from UDS
 		//And could mean we got corrupted connection

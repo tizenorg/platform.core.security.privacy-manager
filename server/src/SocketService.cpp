@@ -88,7 +88,7 @@ SocketService::start(void)
 
 	sigset_t sigset;
 	sigemptyset(&sigset);
-//	if ( sigaddset(&sigset, m_signalToClose) == -1 ) 
+//	if ( sigaddset(&sigset, m_signalToClose) == -1 )
 //	{
 //		LOGE("Failed to sigaddset : %s", strerror(errno));
 //		return -1;
@@ -185,8 +185,8 @@ SocketService::mainloop(void)
 				LOGI("Server thread got signal to close");
 				closeConnections();
 				return PRIV_MGR_ERROR_SUCCESS;
-			} 
-			else 
+			}
+			else
 			{
 				LOGI("Got not handled signal");
 			}
@@ -211,7 +211,7 @@ SocketService::mainloop(void)
 			}
 			addClientSocket(clientFd);
 		}
-	}	
+	}
 }
 
 void*

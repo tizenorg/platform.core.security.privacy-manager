@@ -93,15 +93,14 @@ PrivacyManagerServer::PrivacyManagerServer(void)
 PrivacyManagerServer*
 PrivacyManagerServer::getInstance(void)
 {
-	LOGI("enter");
 	std::lock_guard < std::mutex > guard(m_singletonMutex);
 
 	if (m_pInstance == NULL)
-	{	
+	{
 		m_pInstance = new PrivacyManagerServer();
 		
 		m_pInstance->m_notificationServer.initialize();
 	}
-	LOGI("leave");
+
 	return m_pInstance;
 }

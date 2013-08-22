@@ -1,7 +1,7 @@
 Name:    privacy-manager-server
 Summary: Privacy Management
-Version: 0.0.3
-Release: 1
+Version: 0.0.4
+Release: 0
 Group:   Security/Libraries
 License: Apache-2.0
 Source0: %{name}-%{version}.tar.gz
@@ -12,7 +12,6 @@ Source1003: privacy-manager-client.manifest
 Source1004: privacy-manager-client-devel.manifest
 Source1005: capi-security-privacy-manager.manifest
 Source1006: capi-security-privacy-manager-devel.manifest
-Source1007: tizenprv00.privacy-popup.manifest
 BuildRequires: cmake
 BuildRequires:  pkgconfig(capi-base-common)
 BuildRequires: pkgconfig(libxml-2.0)
@@ -85,13 +84,6 @@ Requires: capi-security-privacy-manager = %{version}-%{release}
 %description -n capi-security-privacy-manager-devel
 The Privacy Manager API provides functions to get/set information about privacy information of installed packages.(DEV)
 
-%package -n tizenprv00.privacy-popup
-Summary:  Privacy Popup
-Group:    System/Security
-
-%description -n tizenprv00.privacy-popup
-The Privacy popup provides UI to set privacy information of application.
-
 %prep
 %setup -q
 
@@ -102,7 +94,6 @@ cp %{SOURCE1003} .
 cp %{SOURCE1004} .
 cp %{SOURCE1005} .
 cp %{SOURCE1006} .
-cp %{SOURCE1007} .
 #%{!?build_type:%define build_type "Release"}
 
 %cmake . -DPREFIX=%{_prefix} \
@@ -111,21 +102,29 @@ cp %{SOURCE1007} .
         -DINCLUDEDIR=%{_includedir} \
         -DCMAKE_BUILD_TYPE=%{build_type} \
         -DVERSION=%{version} \
-        -DDPL_LOG="ON" 
+        -DFILTER_LISTED_PKG=ON
 make %{?jobs:-j%jobs}
 
 %install
 rm -rf %{buildroot}
+mkdir -p %{buildroot}/usr/share/license
+cp LICENSE.APLv2 %{buildroot}/usr/share/license/privacy-manager-server
+mkdir -p %{buildroot}/usr/share/license
+cp LICENSE.APLv2 %{buildroot}/usr/share/license/privacy-manager-client
 mkdir -p %{buildroot}/usr/bin
 cp res/usr/bin/* %{buildroot}/usr/bin/
 mkdir -p %{buildroot}/opt/dbspace
 cp res/opt/dbspace/.privacylist.db /%{buildroot}/opt/dbspace/
+mkdir -p %{buildroot}/usr/share/privacy-manager/
+cp res/usr/share/privacy-manager/privacy-filter-list.ini %{buildroot}/usr/share/privacy-manager/
+#mkdir -p %{buildroot}/etc/rc.d/init.d
+#cp res/etc/rc.d/init.d/* %{buildroot}/etc/rc.d/init.d/
 
 %make_install
 
-mkdir -p %{buildroot}%{_unitdir}/multi-user.target.wants
-install -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/privacy-manager-server.service
-ln -sf %{_unitdir}/privacy-manager-server.service %{buildroot}%{_unitdir}/multi-user.target.wants/privacy-manager-server.service
+mkdir -p %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants
+#install -m 0644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/privacy-manager-server.service
+#ln -sf /usr/lib/systemd/system/privacy-manager-server.service %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants/privacy-manager-server.service
 
 
 %post -n privacy-manager-server
@@ -149,21 +148,25 @@ fi
 %postun -n capi-security-privacy-manager -p /sbin/ldconfig
 
 %files -n privacy-manager-server
-%license  LICENSE.APLv2
+#%license  LICENSE.APLv2
 %defattr(-,root,root,-)
 %manifest privacy-manager-server.manifest
 %{_bindir}/*
 %{_prefix}/lib/systemd/*
+/usr/share/license/privacy-manager-server
 /opt/dbspace/.privacylist.db
 
 %files -n privacy-manager-server-devel
+%{_includedir}/privacy_manager/server/privacy_manager_daemon.h
 %{_libdir}/pkgconfig/privacy-manager-server.pc
 
 %files -n privacy-manager-client
-%license  LICENSE.APLv2
+#%license  LICENSE.APLv2
 %defattr(-,root,root,-)
 %manifest privacy-manager-client.manifest
 %{_libdir}/libprivacy-manager-client.so*
+/usr/share/license/privacy-manager-client
+/usr/share/privacy-manager/privacy-filter-list.ini
 /etc/package-manager/parserlib/libprivileges.so
 
 %files -n privacy-manager-client-devel
@@ -173,9 +176,8 @@ fi
 %{_libdir}/pkgconfig/privacy-manager-client.pc
 
 
-
 %files -n capi-security-privacy-manager
-%license  LICENSE.APLv2
+#%license  LICENSE.APLv2
 %{_libdir}/libcapi-security-privacy-manager.so.*
 %manifest capi-security-privacy-manager.manifest
 
@@ -184,11 +186,3 @@ fi
 %{_includedir}/privacymgr/*.h
 %{_libdir}/libcapi-security-privacy-manager.so
 %{_libdir}/pkgconfig/capi-security-privacy-manager.pc
-
-%files -n tizenprv00.privacy-popup
-%license  LICENSE.APLv2
-%manifest tizenprv00.privacy-popup.manifest
-%defattr(-,root,root,-)
-/usr/bin/tizenprv00.privacy-popup
-/usr/share/packages/tizenprv00.privacy-popup.xml
-#/etc/smack/accesses2.d/tizenprv00.privacy-popup.rule

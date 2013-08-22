@@ -17,9 +17,11 @@
 #ifndef _PRIVACY_MANAGER_DAEMON_H_
 #define _PRIVACY_MANAGER_DAEMON_H_
 
-#include <SocketService.h>
+#include <privacy_manager_client_types.h>
 
-class PrivacyManagerDaemon
+class SocketService;
+
+class EXTERN_API PrivacyManagerDaemon
 {
 private:
 	static PrivacyManagerDaemon* pInstance;
@@ -32,7 +34,7 @@ private:
 
 public:
 	static PrivacyManagerDaemon* getInstance(void);
-	int inialize(void);
+	int initialize(void);
 	int start(void);
 	int stop(void);
 	int shutdown(void);

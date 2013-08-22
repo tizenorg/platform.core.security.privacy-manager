@@ -48,7 +48,7 @@ int create_privacy_info_client_s(const char* privacy_id, bool enabled, privacy_i
 int privacy_manager_client_install_privacy(const char *package_id, const char** privacy_list, bool privacy_popup_required)
 {
 	PrivacyManagerClient* pInst = PrivacyManagerClient::getInstance();
-	std::list < std::string > privacyList; 
+	std::list < std::string > privacyList;
 
 	while (*privacy_list[0] != '\0')
 		privacyList.push_back(std::string(*privacy_list++));

@@ -1,8 +1,0 @@
-<manifest>
-	<define>
-		<domain name="tizenprv00.privacy-popup" />
-	</define>
-	<assign>
-		<filesystem path="/usr/bin/tizenprv00.privacy-popup" label="tizenprv00.privacy-popup" exec_label="tizenprv00.privacy-popup" />
-	</assign>
-</manifest>

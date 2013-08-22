@@ -60,12 +60,12 @@ public:
 	static int checkWithDeviceCap(const std::string pkgId, const std::string deviceCap);
 	
 	// for Checking in Server Process
-	static int initialize(void); 
+	static int initialize(void);
 	static int check(const std::string privacyId);
 	static int checkWithPrivilege(const std::string privilegeId);
 	static int checkWithDeviceCap(const std::string deviceCap);
 	
-	// common 
+	// common
 	static int finalize(void);
 	static DBusHandlerResult handleNotification(DBusConnection* connection, DBusMessage* message, void* user_data);
 };

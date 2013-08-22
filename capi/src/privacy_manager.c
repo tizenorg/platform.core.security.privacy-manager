@@ -31,7 +31,7 @@ static int _privacy_manager_convert_error(int error)
 
 	LOGD("before error : %d", error);
 
-	switch (error) 
+	switch (error)
 	{
 	case PRIV_MGR_ERROR_SUCCESS:
 		ret = PRIVACY_MANAGER_ERROR_NONE;

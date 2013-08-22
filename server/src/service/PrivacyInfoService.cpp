@@ -22,8 +22,6 @@
 void
 PrivacyInfoService::addPrivacyInfo(SocketConnection* pConnector)
 {
-	LOGI("enter");
-
 	std::string pkgId;
 	std::list < std::string > list;
 	bool privacyPopupRequired = true;
@@ -38,8 +36,6 @@ PrivacyInfoService::addPrivacyInfo(SocketConnection* pConnector)
 void
 PrivacyInfoService::removePrivacyInfo(SocketConnection* pConnector)
 {
-	LOGI("enter");
-
 	std::string pkgId;
 	pConnector->read(&pkgId);
 
@@ -52,8 +48,6 @@ PrivacyInfoService::removePrivacyInfo(SocketConnection* pConnector)
 void
 PrivacyInfoService::setPrivacySetting(SocketConnection* pConnector)
 {
-	LOGI("enter");
-
 	std::string pkgId;
 	std::string privacyId;
 	bool enabled = false;
@@ -68,7 +62,6 @@ PrivacyInfoService::setPrivacySetting(SocketConnection* pConnector)
 void
 PrivacyInfoService::getPrivacyAppPackages(SocketConnection* pConnector)
 {
-	LOGI("enter");
 	PrivacyManagerServer* pPrivacyManagerServer = PrivacyManagerServer::getInstance();
 	std::list <std::string> list;
 	int result = pPrivacyManagerServer->getPrivacyAppPackages(list);
@@ -81,8 +74,6 @@ PrivacyInfoService::getPrivacyAppPackages(SocketConnection* pConnector)
 void
 PrivacyInfoService::getAppPackagePrivacyInfo(SocketConnection* pConnector)
 {
-	LOGI("enter");
-
 	std::string pkgId;
 
 	pConnector->read(&pkgId);
@@ -100,8 +91,6 @@ PrivacyInfoService::getAppPackagePrivacyInfo(SocketConnection* pConnector)
 void
 PrivacyInfoService::isUserPrompted(SocketConnection* pConnector)
 {
-	LOGI("enter");
-
 	std::string pkgId;
 
 	pConnector->read(&pkgId);
@@ -113,14 +102,11 @@ PrivacyInfoService::isUserPrompted(SocketConnection* pConnector)
 	pConnector->write( res );
 	pConnector->write( isPrompted );
 
-	LOGI("leave");
 }
 
 void
 PrivacyInfoService::setUserPrompted(SocketConnection* pConnector)
 {
-	LOGI("enter");
-
 	std::string pkgId;
 	bool prompted = false;
 
@@ -131,5 +117,4 @@ PrivacyInfoService::setUserPrompted(SocketConnection* pConnector)
 	LOGI("write");
 	pConnector->write( res );
 
-	LOGI("leave");
 }
