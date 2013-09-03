@@ -13,7 +13,7 @@ Source1004: privacy-manager-client-devel.manifest
 Source1005: capi-security-privacy-manager.manifest
 Source1006: capi-security-privacy-manager-devel.manifest
 BuildRequires: cmake
-BuildRequires:  pkgconfig(capi-base-common)
+BuildRequires: pkgconfig(capi-base-common)
 BuildRequires: pkgconfig(libxml-2.0)
 BuildRequires: pkgconfig(dlog)
 BuildRequires: pkgconfig(glib-2.0)
@@ -24,18 +24,6 @@ BuildRequires: pkgconfig(dbus-glib-1)
 BuildRequires: pkgconfig(db-util)
 BuildRequires: pkgconfig(pkgmgr-info)
 BuildRequires: gettext-tools
-BuildRequires: edje-tools
-BuildRequires: pkgconfig(aul)
-BuildRequires: pkgconfig(ail)
-BuildRequires: pkgconfig(appcore-efl)
-BuildRequires: pkgconfig(capi-appfw-application)
-BuildRequires: pkgconfig(edje)
-BuildRequires: pkgconfig(eina)
-BuildRequires: pkgconfig(elementary)
-BuildRequires: pkgconfig(evas)
-BuildRequires: pkgconfig(ui-gadget-1)
-BuildRequires: pkgconfig(icu-i18n)
-BuildRequires: pkgconfig(bundle)
 
 Requires(post):   /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
