@@ -1,29 +1,29 @@
-Name:    privacy-manager-server
-Summary: Privacy Management
-Version: 0.0.4
-Release: 0
-Group:   Security/Libraries
-License: Apache-2.0
-Source0: %{name}-%{version}.tar.gz
-Source1: privacy-manager-server.service
-Source1001: privacy-manager-server.manifest
-Source1002: privacy-manager-server-devel.manifest
-Source1003: privacy-manager-client.manifest
-Source1004: privacy-manager-client-devel.manifest
-Source1005: capi-security-privacy-manager.manifest
-Source1006: capi-security-privacy-manager-devel.manifest
-BuildRequires: cmake
-BuildRequires: pkgconfig(capi-base-common)
-BuildRequires: pkgconfig(libxml-2.0)
-BuildRequires: pkgconfig(dlog)
-BuildRequires: pkgconfig(glib-2.0)
-BuildRequires: pkgconfig(sqlite3)
-BuildRequires: pkgconfig(capi-base-common)
-BuildRequires: pkgconfig(dbus-1)
-BuildRequires: pkgconfig(dbus-glib-1)
-BuildRequires: pkgconfig(db-util)
-BuildRequires: pkgconfig(pkgmgr-info)
-BuildRequires: gettext-tools
+Name:           privacy-manager-server
+Version:        0.0.4
+Release:        0
+License:        Apache-2.0
+Summary:        Privacy Management
+Group:          Security/Libraries
+Source0:        %{name}-%{version}.tar.gz
+Source1:        privacy-manager-server.service
+Source1001:     privacy-manager-server.manifest
+Source1002:     privacy-manager-server-devel.manifest
+Source1003:     privacy-manager-client.manifest
+Source1004:     privacy-manager-client-devel.manifest
+Source1005:     capi-security-privacy-manager.manifest
+Source1006:     capi-security-privacy-manager-devel.manifest
+BuildRequires:  cmake
+BuildRequires:  gettext-tools
+BuildRequires:  pkgconfig(capi-base-common)
+BuildRequires:  pkgconfig(capi-base-common)
+BuildRequires:  pkgconfig(db-util)
+BuildRequires:  pkgconfig(dbus-1)
+BuildRequires:  pkgconfig(dbus-glib-1)
+BuildRequires:  pkgconfig(dlog)
+BuildRequires:  pkgconfig(glib-2.0)
+BuildRequires:  pkgconfig(libxml-2.0)
+BuildRequires:  pkgconfig(pkgmgr-info)
+BuildRequires:  pkgconfig(sqlite3)
 
 Requires(post):   /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -32,58 +32,53 @@ Requires(postun): /sbin/ldconfig
 Privacy Management
 
 %package -n privacy-manager-server-devel
-Summary: privacy-manager server
-Group: Development/Libraries
-Requires: privacy-manager-server = %{version}-%{release}
+Summary:        Privacy Manager Server
+Requires:       privacy-manager-server = %{version}
 
 %description -n privacy-manager-server-devel
 privacy-manager server devel
 
 %package -n privacy-manager-client
-Summary: privacy-manager client
-Group: System/Libraries
-Requires: privacy-manager-server = %{version}-%{release}
+Summary:        Privacy Manager client
+Requires:       privacy-manager-server = %{version}
 
 %description -n privacy-manager-client
 privacy-manager client
 
 %package -n privacy-manager-client-devel
-Summary:    privacy-manager client devel
-Group:      Development/Libraries
-Requires:   privacy-manager-client = %{version}-%{release}
+Summary:        Privacy Manager client devel
+Requires:       privacy-manager-client = %{version}
 
 %description -n privacy-manager-client-devel
 Privacy Management(development files)
 
 %package -n capi-security-privacy-manager
-Summary:    Privacy Manager API
-Group:      API/C API
-License:    Apache-2.0
-Requires: privacy-manager-client = %{version}-%{release}
+Summary:        Privacy Manager API
+Requires:       privacy-manager-client = %{version}
 
 %description -n capi-security-privacy-manager
-The Privacy Manager API provides functions to get/set information about privacy information of installed packages.
+The Privacy Manager API provides functions to get/set information 
+about privacy information of installed packages.
 
 %package  -n capi-security-privacy-manager-devel
-Summary:  Privacy Manager API (Development)
-Group:    API/C API
-Requires: capi-security-privacy-manager = %{version}-%{release}
+Summary:        Privacy Manager API (Development)
+Requires:       capi-security-privacy-manager = %{version}
 
 %description -n capi-security-privacy-manager-devel
-The Privacy Manager API provides functions to get/set information about privacy information of installed packages.(DEV)
+The Privacy Manager API provides functions to get/set 
+information about privacy information of installed packages.(DEV)
 
 %prep
 %setup -q
-
-%build
 cp %{SOURCE1001} .
 cp %{SOURCE1002} .
 cp %{SOURCE1003} .
 cp %{SOURCE1004} .
 cp %{SOURCE1005} .
 cp %{SOURCE1006} .
-#%{!?build_type:%define build_type "Release"}
 
+%build
+%{!?build_type:%define build_type "Release"}
 %cmake . -DPREFIX=%{_prefix} \
         -DEXEC_PREFIX=%{_exec_prefix} \
         -DLIBDIR=%{_libdir} \
@@ -91,22 +86,15 @@ cp %{SOURCE1006} .
         -DCMAKE_BUILD_TYPE=%{build_type} \
         -DVERSION=%{version} \
         -DFILTER_LISTED_PKG=ON
-make %{?jobs:-j%jobs}
+make %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/share/license
-cp LICENSE.APLv2 %{buildroot}/usr/share/license/privacy-manager-server
-mkdir -p %{buildroot}/usr/share/license
-cp LICENSE.APLv2 %{buildroot}/usr/share/license/privacy-manager-client
-mkdir -p %{buildroot}/usr/bin
-cp res/usr/bin/* %{buildroot}/usr/bin/
+mkdir -p %{buildroot}%{_prefix}/bin
+cp res/usr/bin/* %{buildroot}%{_bindir}/
 mkdir -p %{buildroot}/opt/dbspace
 cp res/opt/dbspace/.privacylist.db /%{buildroot}/opt/dbspace/
-mkdir -p %{buildroot}/usr/share/privacy-manager/
-cp res/usr/share/privacy-manager/privacy-filter-list.ini %{buildroot}/usr/share/privacy-manager/
-#mkdir -p %{buildroot}/etc/rc.d/init.d
-#cp res/etc/rc.d/init.d/* %{buildroot}/etc/rc.d/init.d/
+mkdir -p %{buildroot}%{_datadir}/privacy-manager/
+cp res/usr/share/privacy-manager/privacy-filter-list.ini %{buildroot}%{_datadir}/privacy-manager/
 
 %make_install
 
@@ -136,12 +124,11 @@ fi
 %postun -n capi-security-privacy-manager -p /sbin/ldconfig
 
 %files -n privacy-manager-server
-#%license  LICENSE.APLv2
 %defattr(-,root,root,-)
+%license  LICENSE.APLv2
 %manifest privacy-manager-server.manifest
 %{_bindir}/*
 %{_prefix}/lib/systemd/*
-/usr/share/license/privacy-manager-server
 /opt/dbspace/.privacylist.db
 
 %files -n privacy-manager-server-devel
@@ -149,23 +136,22 @@ fi
 %{_libdir}/pkgconfig/privacy-manager-server.pc
 
 %files -n privacy-manager-client
-#%license  LICENSE.APLv2
 %defattr(-,root,root,-)
+%license  LICENSE.APLv2
 %manifest privacy-manager-client.manifest
 %{_libdir}/libprivacy-manager-client.so*
-/usr/share/license/privacy-manager-client
-/usr/share/privacy-manager/privacy-filter-list.ini
-/etc/package-manager/parserlib/libprivileges.so
+%{_datadir}/privacy-manager/privacy-filter-list.ini
+%{_sysconfdir}/package-manager/parserlib/libprivileges.so
 
 %files -n privacy-manager-client-devel
-%manifest privacy-manager-client-devel.manifest
 %defattr(-,root,root,-)
+%manifest privacy-manager-client-devel.manifest
 %{_includedir}/*
 %{_libdir}/pkgconfig/privacy-manager-client.pc
 
 
 %files -n capi-security-privacy-manager
-#%license  LICENSE.APLv2
+%license  LICENSE.APLv2
 %{_libdir}/libcapi-security-privacy-manager.so.*
 %manifest capi-security-privacy-manager.manifest
 
