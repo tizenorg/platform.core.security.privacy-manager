@@ -126,9 +126,9 @@ fi
 %defattr(-,root,root,-)
 %license  LICENSE.APLv2
 %manifest privacy-manager-server.manifest
-%{_bindir}/*
-%{_prefix}/lib/systemd/*
+%{_libdir}/libprivacy-manager-server.so*
 /opt/dbspace/.privacylist.db
+/usr/bin/*
 
 %files -n privacy-manager-server-devel
 %{_includedir}/privacy_manager/server/privacy_manager_daemon.h

@@ -81,10 +81,10 @@ SET_TARGET_PROPERTIES(privacy-manager-server PROPERTIES VERSION ${VERSION})
 SET(PC_NAME privacy-manager-server)
 SET(PC_DESCRIPTION "Privacy Manager Server API")
 SET(PC_LDFLAGS -lprivacy-manager-server)
-SET(PC_CFLAGS -I\${includedir}/privacy_manager)
+SET(PC_CFLAGS "-I\${includedir}/privacy_manager -I\${includedir}/privacy_manager/server")
 
 CONFIGURE_FILE(../privacy-manager-server.pc.in privacy-manager-server.pc @ONLY)
 
-INSTALL(TARGETS privacy-manager-server DESTINATION bin COMPONENT RuntimeLibraries)
+INSTALL(TARGETS privacy-manager-server DESTINATION ${LIB_INSTALL_DIR} COMPONENT RuntimeLibraries)
 INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/privacy-manager-server.pc DESTINATION ${LIB_INSTALL_DIR}/pkgconfig)
 INSTALL(FILES ${PRIVACY_MANAGER_SERVER_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR}/privacy_manager/server)
