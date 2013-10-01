@@ -7,7 +7,7 @@ SET(EXEC_PREFIX "\${prefix}")
 SET(INCLUDEDIR "\${prefix}/include")
 
 INCLUDE(FindPkgConfig)
-pkg_check_modules(pkgs REQUIRED dlog sqlite3 dbus-1 dbus-glib-1 db-util pkgmgr-info)
+pkg_check_modules(pkgs REQUIRED dlog sqlite3 dbus-1 dbus-glib-1 db-util pkgmgr-info capi-system-info)
 
 FOREACH(flag ${pkgs_CFLAGS})
 	SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} ${flag}")
