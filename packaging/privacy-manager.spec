@@ -23,6 +23,7 @@ BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(pkgmgr-info)
 BuildRequires:  pkgconfig(sqlite3)
+BuildRequires:	pkgconfig(capi-system-info)
 
 Requires(post):   /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
