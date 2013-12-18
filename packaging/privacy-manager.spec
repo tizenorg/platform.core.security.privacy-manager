@@ -85,7 +85,8 @@ cp %{SOURCE1006} .
         -DINCLUDEDIR=%{_includedir} \
         -DCMAKE_BUILD_TYPE=%{build_type} \
         -DVERSION=%{version} \
-        -DFILTER_LISTED_PKG=ON
+        -DFILTER_LISTED_PKG=ON \
+        -DPRIVACY_POPUP=OFF
 make %{?_smp_mflags}
 
 %install
