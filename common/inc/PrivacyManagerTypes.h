@@ -19,9 +19,10 @@
 
 #include <string>
 #include <privacy_manager_client_types.h>
+#include <tzplatform_config.h>
 
-static const std::string PRIVACY_DB_PATH("/opt/dbspace/.privacy.db");
-static const std::string PRIVACY_INFO_DB_PATH("/opt/dbspace/.privacylist.db");
+#define PRIVACY_DB_PATH         tzplatform_mkpath(TZ_SYS_DB,".privacy.db")
+#define PRIVACY_INFO_DB_PATH    tzplatform_mkpath(TZ_SYS_DB,".privacylist.db")
 static const std::string SERVER_ADDRESS ("/tmp/privacy_manager_server");
 static const std::string DBUS_PATH("/privacy_manager/dbus_notification");
 static const std::string DBUS_SIGNAL_INTERFACE("org.tizen.privacy_manager.signal");

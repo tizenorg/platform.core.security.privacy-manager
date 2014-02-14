@@ -32,7 +32,7 @@ PrivacyIdInfo::initialize(void)
 	static const std::string sqlPrivilege("SELECT PRIVILEGE_ID, PRIVACY_ID from PrivilegeToPrivacyTable");
 	static const std::string sqlPrivacyInfo("SELECT FEATURE FROM PrivacyInfo where PRIVACY_ID=?");
 
-	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
+	openDb(PRIVACY_INFO_DB_PATH, pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, sqlPrivilege.c_str(), pStmtPrivilege);
 
 	int res;
@@ -154,7 +154,7 @@ PrivacyIdInfo::getAllPrivacyId(std::list< std::string >& privacyIdList)
 		initialize();
 	}
 
-	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
+	openDb(PRIVACY_INFO_DB_PATH, pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, sql.c_str(), pStmt);
 
 	int res;
@@ -192,7 +192,7 @@ PrivacyIdInfo::getPrivaycDisplayName(const std::string privacyId, std::string& d
 
 	std::string sql = std::string("SELECT STR_MODULE_ID, STR_NAME_ID from PrivacyInfo where PRIVACY_ID=?");
 
-	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
+	openDb(PRIVACY_INFO_DB_PATH, pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, sql.c_str(), pStmt);
 
 	int res = sqlite3_bind_text(pStmt.get(), 1, privacyId.c_str(), -1, SQLITE_TRANSIENT);
@@ -231,7 +231,7 @@ PrivacyIdInfo::getPrivaycDescription(const std::string privacyId, std::string& d
 
 	std::string sql = std::string("SELECT STR_MODULE_ID, STR_NAME_ID from PrivacyInfo where PRIVACY_ID=?");
 
-	openDb(PRIVACY_INFO_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
+	openDb(PRIVACY_INFO_DB_PATH, pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, sql.c_str(), pStmt);
 
 	int res = sqlite3_bind_text(pStmt.get(), 1, privacyId.c_str(), -1, SQLITE_TRANSIENT);

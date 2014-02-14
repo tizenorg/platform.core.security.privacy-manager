@@ -13,19 +13,20 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 #
+source /etc/tizen-platform.conf
 for name in privacy
 do
-    rm -f /opt/dbspace/.$name.db
-    rm -f /opt/dbspace/.$name.db-journal
+    rm -f ${TZ_SYS_DB}/.$name.db
+    rm -f ${TZ_SYS_DB}/.$name.db-journal
     SQL="PRAGMA journal_mode = PERSIST;"
-    sqlite3 /opt/dbspace/.$name.db "$SQL"
+    sqlite3 ${TZ_SYS_DB}/.$name.db "$SQL"
     SQL=".read /usr/bin/"$name"_db.sql"
-    sqlite3 /opt/dbspace/.$name.db "$SQL"
-    touch /opt/dbspace/.$name.db-journal
-    chown 0:0 /opt/dbspace/.$name.db
-    chown 0:0 /opt/dbspace/.$name.db-journal
-    chmod 664 /opt/dbspace/.$name.db
-    chmod 664 /opt/dbspace/.$name.db-journal
+    sqlite3 ${TZ_SYS_DB}/.$name.db "$SQL"
+    touch ${TZ_SYS_DB}/.$name.db-journal
+    chown root:root ${TZ_SYS_DB}/.$name.db
+    chown root:root ${TZ_SYS_DB}/.$name.db-journal
+    chmod 664 ${TZ_SYS_DB}/.$name.db
+    chmod 664 ${TZ_SYS_DB}/.$name.db-journal
 done
 
 

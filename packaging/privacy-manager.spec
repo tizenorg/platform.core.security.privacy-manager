@@ -24,6 +24,7 @@ BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(pkgmgr-info)
 BuildRequires:  pkgconfig(sqlite3)
 BuildRequires:	pkgconfig(capi-system-info)
+BuildRequires:	pkgconfig(libtzplatform-config)
 
 Requires(post):   /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -92,8 +93,8 @@ make %{?_smp_mflags}
 %install
 mkdir -p %{buildroot}%{_prefix}/bin
 cp res/usr/bin/* %{buildroot}%{_bindir}/
-mkdir -p %{buildroot}/opt/dbspace
-cp res/opt/dbspace/.privacylist.db /%{buildroot}/opt/dbspace/
+mkdir -p %{buildroot}%{TZ_SYS_DB}
+cp res/opt/dbspace/.privacylist.db /%{buildroot}%{TZ_SYS_DB}
 mkdir -p %{buildroot}%{_datadir}/privacy-manager/
 cp res/usr/share/privacy-manager/privacy-filter-list.ini %{buildroot}%{_datadir}/privacy-manager/
 
@@ -108,10 +109,10 @@ mkdir -p %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants
 /sbin/ldconfig
 
 echo "Check privacy DB"
-if [ ! -f /opt/dbspace/.privacy.db ]
+if [ ! -f %{TZ_SYS_DB}/.privacy.db ]
 then
 	echo "Create privacy DB"
-	/usr/bin/privacy_manager_create_clean_db.sh
+	%{_bindir}/privacy_manager_create_clean_db.sh
 fi
 
 %postun -p /sbin/ldconfig
@@ -129,7 +130,7 @@ fi
 %license  LICENSE.APLv2
 %manifest privacy-manager-server.manifest
 %{_libdir}/libprivacy-manager-server.so*
-/opt/dbspace/.privacylist.db
+%{TZ_SYS_DB}/.privacylist.db
 /usr/bin/*
 
 %files -n privacy-manager-server-devel

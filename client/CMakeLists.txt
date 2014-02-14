@@ -8,7 +8,7 @@ SET(LIBDIR ${LIB_INSTALL_DIR})
 SET(INCLUDEDIR ${INCLUDE_INSTALL_DIR})
 
 INCLUDE(FindPkgConfig)
-pkg_check_modules(privacy-manager-client REQUIRED dlog sqlite3 dbus-1 dbus-glib-1 db-util pkgmgr-info)
+pkg_check_modules(privacy-manager-client REQUIRED dlog sqlite3 dbus-1 dbus-glib-1 db-util pkgmgr-info libtzplatform-config)
 
 FOREACH(flag ${pkgs_CFLAGS})
 	SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} ${flag}")

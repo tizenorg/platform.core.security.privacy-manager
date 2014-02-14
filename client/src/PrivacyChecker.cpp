@@ -319,7 +319,7 @@ PrivacyChecker::updateCache(const std::string pkgId, std::string privacyId, std:
 {
 	static const std::string PrivacyQuery = "SELECT IS_ENABLED from PrivacyInfo where PKG_ID=? and PRIVACY_ID=?";
 	
-	openDb(PRIVACY_DB_PATH.c_str(), pDbH, SQLITE_OPEN_READONLY);
+	openDb(PRIVACY_DB_PATH, pDbH, SQLITE_OPEN_READONLY);
 	prepareDb(pDbH, PrivacyQuery.c_str(), pPrivacyStmt);
 	int res = sqlite3_bind_text(pPrivacyStmt.get(), 1, pkgId.c_str(),  -1, SQLITE_TRANSIENT);
 	TryReturn( res == 0, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);
@@ -346,7 +346,7 @@ PrivacyChecker::updateCache(std::string pkgId, std::map < std::string, bool >& p
 
 	pkgCacheMap.clear();
 	
-	openDb(PRIVACY_DB_PATH.c_str(), pDbH, SQLITE_OPEN_READONLY);
+	openDb(PRIVACY_DB_PATH, pDbH, SQLITE_OPEN_READONLY);
 	prepareDb(pDbH, PrivacyQuery.c_str(), pPrivacyStmt);
 	int res = sqlite3_bind_text(pPrivacyStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
 	TryReturn( res == SQLITE_OK, PRIV_MGR_ERROR_DB_ERROR, , "sqlite3_bind_text : %d", res);

@@ -71,7 +71,7 @@ PrivacyDb::setPrivacySetting(const std::string pkgId, const std::string privacyI
 {
 	static const std::string query = std::string("UPDATE PrivacyInfo set IS_ENABLED =? where PKG_ID=? and PRIVACY_ID=?");
 
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	openDb(PRIVACY_DB_PATH, pDbHandler, SQLITE_OPEN_READWRITE);
 	prepareDb(pDbHandler, query.c_str(), pStmt);
 
 	int res = sqlite3_bind_int(pStmt.get(), 1, enabled);
@@ -94,7 +94,7 @@ PrivacyDb::getPrivacyAppPackages(std::list <std::string>& list) const
 {
 	std::string query = "SELECT PKG_ID from PackageInfo";
 
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
+	openDb(PRIVACY_DB_PATH, pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, query.c_str(), pStmt);
 
 	while ( sqlite3_step(pStmt.get()) == SQLITE_ROW )
@@ -120,7 +120,7 @@ PrivacyDb::getAppPackagePrivacyInfo(const std::string pkgId, std::list < std::pa
 {
 	static const std::string query = "SELECT PRIVACY_ID, IS_ENABLED from PrivacyInfo where PKG_ID=?";
 
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
+	openDb(PRIVACY_DB_PATH, pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, query.c_str(), pStmt);
 
 	int res = sqlite3_bind_text(pStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
@@ -146,7 +146,7 @@ PrivacyDb::addAppPackagePrivacyInfo(const std::string pkgId, const std::list < s
 	static const std::string pkgInfoQuery("INSERT INTO PackageInfo(PKG_ID, IS_SET) VALUES(?, ?)");
 	static const std::string privacyQuery("INSERT INTO PrivacyInfo(PKG_ID, PRIVACY_ID, IS_ENABLED) VALUES(?, ?, ?)");
 	
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	openDb(PRIVACY_DB_PATH, pDbHandler, SQLITE_OPEN_READWRITE);
 	prepareDb(pDbHandler, pkgInfoQuery.c_str(), pPkgInfoStmt);
 
 	int res = sqlite3_bind_text(pPkgInfoStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
@@ -190,7 +190,7 @@ PrivacyDb::removeAppPackagePrivacyInfo(const std::string pkgId)
 
 	int res;
 
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	openDb(PRIVACY_DB_PATH, pDbHandler, SQLITE_OPEN_READWRITE);
 	prepareDb(pDbHandler, pkgInfoQuery.c_str(), pPkgInfoStmt);
 
 	res = sqlite3_bind_text(pPkgInfoStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
@@ -223,7 +223,7 @@ PrivacyDb::isUserPrompted(const std::string pkgId, bool& isPrompted) const
 		return 0;
 	}
 
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READONLY);
+	openDb(PRIVACY_DB_PATH, pDbHandler, SQLITE_OPEN_READONLY);
 	prepareDb(pDbHandler, query.c_str(), pStmt);
 
 	int res = sqlite3_bind_text(pStmt.get(), 1, pkgId.c_str(), -1, SQLITE_TRANSIENT);
@@ -251,7 +251,7 @@ PrivacyDb::setUserPrompted(const std::string pkgId, bool prompted)
 
 	int res;
 
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	openDb(PRIVACY_DB_PATH, pDbHandler, SQLITE_OPEN_READWRITE);
 	prepareDb(pDbHandler, query.c_str(), pStmt);
 
 	res = sqlite3_bind_int(pStmt.get(), 1, prompted? 1 : 0);
@@ -271,7 +271,7 @@ PrivacyDb::getAppPackagesbyPrivacyId(std::string privacyId, std::list < std::pai
 {
 	std::string sql = std::string("SELECT PKG_ID, IS_ENABLED from PrivacyInfo where PRIVACY_ID=?");
 
-	openDb(PRIVACY_DB_PATH.c_str(), pDbHandler, SQLITE_OPEN_READWRITE);
+	openDb(PRIVACY_DB_PATH, pDbHandler, SQLITE_OPEN_READWRITE);
 	prepareDb(pDbHandler, sql.c_str(), pStmt);
 
 	SECURE_LOGD("privacy id : %s", privacyId.c_str());
