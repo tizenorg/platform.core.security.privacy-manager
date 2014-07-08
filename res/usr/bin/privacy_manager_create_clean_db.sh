@@ -20,7 +20,7 @@ do
     rm -f ${TZ_SYS_DB}/.$name.db-journal
     SQL="PRAGMA journal_mode = PERSIST;"
     sqlite3 ${TZ_SYS_DB}/.$name.db "$SQL"
-    SQL=".read /usr/bin/"$name"_db.sql"
+    SQL=".read ${TZ_SYS_BIN}/"$name"_db.sql"
     sqlite3 ${TZ_SYS_DB}/.$name.db "$SQL"
     touch ${TZ_SYS_DB}/.$name.db-journal
     chown root:root ${TZ_SYS_DB}/.$name.db
