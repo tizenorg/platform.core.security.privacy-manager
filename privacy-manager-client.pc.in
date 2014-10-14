@@ -1,7 +1,7 @@
 prefix=@PREFIX@
 exec_prefix=@EXEC_PREFIX@
 libdir=@LIBDIR@
-includedir=/usr/include
+includedir=@INCLUDE_INSTALL_DIR@
 
 Name: @PC_NAME@
 Description: @PC_DESCRIPTION@

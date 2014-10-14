@@ -2,9 +2,9 @@
 # Package Information for pkg-config
 
 prefix=@PREFIX@
-exec_prefix=/usr
-libdir=/usr/lib
-includedir=/usr/include/privacymgr
+exec_prefix=@PREFIX@
+libdir=@LIB_INSTALL_DIR@
+includedir=@INCLUDE_INSTALL_DIR@/privacymgr
 
 Name: @PC_NAME@
 Description: @PACKAGE_DESCRIPTION@
