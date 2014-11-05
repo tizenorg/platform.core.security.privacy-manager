@@ -23,8 +23,8 @@ BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(pkgmgr-info)
 BuildRequires:  pkgconfig(sqlite3)
-BuildRequires:	pkgconfig(capi-system-info)
-BuildRequires:	pkgconfig(libtzplatform-config)
+BuildRequires:  pkgconfig(capi-system-info)
+BuildRequires:  pkgconfig(libtzplatform-config)
 
 Requires(post):   /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -88,7 +88,7 @@ cp %{SOURCE1006} .
         -DVERSION=%{version} \
         -DFILTER_LISTED_PKG=ON \
         -DPRIVACY_POPUP=OFF
-make %{?_smp_mflags}
+%__make %{?_smp_mflags}
 
 %install
 mkdir -p %{buildroot}%{_prefix}/bin
@@ -100,19 +100,19 @@ cp res/usr/share/privacy-manager/privacy-filter-list.ini %{buildroot}%{_datadir}
 
 %make_install
 
-mkdir -p %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants
-#install -m 0644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/privacy-manager-server.service
-#ln -sf /usr/lib/systemd/system/privacy-manager-server.service %{buildroot}%{_libdir}/systemd/system/multi-user.target.wants/privacy-manager-server.service
+#mkdir -p %%{buildroot}%%{_libdir}/systemd/system/multi-user.target.wants
+#install -m 0644 %%{SOURCE1} %%{buildroot}%%{_libdir}/systemd/system/privacy-manager-server.service
+#ln -sf /usr/lib/systemd/system/privacy-manager-server.service %%{buildroot}%%{_libdir}/systemd/system/multi-user.target.wants/privacy-manager-server.service
 
 
 %post -n privacy-manager-server
-/sbin/ldconfig
+ldconfig
 
 echo "Check privacy DB"
 if [ ! -f %{TZ_SYS_DB}/.privacy.db ]
 then
 	echo "Create privacy DB"
-	%{_bindir}/privacy_manager_create_clean_db.sh
+	privacy_manager_create_clean_db.sh
 fi
 chsmack -a 'User' %{TZ_SYS_DB}/.privacy.db*
 chsmack -a 'User' %{TZ_SYS_DB}/.privacylist.db*
@@ -133,7 +133,7 @@ chsmack -a 'User' %{TZ_SYS_DB}/.privacylist.db*
 %manifest privacy-manager-server.manifest
 %{_libdir}/libprivacy-manager-server.so*
 %{TZ_SYS_DB}/.privacylist.db
-/usr/bin/*
+%{_bindir}/*
 
 %files -n privacy-manager-server-devel
 %{_includedir}/privacy_manager/server/privacy_manager_daemon.h
