@@ -114,8 +114,8 @@ then
 	echo "Create privacy DB"
 	%{_bindir}/privacy_manager_create_clean_db.sh
 fi
-chsmack -a 'User' %{TZ_SYS_DB}/.privacy.db*
-chsmack -a 'User' %{TZ_SYS_DB}/.privacylist.db*
+chsmack -a 'System::Shared' %{TZ_SYS_DB}/.privacy.db*
+chsmack -a 'System::Shared' %{TZ_SYS_DB}/.privacylist.db*
 
 %postun -p /sbin/ldconfig
 
